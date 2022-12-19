@@ -72,7 +72,7 @@ var app = new Vue({
                     areas: this.datasetSelect["countries"].concat(this.datasetSelect["regions"]),
                     layerBoundariesJsonFile: "country_region.geojson",
                     popupHandler: function(layer){
-                        return `<a href="/data?area=${layer.feature.properties.areaId}">${layer.feature.properties.name} : ${layer.feature.properties.grantCount} grants`;
+                        return `<a href="/data?area=${layer.feature.properties.areaId}">${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants`;
                     },
                 },
                 {
@@ -80,7 +80,7 @@ var app = new Vue({
                     areas: this.datasetSelect["localAuthorities"],
                     layerBoundariesJsonFile: "lalt.geojson",
                     popupHandler: function(layer){
-                        return `<a href="/data?area=${layer.feature.properties.areaId}">${layer.feature.properties.name} : ${layer.feature.properties.grantCount} grants`;
+                        return `<a href="/data?area=${layer.feature.properties.areaId}">${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants`;
                     },
                 }
             ];

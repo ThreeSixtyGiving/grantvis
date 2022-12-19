@@ -41,6 +41,9 @@ export const barChart = {
                             display: false,
                         },
                         ticks: {
+                          userCallback(value) {
+                            return value.toLocaleString()
+                          },
                             beginAtZero: true,
                             precision: 0,
                         },

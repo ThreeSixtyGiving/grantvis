@@ -122,7 +122,7 @@
           v-on:click="openDataPage(key, group.id)"
           >
           <label class="bar-chart__label small">{{ group.name }}</label>
-          <div class="bar-chart__bar"><span></span></div>
+          <div class="bar-chart__bar"><span v-bind:data-val="group.grant_count.toLocaleString()"></span></div>
         </li>
       </ul>
       <input v-if="datasetSelect[key].length > 10" class="search-field" v-model="find[key]" v-bind:placeholder="'Find '+dataset" />
