@@ -215,7 +215,7 @@
                   v-bind:class="{ 'hide-print' : group.inactive }"
                   :style="group.style" v-on:click="toggleInArray(filters.funders, group.id)">
                   <label class="bar-chart__label small">{{ group.label }}</label>
-                  <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+                  <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
                 </li>
             </ul>
             <input type="text" v-model="find.funder" placeholder="Find a funder" class="search-field" v-if="safeLength(chartData.byFunder) + safeLength(inactiveChartData.byFunder) > 10"  />
@@ -241,7 +241,7 @@
               v-on:click="toggleInArray(filters.funderTypes, group.id)"
               >
               <label class="bar-chart__label small">{{ group.label }}</a></label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></div>
             </li>
           </ul>
 
@@ -266,7 +266,7 @@
                 v-bind:class="{ 'hide-print' : group.inactive }"
                 v-on:click="applyAmountAwardedFilter(group)">
                <label class="bar-chart__label">{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
 
@@ -354,7 +354,7 @@
             ref="byGrantProgrammeItem"
             >
             <label class="bar-chart__label small">{{ group.label }}</label>
-            <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+            <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
           </li>
         </ul>
         <input type="text" v-model="find.grantProgramme" placeholder="Find a programme" class="search-field" v-if="safeLength(chartData.byGrantProgramme) + safeLength(inactiveChartData.byGrantProgramme) > 10"  />
@@ -393,7 +393,7 @@
               {{ group.label }}
               <span v-if="group.label.length === 0">{{group.id}}</span>
             </label>
-            <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+            <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
           </li>
         </ul>
         <div>
@@ -421,7 +421,7 @@
                   {{ group.label }}
                 </label>
 
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
           <div>
@@ -452,7 +452,7 @@
                   {{ group.label }}
                 </label>
 
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
           <input type="text" v-model="find.localAuthority" placeholder="Find a local authority" class="search-field" v-if="safeLength(chartData.byLocalAuthority) + safeLength(inactiveChartData.byLocalAuthority) > 10"  />
@@ -492,7 +492,7 @@
               style="cursor: unset;"
               :style="group.style">
               <label class="bar-chart__label small" style="cursor: unset;">{{ group.label }}</label>
-              <div class="bar-chart__bar"><span></span></div>
+              <div class="bar-chart__bar"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
           <div>
@@ -525,7 +525,7 @@
               v-on:click="toggleInArray(filters.orgtype, group.id)"
             >
               <label class="bar-chart__label small" >{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
 
@@ -553,7 +553,7 @@
               style="cursor: unset;"
               :style="group.style">
               <label class="bar-chart__label" style="cursor: unset;">{{ group.label }}</label>
-              <div class="bar-chart__bar"><span></span></div>
+              <div class="bar-chart__bar"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
           <div>
@@ -585,7 +585,7 @@
               style="cursor: unset;"
              :style="group.style">
               <label class="bar-chart__label" style="cursor: unset;" >{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span></span></div>
+              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
 <!--          <filter-item title="Recipient age">
