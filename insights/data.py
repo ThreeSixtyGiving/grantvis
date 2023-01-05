@@ -39,15 +39,7 @@ def get_frontpage_options(dataset=DEFAULT_DATASET, with_url=True):
             ],
             key=lambda x: -x["grant_count"],
         ),
-        funderTypes=[
-            {
-                "id": "all",
-                "name": "All grants",
-                "url": url_for("data") if with_url else None,
-                **all_grants[dataset],
-            }
-        ]
-        + sorted(
+        funderTypes=sorted(
             [
                 {
                     "id": k,
