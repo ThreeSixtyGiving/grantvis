@@ -3,6 +3,7 @@ import { barChart } from './components/bar-chart.js';
 import { GQL, gqlSingleGraph, graphqlQuery } from './gql/query.js';
 import { formatCurrency, formatDate, formatNumber, getAmountSuffix, formatNumberSuffix } from './components/filters.js';
 import { debounce } from './lib/debounce.js';
+import { chartCardData } from './data/card.js';
 
 const COLOURS = {
     yellow: "#EFC329",
@@ -146,6 +147,7 @@ var app = new Vue({
             filtersToTitles: filtersToTitles,
             filterDates: { ...initialFilters(true).awardDates },
             choroplethData: [],
+            chartCardData: chartCardData
         }
     },
     computed: {
@@ -246,7 +248,7 @@ var app = new Vue({
                 searchParams.append('grantProgramme', grantProgramme);
             });
             return url + searchParams.toString();
-        },
+        }
     },
     watch: {
 
@@ -640,8 +642,10 @@ var app = new Vue({
              }
 
              return array.length;
+        },
+        getChartCardData(id) {
+              return chartCardData.filter(item => item.id === id)
         }
-
     },
     mounted() {
         this.updateData();

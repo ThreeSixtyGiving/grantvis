@@ -207,7 +207,7 @@
         <!-- Funders -->
 
           <chart-card color="orange" v-bind:loading="loading" v-if="chartData.byFunder && chartData.byFunder.length > 0">
-            <chart-card-header title="Funders">
+            <chart-card-header :title="getChartCardData('byFunder')[0].title">
               (number of grants)
             </chart-card-header>
             <ul class="bar-chart" v-if="chartData.byFunder">
@@ -221,6 +221,7 @@
             <input type="text" v-model="find.funder" placeholder="Find a funder" class="search-field" v-if="safeLength(chartData.byFunder) + safeLength(inactiveChartData.byFunder) > 10"  />
             <div>
               <hr class="separator-light">
+              <p>{{ getChartCardData('byFunder')[0].instructions }}</p>
               <p>Based on {{ chartN('byFunder') | formatNumber }} grants.</p>
               <p v-if="chartMissing('byFunder')">
                 {{ chartMissing('byFunder') | formatNumber }} grants not found.
@@ -231,7 +232,7 @@
         <!-- Funder Types -->
 
         <chart-card color="orange" v-bind:loading="loading" v-if="chartData.byFunderType">
-          <chart-card-header title="Funder types">
+          <chart-card-header :title="getChartCardData('byFunderType')[0].title">
             (number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byFunderType && chartData.byFunderType.length > 0">
@@ -247,6 +248,7 @@
 
           <div>
             <hr class="separator-light">
+            <p>{{ getChartCardData('byFunderType')[0].instructions }}</p>
             <p>Based on {{ chartN('byFunderType') | formatNumber }} grants.</p>
             <p v-if="chartMissing('byFunderType')">
               {{ chartMissing('byFunderType') | formatNumber }} grants not found.
@@ -257,7 +259,7 @@
         <!-- Amount awarded -->
 
         <chart-card color="orange" v-bind:loading="loading">
-          <chart-card-header title="Award amount">
+          <chart-card-header :title="getChartCardData('byAmountAwarded')[0].title">
           (GBP, number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byAmountAwarded">
@@ -279,12 +281,14 @@
               v-model="filters.awardAmount.max">
             <a href="#" v-on:click.prevent="filters.awardAmount.max = null; filters.awardAmount.min = null;" v-if="filters.awardAmount.max || filters.awardAmount.min">Clear amounts</a>
           </filter-item>
+          <hr class="separator-light">
+          <p>{{ getChartCardData('byAmountAwarded')[0].instructions }}</p>
         </chart-card>
 
         <!-- Award date -->
 
         <chart-card colour="orange" v-bind:loading="loading" v-if="summary.minDate && summary.minDate.slice(0,7) != summary.maxDate.slice(0,7)" >
-          <chart-card-header title="Award date">
+          <chart-card-header :title="getChartCardData('byAwardDate')[0].title">
           (number of grants)
           </chart-card-header>
 
@@ -336,13 +340,14 @@
               <input id="award-date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-model="filterDates.max.year">
             </span>
           </filter-item>
-
+          <hr class="separator-light">
+          <p>{{ getChartCardData('byAwardDate')[0].instructions }}</p>
         </chart-card>
 
       <!-- Grant Programmes -->
 
       <chart-card color="orange" v-bind:loading="loading" v-if="chartData.byGrantProgramme && chartN('byGrantProgramme') > 0">
-        <chart-card-header title="Grant programmes">
+        <chart-card-header :title="getChartCardData('byGrantProgramme')[0].title">
           (number of grants)
         </chart-card-header>
         <ul class="bar-chart" v-if="chartData.byGrantProgramme">
@@ -360,6 +365,7 @@
         <input type="text" v-model="find.grantProgramme" placeholder="Find a programme" class="search-field" v-if="safeLength(chartData.byGrantProgramme) + safeLength(inactiveChartData.byGrantProgramme) > 10"  />
         <div>
           <hr class="separator-light">
+          <p>{{ getChartCardData('byGrantProgramme')[0].instructions }}</p>
           <p>Based on {{ chartN('byGrantProgramme') | formatNumber }} grants.</p>
           <p v-if="chartMissing('byGrantProgramme')">
             {{ chartMissing('byGrantProgramme') | formatNumber }} grants did not have a grant programme.
@@ -378,7 +384,7 @@
 
       <!-- countries -->
       <chart-card color="red" v-bind:loading="loading" v-if="chartN('byCountryRegion') > 0">
-        <chart-card-header title="Countries">
+        <chart-card-header :title="getChartCardData('byCountry')[0].title">
           (number of grants)
         </chart-card-header>
         <ul class="bar-chart" v-if="chartData.byCountryRegion">
@@ -398,6 +404,7 @@
         </ul>
         <div>
           <hr class="separator-light">
+          <p>{{ getChartCardData('byCountry')[0].instructions }}</p>
           <p>Based on {{ chartN('byCountryRegion') | formatNumber }} grants.</p>
           <p v-if="chartMissing('byCountryRegion')">
             {{ chartMissing('byCountryRegion') | formatNumber }} grants did not have enough information to determine geography.
@@ -407,7 +414,7 @@
 
         <!-- Regions -->
         <chart-card color="red" v-bind:loading="loading" v-if="chartN('byCountryRegion','grants', 1) > 0">
-          <chart-card-header title="Regions in England">
+          <chart-card-header :title="getChartCardData('byRegion')[0].title">
           (number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byCountryRegion">
@@ -426,6 +433,7 @@
           </ul>
           <div>
             <hr class="separator-light">
+            <p>{{ getChartCardData('byRegion')[0].instructions }}</p>
             <p>Based on {{ chartN('byCountryRegion') | formatNumber }} grants.</p>
             <p v-if="chartMissing('byCountryRegion')">
               {{ chartMissing('byCountryRegion') | formatNumber }} grants did not have enough information to determine geography.
@@ -436,7 +444,7 @@
 
         <!--  Local Authorities -->
         <chart-card color="red" v-bind:loading="loading" v-if="chartN('byLocalAuthority') > 0">
-          <chart-card-header title="Local Authorities">
+          <chart-card-header :title="getChartCardData('byLocalAuthority')[0].title">
           (number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byLocalAuthority">
@@ -458,6 +466,7 @@
           <input type="text" v-model="find.localAuthority" placeholder="Find a local authority" class="search-field" v-if="safeLength(chartData.byLocalAuthority) + safeLength(inactiveChartData.byLocalAuthority) > 10"  />
           <div>
             <hr class="separator-light">
+            <p>{{ getChartCardData('byLocalAuthority')[0].instructions }}</p>
             <p>Based on {{ chartN('byLocalAuthority') | formatNumber }} grants.</p>
             <p v-if="chartMissing('byLocalAuthority')">
               {{ chartMissing('byLocalAuthority') | formatNumber }} grants did not have enough information to determine geography.
@@ -469,13 +478,12 @@
 
         <!-- choropleth -->
         <chart-card color="red">
-          <chart-card-header title="Distribution of Grants by location"></chart-card-header>
+          <chart-card-header :title="getChartCardData('byArea')[0].title"></chart-card-header>
           <a name="map"></a>
           <choropleth class="base-card__content" v-bind:layer-data="choroplethData" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
           <div>
             <hr class="separator-light">
-            <p>Click on an area to view number of grants.</p>
-            <p>Zoom into a Country/Region to view Local Authority-level data.</p>
+            <p>{{ getChartCardData('byArea')[0].instructions }}</p>
             <p v-if="chartMissing('byCountryRegion')">
               {{ chartMissing('byCountryRegion') | formatNumber }} grants did not have location data available.
             </p>
@@ -484,7 +492,7 @@
 
         <!-- Source of location information -->
         <chart-card color="red" v-bind:loading="loading" v-if="chartN('byGeoSource') > 0">
-          <chart-card-header title="Source of location information">
+          <chart-card-header :title="getChartCardData('byGeoSource')[0].title">
             (number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byGeoSource">
@@ -497,6 +505,7 @@
           </ul>
           <div>
             <hr class="separator-light">
+            <p>{{ getChartCardData('byGeoSource')[0].instructions }}</p>
             <p>Based on {{ chartN('byGeoSource') | formatNumber }} grants.</p>
             <p v-if="chartMissing('byGeoSource')">
               {{ chartMissing('byGeoSource') | formatNumber }} grants did not have a location available.
@@ -515,7 +524,7 @@
 
         <!-- Recipient Type -->
         <chart-card color="teal" v-bind:loading="loading">
-          <chart-card-header title="Recipient type">
+          <chart-card-header :title="getChartCardData('byOrgType')[0].title">
             (number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byOrgType">
@@ -531,6 +540,7 @@
 
           <div>
             <hr class="separator-light">
+            <p>{{ getChartCardData('byOrgType')[0].instructions }}</p>
             <p>Based on {{ chartN('byOrgType') | formatNumber }} grants.</p>
             <p v-if="chartMissing('byOrgType')">
               {{ chartMissing('byOrgType') | formatNumber }} values are not found.
@@ -545,7 +555,7 @@
 
         <!-- Latest Income -->
         <chart-card color="teal" v-bind:loading="loading" size="1" v-if="chartN('byOrgSize') > 0" >
-          <chart-card-header title="Latest income of charity recipients">
+          <chart-card-header :title="getChartCardData('byOrgSize')[0].title">
           (number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byOrgSize">
@@ -558,6 +568,7 @@
           </ul>
           <div>
             <hr class="separator-light">
+            <p>{{ getChartCardData('byOrgSize')[0].instructions }}</p>
             <p>Based on {{ chartN('byOrgSize') | formatNumber }} grants.</p>
             <p v-if="chartMissing('byOrgSize')">
               Latest income is not available for {{ chartMissing('byOrgSize') | formatNumber }} grants.
@@ -566,7 +577,7 @@
         </chart-card>
 
         <chart-card color="teal" v-bind:loading="loading" v-if="chartN('byOrgSize') == 0">
-          <chart-card-header title="Latest income of charity recipients"></chart-card-header>
+          <chart-card-header :title="getChartCardData('byOrgSize')[0].title"></chart-card-header>
           <p>
             Latest income is not available for {{ chartMissing('byOrgSize') | formatNumber }} grants.
           </p>
@@ -577,7 +588,7 @@
         </chart-card>
 
         <chart-card color="teal" v-bind:loading="loading" size="1" v-if="chartN('byOrgAge') > 0">
-          <chart-card-header title="Age of recipient organisations">
+          <chart-card-header :title="getChartCardData('byOrgAge')[0].title">
             (number of grants)
           </chart-card-header>
           <ul class="bar-chart" v-if="chartData.byOrgAge">
@@ -598,6 +609,7 @@
 
           <div>
             <hr class="separator-light">
+            <p>{{ getChartCardData('byOrgAge')[0].instructions }}</p>
             <p>Based on {{ chartN('byOrgAge') | formatNumber }} grants.</p>
             <p>Organisation age at the time of the grant award, based on the registration date of that organisation. Only
               available for recipients with charity or company numbers.</p>
