@@ -106,10 +106,7 @@
     <div class="spacer-3"></div>
 
     <chart-card color="orange" v-bind:loading="loading" v-for="(dataset, key) in datasetSelectSections" class="spacer-3">
-      <chart-card-header v-bind:title="'Regions in England'" v-if="dataset == 'Regions'">
-        (number of grants)
-      </chart-card-header>
-      <chart-card-header v-bind:title="dataset" v-else>
+      <chart-card-header :title="getChartCardData(dataset)[0].title">
         (number of grants)
       </chart-card-header>
 
@@ -129,21 +126,20 @@
 
       <div>
         <hr class="separator-light">
-        <p v-if="dataset == 'Regions'">This type of region data is currently only available for England (UK).</p>
+        <p>{{ getChartCardData(dataset)[0].instructions }}</p>
         <p>Total {{dataset}} {{datasetSelect[key].length}}.</p>
-        <a class="button" v-if="dataset == 'Regions' || dataset == 'Countries' || dataset == 'Local authorities'" href="#map">View on Map</a></p>
+        <a class="button" v-if="dataset == 'byRegion' || dataset == 'byCountry' || dataset == 'Local authorities'" href="#map">View on Map</a></p>
      </div>
     </chart-card>
 
     <!-- choropleth -->
     <chart-card color="teal">
-      <chart-card-header title="Distribution of Grants by location"></chart-card-header>
+      <chart-card-header title="getChartCardData('byArea')[0].title"></chart-card-header>
       <a name="map"></a>
       <choropleth class="base-card__content" v-bind:layer-data="choroplethData" container="ch-1" height="680px" :zoom-control="true"></choropleth>
       <div>
         <hr class="separator-light">
-        <p>Click on an area to view number of grants.</p>
-        <p>Zoom into a Country/Region to view Local Authority-level data.</p>
+        <p>{{ getChartCardData('byArea')[0].instructions }}</p>
       </div>
     </chart-card>
 

@@ -1,4 +1,5 @@
 import { formatCurrency, formatDate, formatNumber, getAmountSuffix, formatNumberSuffix } from './components/filters.js';
+import { chartCardData } from './data/card.js';
 
 Vue.filter('formatCurrency', formatCurrency);
 Vue.filter('formatDate', formatDate);
@@ -25,12 +26,12 @@ var app = new Vue({
             uploadError: null,
             datasetSelect: DATASET_SELECT,
             datasetSelectSections: {
-                funders: "Funders",
-                funderTypes: "Funding organisation type",
+                funders: "byFunder",
+                funderTypes: "byFunderType",
                 // publishers: "Publishers",
-                countries: "Countries",
-                regions: "Regions",
-                localAuthorities: "Local authorities",
+                countries: "byCountry",
+                regions: "byRegion",
+                localAuthorities: "byLocalAuthority",
             },
             find: {
                 funders: "",
@@ -41,6 +42,7 @@ var app = new Vue({
             },
             choroplethData: [],
             maxGrantCounts: {}, /* cache of max count */
+            chartCardData: chartCardData
         }
     },
     watch: {
@@ -137,12 +139,14 @@ var app = new Vue({
         },
         openFileDialog: function(){
             this.$refs.uploadFileInput.click();
+        },
+        getChartCardData(id) {
+          return chartCardData.filter(item => item.id === id)
         }
     },
 
     mounted: function(){
         this.choroplethData = this.dataForChoropleth();
-
     },
 
 });
