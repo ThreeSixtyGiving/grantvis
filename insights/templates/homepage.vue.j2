@@ -134,7 +134,7 @@
 
     <!-- choropleth -->
     <chart-card color="teal">
-      <chart-card-header title="getChartCardData('byArea')[0].title"></chart-card-header>
+      <chart-card-header :title="getChartCardData('byArea')[0].title"></chart-card-header>
       <a name="map"></a>
       <choropleth class="base-card__content" v-bind:layer-data="choroplethData" container="ch-1" height="680px" :zoom-control="true"></choropleth>
       <div>
