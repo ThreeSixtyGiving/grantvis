@@ -175,11 +175,6 @@ var app = new Vue({
         filtersApplied(){
             let activeFilters = [];
 
-            if (!window.location.search && this.dataset == 'main'){
-                window.location.href = "/";
-                return activeFilters;
-            }
-
             for (let filter in this.computedFilters){
                 if (this.computedFilters[filter].length || this.computedFilters[filter].min || this.computedFilters[filter].max){
                     if (activeFilters.indexOf(filter) == -1){
@@ -377,13 +372,6 @@ var app = new Vue({
             }
         },
         updateData() {
-            /* If no search filters do nothing */
-
-            if (!this.filtersApplied.length && this.dataset == 'main'){
-                window.location.href = '/'
-                return;
-            }
-
             var app = this;
             app.loadingQ++;
 
