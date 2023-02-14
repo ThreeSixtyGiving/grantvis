@@ -117,7 +117,7 @@ def create_app():
             }
         )
 
-    @app.route("/")
+    @app.route("/old-homepage")
     def index():
         # Loading data from GrantNav avoid the cache mechanism
         if request.args.get("url"):
@@ -176,6 +176,7 @@ def create_app():
             **kwargs,
         )
 
+    @app.route("/")
     @app.route("/data")
     @app.route("/data/<dataset>")
     @app.route("/data/<dataset>/<page>")
