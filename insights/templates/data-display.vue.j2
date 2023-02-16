@@ -171,7 +171,7 @@
       </div>
     </div>
 
-    <div v-if="summary.currencies.length > 1">
+    <div v-if="summary.currencies.length > 1 && filtersApplied.length && !loading">
       This data also contains
       <ul>
         <li v-for="currency in summary.currencies" v-if="currency.currency != 'GBP'">
@@ -185,14 +185,8 @@
   </header>
 
   <main class="layout__content">
-    <div class="layout__content-inner" style="padding-top: 10px">
-      <div class="box box--orange" v-if="(!filtersApplied.length && dataset == 'main') | (summary.grants === 0 && dataset !== 'main')">
-          <h3>No Dataset selected</h3>
-          <p>There are currently no 360Giving datasets selected. <a href="/">Select a dataset.</a></p>
-          <p>Note: Datasets imported from <a href="https://grantnav.threesixtygiving.org">GrantNav</a> expire after {{datasetExpiryDays}} days.</p>
-      </div>
 
-      <template v-else>
+      <template>
 
       <div class="grid grid--two-columns">
 
