@@ -188,6 +188,11 @@ def create_app():
         data_type="data", page="data", dataset=settings.DEFAULT_DATASET, data_id=None
     ):
 
+        if request.args.get("url"):
+            try:
+                return redirect(fetch_file_from_grantnav_url(request.args.get("url")))
+            except Exception as e:
+                flash("Could not fetch from URL")
         # Optimisation - Most of this is now redundant
 
         # regions are areas
