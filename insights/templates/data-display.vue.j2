@@ -52,7 +52,7 @@
                     <a href="/"><img src="https://cdn.threesixtygiving.org/images/360-logos/insights/360insights-color.svg"
                         alt="360 "></a>
                   </div>
-                  <div class="hero__column hero__lead">
+                  <div class="hero__column hero__lead" v-if="filtersApplied.length && !loading">
                     <h2 class="hero__title">{{ subtitle }}</h2>
                     <p class="hero__blurb">
                         <template v-if="funders && funders.length <= 5">
@@ -74,6 +74,11 @@
                           </template>
                         </template>
                     </p>
+                  </div>
+                  <div class="hero__column hero__lead" v-else>
+                    <h2 class="hero__title">See your grantmaking in new ways</h2>
+                    <p class="hero__blurb">Combine and visualise 360Giving, charity and other data to answer questions about your
+                      grantmaking</p>
                   </div>
                 </div>
               </div>
@@ -171,7 +176,7 @@
       </div>
     </div>
 
-    <div v-if="summary.currencies.length > 1 && filtersApplied.length && !loading">
+    <div v-if="summary.currencies.length > 1 && filtersApplied.length && dataset !== 'main' && !loading">
       This data also contains
       <ul>
         <li v-for="currency in summary.currencies" v-if="currency.currency != 'GBP'">
@@ -185,8 +190,14 @@
   </header>
 
   <main class="layout__content">
+    <div class="layout__content-inner" style="padding-top: 10px">
+      <div class="box box--orange" v-if="summary.grants === 0 && dataset !== 'main'">
+          <h3>No Dataset selected</h3>
+          <p>There are currently no 360Giving datasets selected. <a href="/">Select a dataset.</a></p>
+          <p>Note: Datasets imported from <a href="https://grantnav.threesixtygiving.org">GrantNav</a> expire after {{datasetExpiryDays}} days.</p>
+      </div>
 
-      <template>
+      <template v-else>
 
       <div class="grid grid--two-columns">
 
