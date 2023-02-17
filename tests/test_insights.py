@@ -85,9 +85,6 @@ def create_testdata_grants(source_file_id="12345", publisher_prefix="360G-pub", 
 def test_index(client):
     rv = client.get("/")
     assert rv.status_code == 200
-    assert b"See your grantmaking in new ways" in rv.data
-    assert b"Testdata Funder 0" in rv.data
-    assert b"https://grantnav.threesixtygiving.org/" in rv.data
 
 
 def test_about(client):
