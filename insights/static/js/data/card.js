@@ -57,12 +57,12 @@ const chartCardData = [
   {
     id: 'byOrgSize',
     title: 'Latest income of charity recipients',
-    instructions: 'Click on the bars or labels to select one or more ranges of latest incomes of charity recipients.'
+    instructions: ''
   },
   {
     id: 'byOrgAge',
     title: 'Age of recipient organisations',
-    instructions: 'Click on the bars or labels to select one or more age ranges of recipients.'
+    instructions: ''
   }
 ]
 
