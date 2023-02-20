@@ -561,7 +561,7 @@
           <ul class="bar-chart non-interactive" v-if="chartData.byOrgSize">
             <li class="bar-chart__item" v-for="(group, index) in chartBars('byOrgSize')"
               :style="group.style">
-              <label class="bar-chart__label" style="cursor: unset;">{{ group.label }}</label>
+              <label class="bar-chart__label">{{ group.label }}</label>
               <div class="bar-chart__bar"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
@@ -593,7 +593,7 @@
           <ul class="bar-chart non-interactive" v-if="chartData.byOrgAge">
             <li class="bar-chart__item" v-for="(group, index) in chartBars('byOrgAge')"
              :style="group.style">
-              <label class="bar-chart__label" style="cursor: unset;" >{{ group.label }}</label>
+              <label class="bar-chart__label">{{ group.label }}</label>
               <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
