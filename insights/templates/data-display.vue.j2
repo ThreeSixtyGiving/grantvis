@@ -558,9 +558,8 @@
           <chart-card-header :title="getChartCardData('byOrgSize')[0].title">
           (number of grants)
           </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byOrgSize">
+          <ul class="bar-chart non-interactive" v-if="chartData.byOrgSize">
             <li class="bar-chart__item" v-for="(group, index) in chartBars('byOrgSize')"
-              style="cursor: unset;"
               :style="group.style">
               <label class="bar-chart__label" style="cursor: unset;">{{ group.label }}</label>
               <div class="bar-chart__bar"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
@@ -591,9 +590,8 @@
           <chart-card-header :title="getChartCardData('byOrgAge')[0].title">
             (number of grants)
           </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byOrgAge">
+          <ul class="bar-chart non-interactive" v-if="chartData.byOrgAge">
             <li class="bar-chart__item" v-for="(group, index) in chartBars('byOrgAge')"
-              style="cursor: unset;"
              :style="group.style">
               <label class="bar-chart__label" style="cursor: unset;" >{{ group.label }}</label>
               <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
