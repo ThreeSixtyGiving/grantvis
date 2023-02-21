@@ -5592,27 +5592,27 @@ ul.dataset-select > li {
 .base-card--yellow .bar-chart__bar > span {
   background-color: var(--color-yellow); }
 
-.base-card--yellow .bar-chart__bar > span:hover {
+.base-card--yellow .bar-chart:not(.non-interactive) .bar-chart__bar > span:hover {
   background-color: var(--color-yellow-dark); }
 
 .base-card--red .bar-chart__bar > span {
   background-color: var(--color-red);
   opacity: 0.9; }
 
-.base-card--red .bar-chart__bar:hover > span {
+.base-card--red .bar-chart:not(.non-interactive) .bar-chart__bar:hover > span {
   background-color: var(--color-red);
   opacity: 1; }
 
 .base-card--teal .bar-chart__bar > span {
   background-color: var(--color-teal); }
 
-.base-card--teal .bar-chart__bar:hover > span {
+.base-card--teal .bar-chart:not(.non-interactive) .bar-chart__bar:hover > span {
   background-color: var(--color-teal-dark); }
 
 .base-card--orange .bar-chart__bar > span {
   background-color: var(--color-orange); }
 
-.base-card--orange .bar-chart__bar:hover > span {
+.base-card--orange .bar-chart:not(.non-interactive) .bar-chart__bar:hover > span {
   background-color: var(--color-orange-dark); }
 
 .base-card__header {
@@ -5626,10 +5626,11 @@ ul.dataset-select > li {
   overflow-y: auto;
   overflow-x: hidden; }
 
-.bar-chart li, label {
+.bar-chart:not(.non-interactive) li,
+.bar-chart:not(.non-interactive) label {
   cursor: pointer; }
 
-.bar-chart label:hover {
+.bar-chart:not(.non-interactive) label:hover {
   color: var(--color-orange-dark); }
 
 .bar-chart__bar {
