@@ -5,69 +5,15 @@ from insights.db import GeoName, Grant, Publisher, DatasetStats
 from insights.settings import DEFAULT_DATASET
 
 
-def get_frontpage_options(dataset=DEFAULT_DATASET, with_url=True):
+def get_geoname_options(dataset=DEFAULT_DATASET, with_url=True):
 
-    publishers = Publisher.query.all()
-    publisher_counts = get_field_counts(Grant.publisher_id)
-
-    funder_types = get_field_counts(Grant.insights_funding_org_type, dataset=dataset)
-    funders = get_field_counts(Grant.fundingOrganization_id, dataset=dataset)
     countries = get_field_counts(Grant.insights_geo_country, dataset=dataset)
     regions = get_field_counts(Grant.insights_geo_region, dataset=dataset)
     local_authorities = get_field_counts(Grant.insights_geo_la, dataset=dataset)
-    dataset_stats = {
-        stat.name: stat.value for stat in DatasetStats.query.filter(dataset == dataset)
-    }
 
     area_names = {g.id: g.name for g in GeoName.query.all()}
-    funder_names = get_funder_names(dataset=dataset)
-    all_grants = get_field_counts(Grant.dataset, dataset=dataset)
 
     return dict(
-        dataset_stats=dataset_stats,
-        publishers=sorted(
-            [
-                {
-                    "id": p.prefix,
-                    "name": p.name,
-                    "url": url_for("data", data_type="publisher", data_id=p.prefix)
-                    if with_url
-                    else None,
-                    **publisher_counts.get(p.prefix, {"grant_count": 0}),
-                }
-                for p in publishers
-            ],
-            key=lambda x: -x["grant_count"],
-        ),
-        funderTypes=sorted(
-            [
-                {
-                    "id": k,
-                    "name": k,
-                    "url": url_for("data", data_type="funder_type", data_id=k)
-                    if with_url
-                    else None,
-                    **v,
-                }
-                for k, v in funder_types.items()
-            ],
-            key=lambda x: -x["grant_count"],
-        ),
-        funders=sorted(
-            [
-                {  # FIXME for compatibility with graphql filter queries we need a value field we might not actually need id
-                    "id": k,
-                    "value": k,
-                    "name": funder_names.get(k, k),
-                    "url": url_for("data", data_type="funder", data_id=k)
-                    if with_url
-                    else None,
-                    **v,
-                }
-                for k, v in funders.items()
-            ],
-            key=lambda x: -x["grant_count"],
-        ),
         countries=sorted(
             [
                 {

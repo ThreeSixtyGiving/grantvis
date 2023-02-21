@@ -12,7 +12,7 @@ from sqlalchemy.sql import text
 from sqlalchemy.sql import func, distinct
 
 from insights import settings
-from insights.data import get_frontpage_options
+from insights.data import get_geoname_options
 from insights.db import (
     Distribution,
     GeoName,
@@ -290,7 +290,7 @@ def fetch_data(dataset, bulk_limit, limit):
 )
 @with_appcontext
 def fetch_data(url_template):
-    opts = get_frontpage_options(with_url=False)
+    opts = get_geoname_options(with_url=False)
     click.echo("Fetching geonames")
     for i in ["countries", "regions", "localAuthorities"]:
         count = 0
