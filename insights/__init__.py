@@ -20,7 +20,7 @@ import hashlib
 
 from insights import settings
 from insights.commands import fetch_data, expire, cache as cli_cache
-from insights.data import get_frontpage_options, get_funder_names
+from insights.data import get_funder_names
 from insights.db import GeoName, Publisher, Grant, db, migrate
 from insights.schema import schema
 from insights.utils import list_to_string
@@ -111,33 +111,12 @@ def create_app():
     def inject_nav():
         return dict(
             nav={
-                "360Insights": url_for("index"),
+                "360Insights": url_for("data"),
                 "About": url_for("about"),
                 "GrantNav": "https://grantnav.threesixtygiving.org/",
             }
         )
 
-    @app.route("/old-homepage")
-    def index():
-        # Loading data from GrantNav avoid the cache mechanism
-        if request.args.get("url"):
-            try:
-                return redirect(fetch_file_from_grantnav_url(request.args.get("url")))
-            except Exception as e:
-                flash("Could not fetch from URL:" + repr(e), "error")
-                return render_template(
-                    "homepage.vue.j2", dataset_select=get_frontpage_options()
-                )
-        else:
-            home_page_data = cache.get("home_page_data")
-            if home_page_data:
-                print("Cache hit")
-                return render_template("homepage.vue.j2", dataset_select=home_page_data)
-            else:
-                home_page_data = get_frontpage_options()
-                cache.set("home_page_data", home_page_data)
-
-                return render_template("homepage.vue.j2", dataset_select=home_page_data)
 
     @app.route("/about")
     def about():
