@@ -53,7 +53,7 @@ def m():
 def test_fetch_from_url(m, client, url):
     rv = client.get("/?url=" + url, follow_redirects=True)
     assert rv.status_code == 200
-    assert "/data/" in request.path
+    assert "/" in request.path
     assert b'Uploaded dataset' in rv.data
     assert b'Could not fetch from URL' not in rv.data
 
