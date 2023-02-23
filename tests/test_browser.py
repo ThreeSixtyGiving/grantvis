@@ -21,6 +21,8 @@ def browser(request):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
+        # uncomment this if "DevToolsActivePort" error
+        # chrome_options.add_argument("--remote-debugging-port=9222")
         browser = webdriver.Chrome(options=chrome_options)
     else:
         browser = getattr(webdriver, BROWSER)()
@@ -31,8 +33,7 @@ def browser(request):
 
 @pytest.mark.usefixtures('live_server')
 def test_home(browser):
-    browser.get(url_for('index', _external=True))
-
+    browser.get(url_for('data', _external=True))
     assert 'Insights' in browser.find_element_by_tag_name('body').text
 
 
@@ -43,7 +44,7 @@ def test_javascript_errors_in_page(browser):
         for log in browser.get_log("browser"):
             assert "SEVERE" not in log['level'], f"found {log}"
 
-    browser.get(url_for('index', _external=True))
+    browser.get(url_for('data', _external=True))
     check_browser()
 
     data_url = url_for('data', _external=True)
