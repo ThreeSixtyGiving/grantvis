@@ -1,3 +1,5 @@
+name: Live cache
+
 on:
   schedule:
     - cron: '0 6 * * *'
@@ -10,4 +12,4 @@ jobs:
       - name: Install
         run: sudo apt-get install chromium-browser
       - name: Fetch
-        run: chromium-browser --headless https://insights.threesixtygiving.org/
+        run: chromium-browser --headless https://insights.threesixtygiving.org/ && sleep 30
