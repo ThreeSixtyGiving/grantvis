@@ -156,7 +156,8 @@
           <div class="grid__1">
             <div class="base-card base-card--yellow">
               <div class="base-card__content">
-                <h2 class="base-card__title">{{ currency.total | formatCurrency(currency.currency) }}</h2>
+                <h2 class="base-card__title">{{ currency.total | formatCurrency(currency.currency) }}{{ currency.total |
+                getAmountSuffix(true) }}</h2>
                 <p class="base-card__text">Total</p>
               </div>
             </div>
