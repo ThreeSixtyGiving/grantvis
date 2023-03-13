@@ -47,7 +47,7 @@ const chartCardData = [
   {
     id: 'byGeoSource',
     title: 'Source of location information',
-    instructions: ''
+    instructions: 'Data cannot be filtered using this chart.'
   },
   {
     id: 'byOrgType',
@@ -57,12 +57,12 @@ const chartCardData = [
   {
     id: 'byOrgSize',
     title: 'Latest income of charity recipients',
-    instructions: ''
+    instructions: 'Data cannot be filtered using this chart.'
   },
   {
     id: 'byOrgAge',
     title: 'Age of recipient organisations',
-    instructions: ''
+    instructions: 'Data cannot be filtered using this chart.'
   }
 ]
 
