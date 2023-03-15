@@ -51,8 +51,8 @@ const chartCardData = [
   },
   {
     id: 'byOrgType',
-    title: 'Recipient type',
-    instructions: 'Click on the bars or labels to select one or more recipient types.'
+    title: 'Recipient organisation type',
+    instructions: 'Click on the bars or labels to select one or more recipient organisation types.'
   },
   {
     id: 'byOrgSize',
@@ -62,8 +62,14 @@ const chartCardData = [
   {
     id: 'byOrgAge',
     title: 'Age of recipient organisations',
-    instructions: 'Data cannot be filtered using this chart.'
+    instructions: ''
+  },
+  {
+    id: 'byRecipientType',
+    title: 'Type of grant recipient',
+    instructions: 'Click on the bars or labels to select on or more recipient types',
   }
+
 ]
 
 export { chartCardData };

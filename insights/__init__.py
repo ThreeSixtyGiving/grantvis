@@ -24,7 +24,7 @@ from insights.data import get_funder_names
 from insights.db import GeoName, Publisher, Grant, db, migrate
 from insights.schema import schema
 from insights.utils import list_to_string
-from insights.file_upload import upload_file, fetch_file_from_grantnav_url
+from insights.file_upload import fetch_file_from_grantnav_url
 
 __version__ = "0.1.0"
 
