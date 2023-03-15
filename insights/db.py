@@ -34,8 +34,9 @@ class Grant(db.Model):
     plannedDates_startDate = db.Column(db.Date, nullable=True)
     plannedDates_endDate = db.Column(db.Date, nullable=True)
     plannedDates_duration = db.Column(db.Integer, nullable=True)
-    recipientOrganization_id = db.Column(db.String(255), nullable=False, index=True)
-    recipientOrganization_name = db.Column(db.String(1000), nullable=False)
+    recipientIndividual_id = db.Column(db.String(255), nullable=True, index=True)
+    recipientOrganization_id = db.Column(db.String(255), nullable=True, index=True)
+    recipientOrganization_name = db.Column(db.String(1000), nullable=True)
     recipientOrganization_charityNumber = db.Column(db.String(255), nullable=True)
     recipientOrganization_companyNumber = db.Column(db.String(255), nullable=True)
     recipientOrganization_postalCode = db.Column(db.String(255), nullable=True)
@@ -53,6 +54,11 @@ class Grant(db.Model):
         db.String(255), db.ForeignKey("publisher.prefix"), nullable=True, index=True
     )
     publisher = relationship("Publisher", back_populates="grants")
+
+    # insights specific - recipient type
+    insights_recipient_type = db.Column(
+        db.String(255), nullable=False, index=True, default="Organisation"
+    )
 
     # insights specific fields - geography
     insights_geo_region = db.Column(db.String(255), nullable=True, index=True)
