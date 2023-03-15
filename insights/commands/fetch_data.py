@@ -32,44 +32,46 @@ cli = AppGroup("data")
 
 def process_row(row):
     # sort out organistion type
-    orgType = []
-    try:
-        orgType = json.loads(row["organisationType"])
-    except TypeError:
-        pass
-    except json.decoder.JSONDecodeError:
-        if isinstance(row["organisationType"], str):
-            orgType = [row["organisationType"]]
-        else:
-            click.echo(
-                "Couldn't process organisation type for grant {}: {}".format(
-                    row["grant_id"], row["organisationType"]
-                ),
-                err=True,
+    if row["recipientOrganization_id"]:
+
+        orgType = []
+        try:
+            orgType = json.loads(row["organisationType"])
+        except TypeError:
+            pass
+        except json.decoder.JSONDecodeError:
+            if isinstance(row["organisationType"], str):
+                orgType = [row["organisationType"]]
+            else:
+                click.echo(
+                    "Couldn't process organisation type for grant {}: {}".format(
+                        row["grant_id"], row["organisationType"]
+                    ),
+                    err=True,
+                )
+        del row["organisationType"]
+
+        if not row["insights_org_id"]:
+            row["insights_org_id"] = row["recipientOrganization_id"]
+
+        row["insights_org_id_int"] = get_or_create(
+            db.session, OrgIdIds, org_id=row["insights_org_id"]
+        ).id
+
+        org_id_schema, org_id_value = get_org_schema(row["insights_org_id"])
+        row["insights_org_type"] = "Identifier not recognised"
+        if org_id_schema is None and orgType:
+            row["insights_org_type"] = orgType[0]
+        elif org_id_schema == "GB-COH" and len(orgType) > 1:
+            row["insights_org_type"] = orgType[1]
+        elif org_id_schema in settings.IDENTIFIER_MAP:
+            row["insights_org_type"] = settings.IDENTIFIER_MAP.get(
+                org_id_schema, org_id_schema
             )
-    del row["organisationType"]
-
-    if not row["insights_org_id"]:
-        row["insights_org_id"] = row["recipientOrganization_id"]
-
-    row["insights_org_id_int"] = get_or_create(
-        db.session, OrgIdIds, org_id=row["insights_org_id"]
-    ).id
-
-    org_id_schema, org_id_value = get_org_schema(row["insights_org_id"])
-    row["insights_org_type"] = "Identifier not recognised"
-    if org_id_schema is None and orgType:
-        row["insights_org_type"] = orgType[0]
-    elif org_id_schema == "GB-COH" and len(orgType) > 1:
-        row["insights_org_type"] = orgType[1]
-    elif org_id_schema in settings.IDENTIFIER_MAP:
-        row["insights_org_type"] = settings.IDENTIFIER_MAP.get(
-            org_id_schema, org_id_schema
-        )
-    elif org_id_schema and not org_id_schema.startswith("GB-"):
-        row["insights_org_type"] = "Overseas organisation"
-    elif org_id_schema:
-        row["insights_org_type"] = org_id_schema
+        elif org_id_schema and not org_id_schema.startswith("GB-"):
+            row["insights_org_type"] = "Overseas organisation"
+        elif org_id_schema:
+            row["insights_org_type"] = org_id_schema
 
     # sort out duration field
     if row["plannedDates_duration"]:
@@ -208,8 +210,9 @@ def fetch_data(dataset, bulk_limit, limit):
         g.data->'plannedDates'->0->>'startDate' as "plannedDates_startDate",
         g.data->'plannedDates'->0->>'endDate' as "plannedDates_endDate",
         g.data->'plannedDates'->0->>'duration' as "plannedDates_duration",
-        COALESCE(g.data->'recipientOrganization'->0->>'id', 'INDIVIDUAL') as "recipientOrganization_id",
-        COALESCE(g.data->'recipientOrganization'->0->>'name', 'Individual') as "recipientOrganization_name",
+        g.data->'recipientOrganization'->0->>'id' as "recipientOrganization_id",
+        g.data->'recipientIndividual'->>'id' as "recipientIndividual_id",
+        g.data->'recipientOrganization'->0->>'name' as "recipientOrganization_name",
         g.data->'recipientOrganization'->0->>'charityNumber' as "recipientOrganization_charityNumber",
         g.data->'recipientOrganization'->0->>'companyNumber' as "recipientOrganization_companyNumber",
         g.data->'recipientOrganization'->0->>'postalCode' as "recipientOrganization_postalCode",
@@ -229,7 +232,8 @@ def fetch_data(dataset, bulk_limit, limit):
         (NULLIF(g.additional_data->'recipientOrgInfos'->0->>'latestIncome', ''))::float as "insights_org_latest_income",
         g.additional_data->'recipientOrgInfos'->0->>'organisationType' as "organisationType",
         g.source_data->>'identifier' as "source_file_id",
-        g.source_data->'publisher'->>'prefix' as "publisher_id"
+        g.source_data->'publisher'->>'prefix' as "publisher_id",
+        g.additional_data->>'TSGRecipientType' as "insights_recipient_type"
     from view_latest_grant g
     """
     if limit:
