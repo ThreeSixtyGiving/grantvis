@@ -228,12 +228,12 @@ def save_json_to_db(data, dataset, source_file_id):
                 ),
                 plannedDates_endDate=row.get("plannedDates", [{}])[0].get("endDate"),
                 plannedDates_duration=row.get("plannedDates", [{}])[0].get("duration"),
-                recipientOrganization_id=row.get(
-                    "recipientOrganization", [{"id": "INDIVIDUAL"}]
-                )[0]["id"],
-                recipientOrganization_name=row.get(
-                    "recipientOrganization", [{"name": "Individual"}]
-                )[0]["name"],
+                recipientOrganization_id=row.get("recipientOrganization", [{}])[0].get(
+                    "id"
+                ),
+                recipientOrganization_name=row.get("recipientOrganization", [{}])[
+                    0
+                ].get("name"),
                 recipientOrganization_charityNumber=row.get(
                     "recipientOrganization", [{}]
                 )[0].get("charityNumber"),
@@ -249,6 +249,7 @@ def save_json_to_db(data, dataset, source_file_id):
                     0
                 ].get("department"),
                 grantProgramme_title=row.get("grantProgramme", [{}])[0].get("title"),
+                recipientIndividual_id=row.get("recipientIndividual", {}).get("id"),
                 # file link,
                 source_file_id=source_file_id,
                 publisher_id=None,
@@ -271,6 +272,9 @@ def save_json_to_db(data, dataset, source_file_id):
                 insights_org_type=None,
                 insights_funding_org_type=row.get("additional_data", {}).get(
                     "TSGFundingOrgType"
+                ),
+                insights_recipient_type=row.get("additional_data", {}).get(
+                    "TSGRecipientType"
                 ),
             )
         except KeyError:
