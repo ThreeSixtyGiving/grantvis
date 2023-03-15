@@ -63,6 +63,8 @@ class GrantBucket(graphene.ObjectType):
     max_date = graphene.Date()
     min_date = graphene.Date()
     status = graphene.String()
+    recipient_individuals = graphene.Int()
+    recipient_organisations = graphene.Int()
 
 
 class GrantAggregate(graphene.ObjectType):
@@ -82,6 +84,7 @@ class GrantAggregate(graphene.ObjectType):
     by_country_region = graphene.List(GrantBucket)
     by_local_authority = graphene.List(GrantBucket)
     by_geo_source = graphene.List(GrantBucket)
+    by_recipient_type = graphene.List(GrantBucket)
     summary = graphene.List(GrantBucket)
 
 
@@ -113,6 +116,7 @@ grant_query_args = dict(
     org_size=graphene.Argument(type=MaxMin),
     org_age=graphene.Argument(type=MaxMin),
     local_authorities=graphene.Argument(type=graphene.List(graphene.String)),
+    recipient_types=graphene.Argument(type=graphene.List(graphene.String)),
 )
 
 
@@ -194,6 +198,7 @@ class Query(graphene.ObjectType):
             "by_amount_awarded": [GrantModel.currency, GrantModel.insights_band_amount],
             "by_source": [GrantModel.source_file_id],
             "by_publisher": [GrantModel.publisher_id],
+            "by_recipient_type": [GrantModel.insights_recipient_type],
             "by_country_region": [
                 GrantModel.insights_geo_country,
                 GrantModel.insights_geo_region,
@@ -228,12 +233,28 @@ class Query(graphene.ObjectType):
             agg_cols = []
             if "grants" in operations[k] or "bucket" in operations[k]:
                 agg_cols.append(func.count(GrantModel.id).label("grants"))
-            if "recipients" in operations[k] or "bucket" in operations[k]:
+
+            if "recipient_types" in operations[k] or "bucket" in operations[k]:
                 agg_cols.append(
-                    func.count(distinct(GrantModel.insights_org_id_int)).label(
-                        "recipients"
+                    func.count(GrantModel.insights_recipient_type).label(
+                        "recipient_types"
                     )
                 )
+
+            if "recipient_individuals" in operations[k] or "bucket" in operations[k]:
+                agg_cols.append(
+                    func.count(GrantModel.recipientIndividual_id).label(
+                        "recipient_individuals"
+                    )
+                )
+
+            if "recipient_organisations" in operations[k] or "bucket" in operations[k]:
+                agg_cols.append(
+                    func.count(distinct(GrantModel.insights_org_id_int)).label(
+                        "recipient_organisations"
+                    )
+                )
+
             if "funders" in operations[k] or "bucket" in operations[k]:
                 agg_cols.append(
                     func.count(distinct(GrantModel.fundingOrganization_id)).label(
@@ -250,14 +271,12 @@ class Query(graphene.ObjectType):
                 money_cols.extend(
                     [
                         func.sum(GrantModel.amountAwarded).label("total"),
-                        func.avg(GrantModel.amountAwarded).label("mean"),
                         func.max(GrantModel.amountAwarded).label("max_grant"),
                         func.min(GrantModel.amountAwarded).label("min_grant"),
                     ]
                 )
 
             currency_col = [GrantModel.currency] if money_cols else []
-
             query_start_time = default_timer()
             result = query.add_columns(*(new_cols + agg_cols)).group_by(*groupbys).all()
             return_result[k] = [
@@ -376,6 +395,10 @@ def get_grants_base_query(query, **kwargs):
     if kwargs.get("funder_types"):
         query = query.filter(
             GrantModel.insights_funding_org_type.in_(kwargs.get("funder_types")),
+        )
+    if kwargs.get("recipient_types"):
+        query = query.filter(
+            GrantModel.insights_recipient_type.in_(kwargs.get("recipient_types"))
         )
     if kwargs.get("local_authorities"):
         query = query.filter(

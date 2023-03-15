@@ -77,20 +77,23 @@ function initialFilters(useQueryParams) {
         funders: params.getAll("funders"),
         funderTypes: params.getAll("funderTypes"),
         localAuthorities: params.getAll("localAuthorities"),
+        recipientTypes: params.getAll("recipientTypes"),
     }
 }
 
+/* Friendly names map for filter options */
 var filtersToTitles = {
     awardAmount: "Award amounts",
     awardDates: "Award dates",
     orgSize: "Size of recipient organisations",
     orgAge: "Age of recipient organisations",
-    orgtype: "Recipient type",
+    orgtype: "Recipient organisation type",
     grantProgrammes: "Grant programmes",
     funders: "Funders",
     funderTypes: "Funder types",
     area: "Location",
     localAuthorities: "Local Authorities",
+    recipientTypes: "Recipient types",
 }
 
 var chartToFilters = {
@@ -100,6 +103,7 @@ var chartToFilters = {
     byCountryRegion: 'area',
     byOrgType: 'orgtype',
     byLocalAuthority: 'localAuthorities',
+    byRecipientType: 'recipientTypes',
 }
 
 /* Same as above but k,v swapped */
@@ -163,7 +167,7 @@ var app = new Vue({
                 if (filters[field].min === '') { filters[field].min = null; }
                 if (filters[field].max === '') { filters[field].max = null; }
             });
-            ['area', 'orgtype', 'grantProgrammes', 'funders', 'funderTypes'].forEach((field) => {
+            ['area', 'orgtype', 'grantProgrammes', 'funders', 'funderTypes', 'recipientTypes'].forEach((field) => {
                 filters[field] = filters[field].map((item) => typeof item=="string" ? item : item.value );
                 if (Array.isArray(BASE_FILTERS[field])) {
                     filters[field] = filters[field].concat(BASE_FILTERS[field]);
@@ -195,6 +199,7 @@ var app = new Vue({
             return currencies[0];
         },
         grantnavUrl: function () {
+            /* Create the grantnav search url from the current filter selection */
             // TODO, look this up from the config
             var url = 'https://grantnav.threesixtygiving.org/search?';
 
@@ -242,6 +247,11 @@ var app = new Vue({
             this.filters.grantProgrammes.forEach((grantProgramme) => {
                 searchParams.append('grantProgramme', grantProgramme);
             });
+
+            this.filters.recipientTypes.forEach((recipientType) => {
+                searchParams.append('recipientTSGType', recipientType);
+            });
+
             return url + searchParams.toString();
         }
     },
@@ -401,7 +411,7 @@ var app = new Vue({
 
             /* depending on the filters set find out what the data options would have been */
             if (this.filtersApplied.length) {
-                ['funders', 'funderTypes', 'area', 'orgtype', 'grantProgrammes', 'localAuthorities'].forEach((filter) => {
+                ['funders', 'funderTypes', 'area', 'orgtype', 'grantProgrammes', 'localAuthorities', 'recipientTypes'].forEach((filter) => {
                     if (app.filters[filter].length > 0) {
                         this.dataWithoutFilter(filter);
                     }
@@ -426,6 +436,7 @@ var app = new Vue({
                 this.loadingQ--;
 
                 Object.entries(data.data.grantAggregates).forEach(([key, value]) => {
+                    console.log(key, value);
                     app.inactiveChartData[key] = value;
                 });
             });

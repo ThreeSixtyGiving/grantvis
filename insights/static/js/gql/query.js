@@ -14,6 +14,7 @@ export function queryHeader(queryName, queryType) {
       $funderTypes: [String],
       $orgSize: MaxMin,
       $localAuthorities: [String],
+      $recipientTypes: [String],
     ) {
         ${queryType}(
           dataset: $dataset,
@@ -29,6 +30,7 @@ export function queryHeader(queryName, queryType) {
           funderTypes: $funderTypes,
           orgSize: $orgSize,
           localAuthorities: $localAuthorities,
+          recipientTypes: $recipientTypes,
         ) `
 }
 
@@ -40,6 +42,8 @@ export function gqlSingleGraph(graph){
         grants
         recipients
         funders
+        recipientIndividuals
+        recipientOrganisations
         maxDate
         minDate
         currencies {
@@ -81,6 +85,8 @@ ${queryHeader('insightsData', 'grantAggregates')} {
         funders
         maxDate
         minDate
+        recipientIndividuals
+        recipientOrganisations
         currencies {
           currency
           total
@@ -125,6 +131,9 @@ ${queryHeader('insightsData', 'grantAggregates')} {
         ...chartFields
       }
       byGeoSource {
+        ...chartFields
+      }
+      byRecipientType {
         ...chartFields
       }
     }
