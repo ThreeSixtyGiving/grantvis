@@ -144,7 +144,7 @@
         </div>
 
         <div class="grid__1">
-          <div class="base-card base-card--teal" v-if="typeof(summary.recipientOrganisations) === 'number'" >
+          <div class="base-card base-card--teal" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px">
               <h2 class="base-card__title">{{ summary.recipientOrganisations.toLocaleString() }}</h2>
               <p class="base-card__text">Recipient Organisations</p>
@@ -153,7 +153,7 @@
         </div>
 
         <div class="grid__1">
-          <div class="base-card base-card--teal" v-if="typeof(summary.recipientIndividuals) === 'number'" >
+          <div class="base-card base-card--teal" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px">
               <h2 class="base-card__title">{{ summary.recipientIndividuals.toLocaleString() }}</h2>
               <p class="base-card__text">Recipient Individuals</p>
