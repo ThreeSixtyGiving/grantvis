@@ -68,6 +68,11 @@ const chartCardData = [
     id: 'byRecipientType',
     title: 'Type of grant recipient',
     instructions: 'Click on the bars or labels to select on or more recipient types',
+  },
+  {
+    id: 'byGrantType',
+    title: 'Type of grant',
+    instructions: 'Click on the bars or labels to select on or more grant types',
   }
 
 ]

@@ -85,6 +85,8 @@ class GrantAggregate(graphene.ObjectType):
     by_local_authority = graphene.List(GrantBucket)
     by_geo_source = graphene.List(GrantBucket)
     by_recipient_type = graphene.List(GrantBucket)
+    by_grant_type = graphene.List(GrantBucket)
+
     summary = graphene.List(GrantBucket)
 
 
@@ -117,6 +119,7 @@ grant_query_args = dict(
     org_age=graphene.Argument(type=MaxMin),
     local_authorities=graphene.Argument(type=graphene.List(graphene.String)),
     recipient_types=graphene.Argument(type=graphene.List(graphene.String)),
+    grant_types=graphene.Argument(type=graphene.List(graphene.String)),
 )
 
 
@@ -205,6 +208,7 @@ class Query(graphene.ObjectType):
             ],
             "by_local_authority": [GrantModel.insights_geo_la],
             "by_geo_source": [GrantModel.insights_geo_source],
+            "by_grant_type": [GrantModel.insights_grant_type],
             "summary": [],
         }
         return_result = {}
@@ -446,6 +450,11 @@ def get_grants_base_query(query, **kwargs):
         query = query.filter(
             GrantModel.insights_org_latest_income
             <= kwargs.get("org_size", {}).get("max"),
+        )
+
+    if kwargs.get("grant_types"):
+        query = query.filter(
+            GrantModel.insights_grant_type.in_(kwargs.get("grant_types"))
         )
     # if kwargs.get("org_age", {}).get("min"):
     #     query = query.filter(

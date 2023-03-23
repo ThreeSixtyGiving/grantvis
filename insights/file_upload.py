@@ -276,6 +276,7 @@ def save_json_to_db(data, dataset, source_file_id):
                 insights_recipient_type=row.get("additional_data", {}).get(
                     "TSGRecipientType"
                 ),
+                insights_grant_type=row.get("simple_grant_type", "Direct Grant"),
             )
         except KeyError:
             print("Could not import grant record")

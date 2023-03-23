@@ -233,7 +233,12 @@ def fetch_data(dataset, bulk_limit, limit):
         g.additional_data->'recipientOrgInfos'->0->>'organisationType' as "organisationType",
         g.source_data->>'identifier' as "source_file_id",
         g.source_data->'publisher'->>'prefix' as "publisher_id",
-        g.additional_data->>'TSGRecipientType' as "insights_recipient_type"
+        g.additional_data->>'TSGRecipientType' as "insights_recipient_type",
+        CASE
+             WHEN g.data->>'regrantType' IS NOT NULL THEN 'Regrant'
+             ELSE 'Direct grant'
+        END "insights_grant_type"
+
     from view_latest_grant g
     """
     if limit:

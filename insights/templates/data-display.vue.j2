@@ -693,6 +693,36 @@
         </chart-card>
       </div> <!-- / grid -->
 
+      <div class="grid__all">
+        <h3>Grant types</h3>
+      </div>
+
+      <chart-card color="orange" v-bind:loading="loading">
+          <chart-card-header :title="getChartCardData('byGrantType')[0].title">
+            (number of grants)
+          </chart-card-header>
+          <ul class="bar-chart" v-if="chartData.byGrantType && chartData.byGrantType.length > 0">
+            <li class="bar-chart__item" v-for="(group, index) in chartBars('byGrantType')"
+              :style="group.style"
+              v-bind:class="{ 'hide-print' : group.inactive }"
+              v-on:click="toggleInArray(filters.grantTypes, group.id)"
+            >
+              <label class="bar-chart__label small" >{{ group.label }}</label>
+              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
+            </li>
+          </ul>
+
+          <div>
+            <hr class="separator-light">
+            <p>{{ getChartCardData('byGrantType')[0].instructions }}</p>
+            <p>Based on {{ chartN('byGrantType') | formatNumber }} grants.</p>
+            <p v-if="chartMissing('byGrantType')">
+              {{ chartMissing('byGrantType') | formatNumber }} values are not found.
+            </p>
+          </div>
+        </chart-card>
+
+
       </template>
 
     </div> <!-- / layout content inner -->
