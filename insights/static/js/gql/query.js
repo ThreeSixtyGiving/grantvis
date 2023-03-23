@@ -15,6 +15,7 @@ export function queryHeader(queryName, queryType) {
       $orgSize: MaxMin,
       $localAuthorities: [String],
       $recipientTypes: [String],
+      $grantTypes: [String],
     ) {
         ${queryType}(
           dataset: $dataset,
@@ -31,6 +32,7 @@ export function queryHeader(queryName, queryType) {
           orgSize: $orgSize,
           localAuthorities: $localAuthorities,
           recipientTypes: $recipientTypes,
+          grantTypes: $grantTypes,
         ) `
 }
 
@@ -134,6 +136,9 @@ ${queryHeader('insightsData', 'grantAggregates')} {
         ...chartFields
       }
       byRecipientType {
+        ...chartFields
+      }
+      byGrantType {
         ...chartFields
       }
     }

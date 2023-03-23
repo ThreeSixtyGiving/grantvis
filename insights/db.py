@@ -60,6 +60,11 @@ class Grant(db.Model):
         db.String(255), nullable=False, index=True, default="Organisation"
     )
 
+    # insights specific fields - grant type
+    insights_grant_type = db.Column(
+        db.String(255), nullable=False, default="Direct grant"
+    )
+
     # insights specific fields - geography
     insights_geo_region = db.Column(db.String(255), nullable=True, index=True)
     insights_geo_la = db.Column(db.String(255), nullable=True)

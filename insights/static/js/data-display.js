@@ -78,6 +78,7 @@ function initialFilters(useQueryParams) {
         funderTypes: params.getAll("funderTypes"),
         localAuthorities: params.getAll("localAuthorities"),
         recipientTypes: params.getAll("recipientTypes"),
+        grantTypes: params.getAll("grantTypes"),
     }
 }
 
@@ -94,6 +95,7 @@ var filtersToTitles = {
     area: "Location",
     localAuthorities: "Local Authorities",
     recipientTypes: "Recipient types",
+    grantTypes: "Grant type",
 }
 
 var chartToFilters = {
@@ -104,6 +106,7 @@ var chartToFilters = {
     byOrgType: 'orgtype',
     byLocalAuthority: 'localAuthorities',
     byRecipientType: 'recipientTypes',
+    byGrantType: 'grantTypes',
 }
 
 /* Same as above but k,v swapped */
@@ -167,7 +170,7 @@ var app = new Vue({
                 if (filters[field].min === '') { filters[field].min = null; }
                 if (filters[field].max === '') { filters[field].max = null; }
             });
-            ['area', 'orgtype', 'grantProgrammes', 'funders', 'funderTypes', 'recipientTypes'].forEach((field) => {
+            ['area', 'orgtype', 'grantProgrammes', 'funders', 'funderTypes', 'recipientTypes', 'grantTypes'].forEach((field) => {
                 filters[field] = filters[field].map((item) => typeof item=="string" ? item : item.value );
                 if (Array.isArray(BASE_FILTERS[field])) {
                     filters[field] = filters[field].concat(BASE_FILTERS[field]);
@@ -250,6 +253,10 @@ var app = new Vue({
 
             this.filters.recipientTypes.forEach((recipientType) => {
                 searchParams.append('recipientTSGType', recipientType);
+            });
+
+            this.filters.grantTypes.forEach((grantType) => {
+                searchParams.append('simple_grant_type', grantType);
             });
 
             return url + searchParams.toString();
@@ -411,7 +418,7 @@ var app = new Vue({
 
             /* depending on the filters set find out what the data options would have been */
             if (this.filtersApplied.length) {
-                ['funders', 'funderTypes', 'area', 'orgtype', 'grantProgrammes', 'localAuthorities', 'recipientTypes'].forEach((filter) => {
+                ['funders', 'funderTypes', 'area', 'orgtype', 'grantProgrammes', 'localAuthorities', 'recipientTypes', 'grantTypes'].forEach((filter) => {
                     if (app.filters[filter].length > 0) {
                         this.dataWithoutFilter(filter);
                     }
@@ -436,7 +443,6 @@ var app = new Vue({
                 this.loadingQ--;
 
                 Object.entries(data.data.grantAggregates).forEach(([key, value]) => {
-                    console.log(key, value);
                     app.inactiveChartData[key] = value;
                 });
             });
