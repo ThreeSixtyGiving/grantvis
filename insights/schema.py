@@ -247,7 +247,7 @@ class Query(graphene.ObjectType):
 
             if "recipient_individuals" in operations[k] or "bucket" in operations[k]:
                 agg_cols.append(
-                    func.count(GrantModel.recipientIndividual_id).label(
+                    func.count(distinct(GrantModel.recipientIndividual_id)).label(
                         "recipient_individuals"
                     )
                 )
