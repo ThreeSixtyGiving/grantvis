@@ -132,7 +132,8 @@ var app = new Vue({
             inactiveChartData: {},
             summary: {
                 grants: 0,
-                recipients: 0,
+                recipientIndividuals: 0,
+                recipientOrganisations: 0,
                 funders: 0,
                 currencies:[ {
                     currency: "GBP",
