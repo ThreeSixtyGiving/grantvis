@@ -155,7 +155,8 @@ var app = new Vue({
             filtersToTitles: filtersToTitles,
             filterDates: { ...initialFilters(true).awardDates },
             choroplethData: [],
-            chartCardData: chartCardData
+            chartCardData: chartCardData,
+            insights_config: INSIGHTS_CONFIG
         }
     },
     computed: {
