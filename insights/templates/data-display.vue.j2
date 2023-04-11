@@ -16,6 +16,7 @@
     const DATASET = {{ dataset|tojson }};
     const BASE_FILTERS = {{ base_filters|tojson }};
     const MAPBOX_ACCESS_TOKEN = {{ config.MAPBOX_ACCESS_TOKEN|tojson }};
+    const INSIGHTS_CONFIG = {{ config.INSIGHTS_CONFIG|tojson }};
     const PAGE_URLS = {{ page_urls|tojson }};
     const TITLE = {{ title|tojson }};
     const SUBTITLE = {{ subtitle|tojson }};
@@ -90,7 +91,7 @@
 
         <p class="header-group__excerpt">
           <template v-if="grantnavUrl && dataset == 'main'">
-            <a v-bind:href="grantnavUrl" class="button hide-print" style="float:right">See in GrantNav</a>.
+            <a v-bind:href="grantnavUrl" class="button hide-print" style="float:right">See in GrantNav</a>
           </template>
 
           <a href="#" class="button hide-print" title="Print this page" style="margin-right: 5px; padding-bottom: 2px; float:right" onclick="window.print()"><i class="material-icons">print</i></a>
@@ -183,6 +184,8 @@
         </template>
       </div>
     </div>
+
+    <div class="grid grid--two-columns" v-html="insights_config.dataexplainer"></div>
 
     <div v-if="summary.currencies.length > 1 && filtersApplied.length && dataset !== 'main' && !loading">
       This data also contains
