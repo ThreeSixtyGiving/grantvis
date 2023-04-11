@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import string
@@ -42,6 +43,10 @@ def create_app():
 
     database_url = os.environ.get("DATABASE_URL", "")
 
+    with open("config/" + os.environ.get("INSIGHTS_CONFIG") + ".json") as f:
+        config_data = json.load(f)
+        
+
     # dokku uses postgres:// and sqlalchamy requires postgresql:// fix the url here
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://")
@@ -59,6 +64,7 @@ def create_app():
         CACHE_TYPE=os.environ.get("CACHE_TYPE", "FileSystemCache"),
         CACHE_DIR=os.environ.get("CACHE_DIR", "/tmp/insights-cac"),
         CACHE_DEFAULT_TIMEOUT=os.environ.get("CACHE_TIMEOUT", 0),
+        INSIGHTS_CONFIG=config_data,
     )
 
     # Make sure that the tojson filter function does *not* use the jinja default of sorting the
