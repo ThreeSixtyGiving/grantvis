@@ -43,7 +43,7 @@ def create_app():
 
     database_url = os.environ.get("DATABASE_URL", "")
 
-    with open("config/" + os.environ.get("INSIGHTS_CONFIG") + ".json") as f:
+    with open("config/" + os.environ.get("INSIGHTS_CONFIG", "main") + ".json") as f:
         config_data = json.load(f)
         
 
