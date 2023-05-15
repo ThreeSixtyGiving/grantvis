@@ -235,7 +235,7 @@ def fetch_data(dataset, bulk_limit, limit):
         g.source_data->'publisher'->>'prefix' as "publisher_id",
         g.additional_data->>'TSGRecipientType' as "insights_recipient_type",
         CASE
-             WHEN g.data->>'regrantType' IS NOT NULL THEN 'Regrant'
+             WHEN g.data->>'regrantType' IS NOT NULL THEN 'For regrant'
              ELSE 'Direct grant'
         END "insights_grant_type"
 
