@@ -1,4 +1,5 @@
 import datetime
+from sqlalchemy.sql import func
 
 from flask.cli import AppGroup
 from insights.db import db, SourceFile, Grant
@@ -15,7 +16,7 @@ def expire_uploaded_data():
     )
 
     for source_file in SourceFile.query.filter(
-        SourceFile.publisher_prefix == None
+        func.like(SourceFile.id, "uploaded_dataset_%")
     ).filter(SourceFile.modified < expiry_datetime):
         Grant.query.filter(Grant.source_file == source_file).filter(
             Grant.dataset != "main"
