@@ -117,6 +117,10 @@ def create_app():
             }
         )
 
+    @app.context_processor
+    def env_export():
+        return dict(env={"debug": os.environ["FLASK_ENV"] == "development"})
+
     @app.route("/about")
     def about():
         return render_template("about.html.j2")

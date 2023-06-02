@@ -37,7 +37,9 @@
     {% block content %}
     {% endblock content %}
 
+    {% if not env.debug %}
     {% include 'components/cookie-consent.html.j2' %}
+    {% endif %}
 
     {% block footer %}
     {% include 'components/footer.html.j2' %}
