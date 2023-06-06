@@ -605,8 +605,7 @@
             <hr class="separator-light">
             <p>{{ getChartCardData('byOrgType')[0].instructions }}</p>
             <p>Based on {{ chartN('byOrgType') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byOrgType')">
-              {{ chartMissing('byOrgType') | formatNumber }} values are not found.
+            <p v-if="chartMissing('byOrgType')">Recipient organisation type was not available for {{ chartMissing('byOrgType') | formatNumber }} grants because they were to individuals.
             </p>
             <p>Organisation type is based on official organisation identifiers, such as registered charity or
               company numbers, found in the data.</p>
