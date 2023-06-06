@@ -219,7 +219,7 @@
 
         <!-- Funders -->
 
-          <chart-card color="orange" v-bind:loading="loading" v-if="chartData.byFunder && chartData.byFunder.length > 0">
+          <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byFunder && chartData.byFunder.length > 0">
             <chart-card-header :title="getChartCardData('byFunder')[0].title">
               (number of grants)
             </chart-card-header>
@@ -244,7 +244,7 @@
 
         <!-- Funder Types -->
 
-        <chart-card color="orange" v-bind:loading="loading" v-if="chartData.byFunderType">
+        <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byFunderType">
           <chart-card-header :title="getChartCardData('byFunderType')[0].title">
             (number of grants)
           </chart-card-header>
@@ -269,7 +269,7 @@
           </div>
         </chart-card>
 
-        <chart-card color="orange" v-bind:loading="loading" v-if="chartData.byRecipientOrgType">
+        <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byRecipientOrgType">
           <chart-card-header :title="getChartCardData('byRecipientOrgType')[0].title">
             (number of grants)
           </chart-card-header>
@@ -296,7 +296,7 @@
 
         <!-- Amount awarded -->
 
-        <chart-card color="orange" v-bind:loading="loading">
+        <chart-card color="orange" v-bind:loading="loading" v-if="!loading">
           <chart-card-header :title="getChartCardData('byAmountAwarded')[0].title">
           (GBP, number of grants)
           </chart-card-header>
@@ -325,7 +325,7 @@
 
         <!-- Award date -->
 
-        <chart-card colour="orange" v-bind:loading="loading" v-if="summary.minDate && summary.minDate.slice(0,7) != summary.maxDate.slice(0,7)" >
+        <chart-card colour="orange" v-bind:loading="loading" v-if="!loading && summary.minDate && summary.minDate.slice(0,7) != summary.maxDate.slice(0,7)" >
           <chart-card-header :title="getChartCardData('byAwardDate')[0].title">
           (number of grants)
           </chart-card-header>
@@ -384,7 +384,7 @@
 
       <!-- Grant Programmes -->
 
-      <chart-card color="orange" v-bind:loading="loading" v-if="chartData.byGrantProgramme && chartN('byGrantProgramme') > 0">
+      <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byGrantProgramme && chartN('byGrantProgramme') > 0">
         <chart-card-header :title="getChartCardData('byGrantProgramme')[0].title">
           (number of grants)
         </chart-card-header>
@@ -417,11 +417,11 @@
       <div class="grid grid--two-columns">
 
         <div class="grid__all">
-          <h3>Grants locations</h3>
+          <h3 v-if="!loading">Grants locations</h3>
         </div>
 
       <!-- countries -->
-      <chart-card color="red" v-bind:loading="loading" v-if="chartN('byCountryRegion') > 0">
+      <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byCountryRegion') > 0">
         <chart-card-header :title="getChartCardData('byCountry')[0].title">
           (number of grants)
         </chart-card-header>
@@ -451,7 +451,7 @@
       </chart-card>
 
         <!-- Regions -->
-        <chart-card color="red" v-bind:loading="loading" v-if="chartN('byCountryRegion','grants', 1) > 0">
+        <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byCountryRegion','grants', 1) > 0">
           <chart-card-header :title="getChartCardData('byRegion')[0].title">
           (number of grants)
           </chart-card-header>
@@ -481,7 +481,7 @@
         </chart-card>
 
         <!--  Local Authorities -->
-        <chart-card color="red" v-bind:loading="loading" v-if="chartN('byLocalAuthority') > 0">
+        <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byLocalAuthority') > 0">
           <chart-card-header :title="getChartCardData('byLocalAuthority')[0].title">
           (number of grants)
           </chart-card-header>
@@ -515,7 +515,7 @@
 
 
         <!-- choropleth -->
-        <chart-card color="red">
+        <chart-card color="red" v-if="!loading">
           <chart-card-header :title="getChartCardData('byArea')[0].title"></chart-card-header>
           <a name="map"></a>
           <choropleth class="base-card__content" v-bind:layer-data="choroplethData" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
@@ -529,7 +529,7 @@
         </chart-card>
 
         <!-- Source of location information -->
-        <chart-card color="red" v-bind:loading="loading" v-if="chartN('byGeoSource') > 0">
+        <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byGeoSource') > 0">
           <chart-card-header :title="getChartCardData('byGeoSource')[0].title">
             (number of grants)
           </chart-card-header>
@@ -557,10 +557,10 @@
       <div class="grid grid--two-columns">
 
         <div class="grid__all">
-          <h3>Grant recipients</h3>
+          <h3 v-if="!loading">Grant recipients</h3>
         </div>
 
-        <chart-card color="teal" v-bind:loading="loading">
+        <chart-card color="teal" v-bind:loading="loading" v-if="!loading">
           <chart-card-header :title="getChartCardData('byRecipientType')[0].title">
             (number of grants)
           </chart-card-header>
@@ -586,7 +586,7 @@
         </chart-card>
 
         <!-- Recipient org Type -->
-        <chart-card color="teal" v-bind:loading="loading">
+        <chart-card color="teal" v-bind:loading="loading" v-if="!loading">
           <chart-card-header :title="getChartCardData('byOrgType')[0].title">
             (number of grants)
           </chart-card-header>
@@ -616,7 +616,7 @@
         </chart-card>
 
         <!-- Latest Income -->
-        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="chartN('byOrgSize') > 0" >
+        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="!loading && chartN('byOrgSize') > 0" >
           <chart-card-header :title="getChartCardData('byOrgSize')[0].title">
           (number of grants)
           </chart-card-header>
@@ -637,7 +637,7 @@
           </div>
         </chart-card>
 
-        <chart-card color="teal" v-bind:loading="loading" v-if="chartN('byOrgSize') == 0">
+        <chart-card color="teal" v-bind:loading="loading" v-if="!loading && chartN('byOrgSize') == 0">
           <chart-card-header :title="getChartCardData('byOrgSize')[0].title"></chart-card-header>
           <p>
             Latest income is not available for {{ chartMissing('byOrgSize') | formatNumber }} grants.
@@ -648,7 +648,7 @@
           </p>
         </chart-card>
 
-        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="chartN('byOrgAge') > 0">
+        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="!loading && chartN('byOrgAge') > 0">
           <chart-card-header :title="getChartCardData('byOrgAge')[0].title">
             (number of grants)
           </chart-card-header>
@@ -680,7 +680,7 @@
         </chart-card>
 
 
-        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="chartN('byOrgAge') == 0">
+        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="!loading && chartN('byOrgAge') == 0">
           <chart-card-header title="Age of recipient organisations"></chart-card-header>
           <p>
             Organisation age is not available for {{ chartMissing('byOrgAge') | formatNumber }} grants.
@@ -693,10 +693,10 @@
       </div> <!-- / grid -->
 
       <div class="grid__all">
-        <h3>Grant types</h3>
+        <h3 v-if="!loading">Grant types</h3>
       </div>
 
-      <chart-card color="orange" v-bind:loading="loading">
+      <chart-card color="orange" v-bind:loading="loading" v-if="!loading">
           <chart-card-header :title="getChartCardData('byGrantType')[0].title">
             (number of grants)
           </chart-card-header>
