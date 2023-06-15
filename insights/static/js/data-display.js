@@ -368,7 +368,8 @@ var app = new Vue({
                 this.mapUrl = PAGE_URLS['map'];
                 this.dataUrl = PAGE_URLS['data'];
             }
-            history.pushState(this.filters, '', "?" + queryParams.toString());
+
+            window.location.href = window.location.pathname + '?' + queryParams.toString();
         },
         resetFilter(name) {
             if (this.filters[name].min || this.filters[name].max){
