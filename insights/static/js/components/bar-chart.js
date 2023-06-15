@@ -1,4 +1,21 @@
 const MS_IN_DAY = (1000 * 60 * 60 * 24); // number of milliseconds in a day
+const date = new Date();
+
+let language;
+if (window.navigator.languages) {
+    language = window.navigator.languages[0];
+} else {
+    language = window.navigator.userLanguage || window.navigator.language;
+}
+
+const newData = {
+  labels: ['Older'],
+  datasets: [{
+      label: 'Data',
+      backgroundColor: '#F26202',
+      data: [],
+  }]
+};
 
 export const barChart = {
     extends: VueChartJs.Bar,
@@ -9,7 +26,25 @@ export const barChart = {
     },
     computed: {
         options: function () {
-            var component = this;
+
+          this.chartData.labels.forEach((label, index) => {
+            const daysOld = Math.ceil((date - new Date(label)) / MS_IN_DAY);
+            if (daysOld > 365 * 20) {
+                newData.datasets[0].data[0] += this.chartData.datasets[0].data[index];
+            } else {
+                newData.labels.push(label);
+                newData.datasets[0].data.push(this.chartData.datasets[0].data[index]);
+            }
+          });
+
+            let params = new URLSearchParams(document.location.search);
+            let awardDates = false
+            for (const [key, value] of params) {
+              if (key.includes('awardDates')) {
+                awardDates = true
+              }
+            }
+            
             var daysRange = Math.ceil(
                 (
                     Math.max(...this.chartData.labels) - Math.min(...this.chartData.labels)
@@ -24,17 +59,21 @@ export const barChart = {
                     xAxes: [{
                         gridLines: {
                             display: false,
-                            offsetGridLines: false,
+                            offsetGridLines: true,
                         },
                         offset: true,
                         ticks: {
-                            display: true,
+                          userCallback(value, index, ticks) {
+                            if (value instanceof Date) {
+                              const month = new Intl.DateTimeFormat(language, { month: 'long' }).format(value)
+                              const year = value.getUTCFullYear()
+                              return language.includes('en') ? `${month.substring(0,3)} ${year}` : `${month} ${year}`
+                            } else {
+                              return awardDates ? '' : value
+                            }
+                          }
                         },
-                        type: 'time',
                         display: true,
-                        time: {
-                            unit: (daysRange > 365 ? 'year' : 'month')
-                        },
                     }],
                     yAxes: [{
                         gridLines: {
@@ -53,6 +92,6 @@ export const barChart = {
         }
     },
     mounted() {
-        this.renderChart(this.chartData, this.options)
+        this.renderChart(newData, this.options)
     }
 }
