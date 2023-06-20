@@ -7,6 +7,7 @@ if (window.navigator.languages) {
   language = window.navigator.userLanguage || window.navigator.language;
 }
 
+// Create empty dataset with 'Older' entry to be populated with this.chartData entries
 const compiledData = {
   labels: ['Older'],
   datasets: [{
@@ -16,6 +17,7 @@ const compiledData = {
   }]
 };
 
+// Check if date range is filtered
 let params = new URLSearchParams(document.location.search);
 let awardDates = false
 let awardMinYear = null;
@@ -44,11 +46,14 @@ export const barChart = {
         ) / MS_IN_DAY
       )
 
+      
       this.chartData.labels.forEach((label, index) => {
         const daysOld = Math.ceil((date - new Date(label)) / MS_IN_DAY);
         if (daysOld > 365 * 20) {
+            // Push this.chartData older than 20 years into compiledData Older entry
             compiledData.datasets[0].data[0] += this.chartData.datasets[0].data[index];
         } else {
+            // Push all other data > 20 years old to compiledData dataset
             compiledData.labels.push(label);
             compiledData.datasets[0].data.push(this.chartData.datasets[0].data[index]);
         }
@@ -79,19 +84,23 @@ export const barChart = {
             ticks: {
               autoSkip: false,
               callback(value, index, ticks) {
+                // Parse and display date labels
                 if (value instanceof Date) {
                   const year = value.toLocaleString(language, { year: 'numeric' });
                   let label = null;
                   
                   if (daysRange >= 365) {
+                    // Hide date labels older than 20 years
                     if (date.getFullYear() - year >= 20) {
                       label = null;
                     } else if (year !== lastYearLabel) {
+                      // Show label on first instance of the year (prevents duplicates)
                       label = year;
                     } else {
                       label = null;
                     }
                   } else {
+                    // Show month and year if date range < 365 days
                     label = value.toLocaleString(language, { month: 'short', year: 'numeric' });
                   }
                   
@@ -99,6 +108,7 @@ export const barChart = {
 
                   return label;
                 } else {
+                  // Show 'Older' (non-date) label if date range isn't filtered
                   return awardDates ? null : value;
                 }
               }
@@ -125,6 +135,7 @@ export const barChart = {
     lastYearLabel = '';
   },
   mounted() {
+    // Switch dataset between original and 'Older' depending on if min date range filter
     !awardMinYear ? this.renderChart(compiledData, this.options) : this.renderChart(this.chartData, this.options);
   }
 }
