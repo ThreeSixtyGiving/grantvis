@@ -1,7 +1,6 @@
 const MS_IN_DAY = (1000 * 60 * 60 * 24); // number of milliseconds in a day
 const date = new Date();
-
-let language;
+let lastYearLabel, language;
 if (window.navigator.languages) {
   language = window.navigator.languages[0];
 } else {
@@ -38,6 +37,12 @@ export const barChart = {
   },
   computed: {
     options: function () {
+      
+      const daysRange = Math.ceil(
+        (
+            Math.max(...this.chartData.labels) - Math.min(...this.chartData.labels)
+        ) / MS_IN_DAY
+      )
 
       this.chartData.labels.forEach((label, index) => {
         const daysOld = Math.ceil((date - new Date(label)) / MS_IN_DAY);
@@ -72,11 +77,29 @@ export const barChart = {
             },
             offset: true,
             ticks: {
-              userCallback(value, index, ticks) {
+              autoSkip: false,
+              callback(value, index, ticks) {
                 if (value instanceof Date) {
-                  return value.toLocaleString(language, { month: 'short', year: 'numeric' });
+                  const year = value.toLocaleString(language, { year: 'numeric' });
+                  let label = null;
+                  
+                  if (daysRange >= 365) {
+                    if (date.getFullYear() - year >= 20) {
+                      label = null;
+                    } else if (year !== lastYearLabel) {
+                      label = year;
+                    } else {
+                      label = null;
+                    }
+                  } else {
+                    label = value.toLocaleString(language, { month: 'short', year: 'numeric' });
+                  }
+                  
+                  lastYearLabel = year;
+
+                  return label;
                 } else {
-                  return awardDates ? '' : value;
+                  return awardDates ? null : value;
                 }
               }
             },
@@ -98,7 +121,10 @@ export const barChart = {
       }
     }
   },
+  created() {
+    lastYearLabel = '';
+  },
   mounted() {
-    !awardMinYear ? this.renderChart(compiledData, this.options) : this.renderChart(this.chartData, this.options)
+    !awardMinYear ? this.renderChart(compiledData, this.options) : this.renderChart(this.chartData, this.options);
   }
 }
