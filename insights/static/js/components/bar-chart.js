@@ -86,12 +86,16 @@ export const barChart = {
               callback(value, index, ticks) {
                 // Parse and display date labels
                 if (value instanceof Date) {
+                  const month = value.toLocaleString(language, { month: 'numeric' });
                   const year = value.toLocaleString(language, { year: 'numeric' });
                   let label = null;
                   
-                  if (daysRange >= 365) {
+                  if (daysRange >= 1460) {
                     // Hide date labels older than 20 years
                     if (date.getFullYear() - year >= 20) {
+                      label = null;
+                    } else if (month === '10' || month === '11' || month === '12') {
+                      // Hide label if month is Oct / Nov / Dec to prevent overlapping
                       label = null;
                     } else if (year !== lastYearLabel) {
                       // Show label on first instance of the year (prevents duplicates)
@@ -100,7 +104,7 @@ export const barChart = {
                       label = null;
                     }
                   } else {
-                    // Show month and year if date range < 365 days
+                    // Show month and year if date range < 1460 days (4 years)
                     label = value.toLocaleString(language, { month: 'short', year: 'numeric' });
                   }
                   
