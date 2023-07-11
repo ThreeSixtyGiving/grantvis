@@ -1,13 +1,15 @@
 const chartCardData = [
   {
-    id: 'byFunder',
+    id: 'fundingOrganization',
     title: 'Funders',
-    instructions: 'Click on the bars or labels to select one or more funders.'
+    instructions: 'Click on the bars or labels to select one or more funders.',
+    colour: 'orange',
   },
   {
-    id: 'byFunderType',
+    id: 'fundingOrganizationTSGType',
     title: 'Funder types',
-    instructions: 'Click on the bars or labels to select one or more funding organisation types.'
+    instructions: 'Click on the bars or labels to select one or more funding organisation types.',
+    colour: 'orange',
   },
   {
     id: 'byAmountAwarded',
@@ -75,6 +77,6 @@ const chartCardData = [
     instructions: 'Click on the bars or labels to select one or more grant types',
   }
 
-]
+] /*TODO make this an object top level rather than an array  ? */
 
 export { chartCardData };

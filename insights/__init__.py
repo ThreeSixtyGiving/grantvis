@@ -45,7 +45,6 @@ def create_app():
 
     with open("config/" + os.environ.get("INSIGHTS_CONFIG", "main") + ".json") as f:
         config_data = json.load(f)
-        
 
     # dokku uses postgres:// and sqlalchamy requires postgresql:// fix the url here
     if database_url.startswith("postgres://"):

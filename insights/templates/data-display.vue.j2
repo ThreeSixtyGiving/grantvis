@@ -40,7 +40,7 @@
 {% raw %}
 <!-- insights VueJS application -->
 <div id="data-display" v-cloak>
-  <header class="layout__header wrapper" v-if="summary">
+  <header class="layout__header wrapper" v-if="data">
 
     <div class="base-section">
       <div class="grid grid--single-column">
@@ -133,11 +133,11 @@
 
       <!-- totals summary boxes -->
 
-      <div class="grid grid--five-columns" v-if="summary.currencies" style="align-items: center;">
+      <div class="grid grid--five-columns" v-if="data.hits" style="align-items: center;">
         <div class="grid__1">
           <div class="base-card base-card--orange" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px" >
-              <h2 class="base-card__title">{{ summary.grants | formatNumberSuffix }}{{ summary.grants |
+              <h2 class="base-card__title">{{ data.hits.total.value | formatNumberSuffix }}{{ data.hits.total.value |
                 getAmountSuffix(true) }}</h2>
               <p class="base-card__text">Grants <br/></p>
             </div>
@@ -147,7 +147,7 @@
         <div class="grid__1">
           <div class="base-card base-card--teal" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px">
-              <h2 class="base-card__title">{{ summary.recipientOrganisations.toLocaleString() }}</h2>
+              <h2 class="base-card__title">{{ data.aggregations.recipient_orgs.value.toLocaleString() }}</h2>
               <p class="base-card__text">Recipient Organisations</p>
             </div>
           </div>
@@ -156,7 +156,7 @@
         <div class="grid__1">
           <div class="base-card base-card--teal" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px">
-              <h2 class="base-card__title">{{ summary.recipientIndividuals.toLocaleString() }}</h2>
+              <h2 class="base-card__title">{{ data.aggregations.recipient_indi.value.toLocaleString() }}</h2>
               <p class="base-card__text">Recipient Individuals</p>
             </div>
           </div>
@@ -166,8 +166,7 @@
           <div class="grid__1">
             <div class="base-card base-card--yellow"  >
               <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ currency.total | formatCurrency(currency.currency) }}{{ currency.total |
-                getAmountSuffix(true) }}</h2>
+                <h2 class="base-card__title">{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | formatCurrency("GBP") }}{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | getAmountSuffix(true) }}</h2>
                 <p class="base-card__text">Total</p>
               </div>
             </div>
@@ -176,7 +175,7 @@
           <div class="grid__1">
             <div class="base-card base-card--black" >
               <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ summary.funders.toLocaleString() }}</h2>
+                <h2 class="base-card__title">{{ data.aggregations.funding_orgs.value.toLocaleString() }}</h2>
                 <p class="base-card__text">Funders</p>
               </div>
             </div>
@@ -187,12 +186,12 @@
 
     <div class="grid grid--two-columns" v-html="insights_config.dataexplainer"></div>
 
-    <div v-if="summary.currencies.length > 1 && filtersApplied.length && dataset !== 'main' && !loading">
+    <div v-if="data.aggregations && data.aggregations.currency_stats.buckets.length > 1">
       This data also contains
       <ul>
-        <li v-for="currency in summary.currencies" v-if="currency.currency != 'GBP'">
-          {{currency.grants | formatNumberSuffix}} grants awarded in {{currency.currency}} totalling {{ currency.total |
-          formatCurrency(currency.currency) }}{{ currency.total | getAmountSuffix(true) }}.
+        <li v-for="currency in data.aggregations.currency_stats.buckets" v-if="currency.key != 'GBP'">
+          {{currency.doc_count| formatNumberSuffix}} grants awarded in {{currency.key}} totalling {{ currency.amount_stats.sum |
+          formatCurrency(currency.key) }}{{ currency.amount_stats.sum| getAmountSuffix(true) }}.
         </li>
       </ul>
     </div>
@@ -216,88 +215,16 @@
           <chart-card-header title="Dataset filters">
             <a href="/" title="See all available datasets">(back to dataset selection)</a>
           </chart-card-header>
-
+<!-- TODO filters titles for new / filters -->
           <a href="#" v-bind:title="'Remove dataset filter '+filtersToTitles[filter]" class="filter filter--data-wrangling" v-for="filter in filtersApplied" v-on:click.prevent="resetFilter(filter)">{{filtersToTitles[filter]}} &times;</a>
         </chart-card>
 
         <!-- Funders -->
-
-          <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byFunder && chartData.byFunder.length > 0">
-            <chart-card-header :title="getChartCardData('byFunder')[0].title">
-              (number of grants)
-            </chart-card-header>
-            <ul class="bar-chart" v-if="chartData.byFunder">
-                <li ref="byFunderItem" v-bind:data-label="group.label" class="bar-chart__item" v-for="(group, index) in chartBars('byFunder')"
-                  v-bind:class="{ 'hide-print' : group.inactive }"
-                  :style="group.style" v-on:click="toggleInArray(filters.funders, group.id)">
-                  <label class="bar-chart__label small">{{ group.label }}</label>
-                  <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-                </li>
-            </ul>
-            <input type="text" v-model="find.funder" placeholder="Find a funder" class="search-field" v-if="safeLength(chartData.byFunder) + safeLength(inactiveChartData.byFunder) > 10"  />
-            <div>
-              <hr class="separator-light">
-              <p>{{ getChartCardData('byFunder')[0].instructions }}</p>
-              <p>Based on {{ chartN('byFunder') | formatNumber }} grants.</p>
-              <p v-if="chartMissing('byFunder')">
-                {{ chartMissing('byFunder') | formatNumber }} grants not found.
-              </p>
-            </div>
-        </chart-card>
-
-        <!-- Funder Types -->
-
-        <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byFunderType">
-          <chart-card-header :title="getChartCardData('byFunderType')[0].title">
-            (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byFunderType && chartData.byFunderType.length > 0">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byFunderType')"
-              :style="group.style"
-              v-bind:class="{ 'hide-print' : group.inactive }"
-              v-on:click="toggleInArray(filters.funderTypes, group.id)"
-              >
-              <label class="bar-chart__label small">{{ group.label }}</a></label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></div>
-            </li>
-          </ul>
-
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byFunderType')[0].instructions }}</p>
-            <p>Based on {{ chartN('byFunderType') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byFunderType')">
-              {{ chartMissing('byFunderType') | formatNumber }} grants not found.
-            </p>
-          </div>
-        </chart-card>
-
-        <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byRecipientOrgType">
-          <chart-card-header :title="getChartCardData('byRecipientOrgType')[0].title">
-            (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byRecipientOrgType && chartData.byFunderType.length > 0">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byRecipientOrgType')"
-              :style="group.style"
-              v-bind:class="{ 'hide-print' : group.inactive }"
-              v-on:click="toggleInArray(filters.funderTypes, group.id)"
-              >
-              <label class="bar-chart__label small">{{ group.label }}</a></label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></div>
-            </li>
-          </ul>
-
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byRecipientOrgType')[0].instructions }}</p>
-            <p>Based on {{ chartN('byRecipientOrgType') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byRecipientOrgType')">
-              {{ chartMissing('byRecipientOrgType') | formatNumber }} grants not found.
-            </p>
-          </div>
-        </chart-card>
-
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganization" v-if="data.aggregations" ></bar-chart-card>
+        <!-- Funding organisation type -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganizationTSGType" v-if="data.aggregations" ></bar-chart-card>
         <!-- Amount awarded -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
 
         <chart-card color="orange" v-bind:loading="loading" v-if="!loading">
           <chart-card-header :title="getChartCardData('byAmountAwarded')[0].title">
