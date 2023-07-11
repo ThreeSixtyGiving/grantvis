@@ -40,7 +40,7 @@
 {% raw %}
 <!-- insights VueJS application -->
 <div id="data-display" v-cloak>
-  <header class="layout__header wrapper" v-if="summary">
+  <header class="layout__header wrapper" v-if="data">
 
     <div class="base-section">
       <div class="grid grid--single-column">
@@ -133,11 +133,11 @@
 
       <!-- totals summary boxes -->
 
-      <div class="grid grid--five-columns" v-if="summary.currencies" style="align-items: center;">
+      <div class="grid grid--five-columns" v-if="data.hits" style="align-items: center;">
         <div class="grid__1">
           <div class="base-card base-card--orange" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px" >
-              <h2 class="base-card__title">{{ summary.grants | formatNumberSuffix }}{{ summary.grants |
+              <h2 class="base-card__title">{{ data.hits.total.value | formatNumberSuffix }}{{ data.hits.total.value |
                 getAmountSuffix(true) }}</h2>
               <p class="base-card__text">Grants <br/></p>
             </div>
@@ -147,7 +147,7 @@
         <div class="grid__1">
           <div class="base-card base-card--teal" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px">
-              <h2 class="base-card__title">{{ summary.recipientOrganisations.toLocaleString() }}</h2>
+              <h2 class="base-card__title">{{ data.aggregations.recipient_orgs.value.toLocaleString() }}</h2>
               <p class="base-card__text">Recipient Organisations</p>
             </div>
           </div>
@@ -156,7 +156,7 @@
         <div class="grid__1">
           <div class="base-card base-card--teal" >
             <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center; min-height: 173px">
-              <h2 class="base-card__title">{{ summary.recipientIndividuals.toLocaleString() }}</h2>
+              <h2 class="base-card__title">{{ data.aggregations.recipient_indi.value.toLocaleString() }}</h2>
               <p class="base-card__text">Recipient Individuals</p>
             </div>
           </div>
@@ -166,8 +166,7 @@
           <div class="grid__1">
             <div class="base-card base-card--yellow"  >
               <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ currency.total | formatCurrency(currency.currency) }}{{ currency.total |
-                getAmountSuffix(true) }}</h2>
+                <h2 class="base-card__title">{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | formatCurrency("GBP") }}{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | getAmountSuffix(true) }}</h2>
                 <p class="base-card__text">Total</p>
               </div>
             </div>
@@ -176,7 +175,7 @@
           <div class="grid__1">
             <div class="base-card base-card--black" >
               <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ summary.funders.toLocaleString() }}</h2>
+                <h2 class="base-card__title">{{ data.aggregations.funding_orgs.value.toLocaleString() }}</h2>
                 <p class="base-card__text">Funders</p>
               </div>
             </div>
@@ -187,12 +186,12 @@
 
     <div class="grid grid--two-columns" v-html="insights_config.dataexplainer"></div>
 
-    <div v-if="summary.currencies.length > 1 && filtersApplied.length && dataset !== 'main' && !loading">
+    <div v-if="data.aggregations && data.aggregations.currency_stats.buckets.length > 1">
       This data also contains
       <ul>
-        <li v-for="currency in summary.currencies" v-if="currency.currency != 'GBP'">
-          {{currency.grants | formatNumberSuffix}} grants awarded in {{currency.currency}} totalling {{ currency.total |
-          formatCurrency(currency.currency) }}{{ currency.total | getAmountSuffix(true) }}.
+        <li v-for="currency in data.aggregations.currency_stats.buckets" v-if="currency.key != 'GBP'">
+          {{currency.doc_count| formatNumberSuffix}} grants awarded in {{currency.key}} totalling {{ currency.amount_stats.sum |
+          formatCurrency(currency.key) }}{{ currency.amount_stats.sum| getAmountSuffix(true) }}.
         </li>
       </ul>
     </div>

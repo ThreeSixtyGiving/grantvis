@@ -120,6 +120,7 @@ var app = new Vue({
     el: '#data-display',
     data() {
         return {
+            data: {},
             dataset: DATASET,
             datasetExpiryDays: DATASET_EXPIRY_DAYS,
             title: TITLE,
@@ -376,7 +377,7 @@ var app = new Vue({
                 awardDates = true;
               }
             }
-            
+
             // Reload page on awardDate filter change to prevent duplicate chart data entering state
             if (awardDates) {
               window.location.href = window.location.pathname + '?' + queryParams;
@@ -404,15 +405,25 @@ var app = new Vue({
                 };
             }
         },
-        updateData() {
+        async updateData() {
             var app = this;
             app.loadingQ++;
 
-            graphqlQuery(GQL, {
-                dataset: app.dataset,
+            let filters = {
                 ...app.base_filters,
                 ...app.computedFilters,
-            }).then((data) => {
+                dataset: app.dataset,
+            };
+
+            let res = await fetch("http://localhost:8000/api/insights/search");
+            res = await res.json();
+
+            console.log(res);
+            this.data = res;
+
+
+
+            /* }).then((data) => {
                 Object.entries(data.data.grantAggregates).forEach(([key, value]) => {
                     if (key == "summary") {
                         app.summary = value[0];
@@ -426,11 +437,10 @@ var app = new Vue({
                     }
 
                 });
-
+*/
                 app.updateChoropleth();
 
                 app.loadingQ--;
-            });
 
             /* depending on the filters set find out what the data options would have been */
             if (this.filtersApplied.length) {
