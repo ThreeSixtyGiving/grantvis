@@ -1,4 +1,142 @@
+<script src="{{ url_for('static', filename='js/data/cards.js') }}"></script>
 {% raw %}
+<script type="text/x-template" id="bar-chart-card-template" >
+  <div v-bind:class="'grid__'+size"  >
+      <div class="base-card base-card--left" v-bind:class="'base-card--'+chartCardMetadata.colour" >
+          <div class="base-card__content" >
+                <header class="base-card__header" style="display: flex; align-items: center;" >
+                    <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
+                    <h4 class="base-card__subheading" style="margin-left: 5px">
+                        (number of grants)
+                    </h4>
+                </header>
+                <slot></slot>
+                <ul class="bar-chart">
+                    <li
+                    class="bar-chart__item"
+                    ref="barItem"
+                    v-bind:data-label="item.name ? item.name : item.key"
+                    v-for="item in data.buckets"
+                    v-if="item.selected"
+                    :style="getBarStyle(item.doc_count, data.buckets)" v-on:click="updateData(item.url)">
+                    <label class="bar-chart__label small" v-if="item.to && item.from">{{item.from}} - {{item.to}}</label>
+                    <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
+                    <label class="bar-chart__label small" v-else>{{ item.key }}</label>
+
+                    <div class="bar-chart__bar"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
+                    </li>
+                </ul>
+                <ul class="bar-chart hide-print" b-bind:style="find ? 'min-height: 400px' : ''">
+                    <li
+                    class="bar-chart__item inactive-bar"
+                    ref="barItem"
+                    v-bind:data-label="item.name ? item.name : item.key"  v-for="item in data.buckets"
+                    v-if="!item.selected"
+                    :style="getBarStyle(item.doc_count, data.buckets)"
+                    v-on:click="updateData(item.url)">
+
+                    <label class="bar-chart__label small" v-if="item.to && item.from">{{item.from.toLocaleString()}} - {{item.to.toLocaleString()}}</label>
+                    <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
+                    <label class="bar-chart__label small" v-else>{{ item.key }}</label>
+
+                    <div class="bar-chart__bar inactive-bar"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
+                    </li>
+                </ul>
+                <!--- Extra in-place filters -->
+                <input  v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'finder' && data.buckets.length > 10" type="text" v-model="find" placeholder="Find a funder" class="search-field"   />
+                <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'number'" title="Amount">
+                    <label for="number-min">Between</label>
+                    <input id="number-min" type="number" class="filter-input" placeholder="Minimum" v-model="filters.numberMin">
+                    <label for="number-max">and</label>
+                    <input id="number-max" type="number" class="filter-input" placeholder="Maximum" v-model="filters.numberMax">
+                    <a href="#" v-on:click.prevent="filters.numberMax = null; filters.amountMin = null;" v-if="filters.amountMax || filters.amountMin">Clear amounts</a>
+                </filter-item>
+                <div>
+                <hr class="separator-light">
+                <p>{{ chartCardMetadata.instructions }}</p>
+                <p>Based on TODO  | formatNumber grants.</p>
+                <p >
+                    TODO | formatNumber grants not found.
+                </p>
+                </div>
+            </div>
+      </div>
+  </div>
+</script>
+
+
+<script>
+
+function clamp(num, min, max){
+    return Math.min(Math.max(num, min), max);
+}
+
+
+Vue.component('bar-chart-card', {
+    template: "#bar-chart-card-template",
+    props: {
+        size: { type: String, default: "2" },
+        loading: { type: Boolean, default: true },
+        dataAll: { type: Object },
+        dataId: { type: String },
+    },
+    data() {
+        return {
+            chartCardMetadata: chartCardMetadata[this.dataId],
+            data: this.dataAll.aggregations[this.dataId],
+            find: "",
+            filters: {
+                numberMin: 0,
+                numberMax: 0,
+            }
+        };
+    },
+    methods: {
+        getBarStyle(count, buckets){
+            let maxValue = 1;
+
+            try {
+                maxValue = Math.max(...buckets.map((d) => d.doc_count));
+            } catch(e) {
+                console.warn(e);
+            }
+
+
+            return {
+                '--value': count,
+                '--width': `${clamp(((count / maxValue) * 100), 0.1, 100)}%`,
+            }
+        },
+        updateData(url){
+            this.find = "";
+            this.$emit("select", url);
+        }
+    },
+    watch: {
+        'dataAll': {
+            handler: function() {
+                this.data = this.dataAll.aggregations[this.dataId]
+            },
+            deep: true
+        },
+        'find': function () {
+            var app = this;
+            this.$refs.barItem.forEach((li) => {
+                li.style.display = null;
+                if (li.dataset.label && app.find && !li.dataset.label.toLowerCase().includes(app.find.toLowerCase())){
+                    li.style.display = "none";
+                }
+            });
+        }, /*
+        'filters.numberMin': function(){
+            TODO debounce , make URL param e.g. &min_amount=23&max_amount=55
+            this.chartCardMetadata.filterers.fields[0];
+        } */
+    }
+});
+</script>
+
+<!-- everything below To be deprecated -->
 <script type="text/x-template" id="chart-card-template" >
   <div v-bind:class="'grid__'+size"  >
       <div class="base-card base-card--left" v-bind:class="'base-card--'+color" >

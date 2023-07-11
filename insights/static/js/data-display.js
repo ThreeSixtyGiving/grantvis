@@ -5,6 +5,7 @@ import { formatCurrency, formatDate, formatNumber, getAmountSuffix, formatNumber
 import { debounce } from './lib/debounce.js';
 import { chartCardData } from './data/card.js';
 
+
 const COLOURS = {
     yellow: "#EFC329",
     red: "#BC2C26",
@@ -83,6 +84,7 @@ function initialFilters(useQueryParams) {
 }
 
 /* Friendly names map for filter options */
+/* TODO */
 var filtersToTitles = {
     awardAmount: "Award amounts",
     awardDates: "Award dates",
@@ -120,6 +122,7 @@ var app = new Vue({
     el: '#data-display',
     data() {
         return {
+            data: {},
             dataset: DATASET,
             datasetExpiryDays: DATASET_EXPIRY_DAYS,
             title: TITLE,
@@ -330,6 +333,8 @@ var app = new Vue({
     },
     methods: {
         updateUrl() {
+            return;
+            /*
             var queryParams = new URLSearchParams();
             Object.entries(this.filters)
                 .filter(([k, v]) => v && v.length != 0)
@@ -376,13 +381,14 @@ var app = new Vue({
                 awardDates = true;
               }
             }
-            
+*/
             // Reload page on awardDate filter change to prevent duplicate chart data entering state
+            /*
             if (awardDates) {
               window.location.href = window.location.pathname + '?' + queryParams;
             } else {
               history.pushState(this.filters, '', "?" + queryParams.toString());
-            }
+            }*/
 
         },
         resetFilter(name) {
@@ -404,15 +410,25 @@ var app = new Vue({
                 };
             }
         },
-        updateData() {
+        async updateData(queryUrl = "/search") {
             var app = this;
             app.loadingQ++;
 
-            graphqlQuery(GQL, {
-                dataset: app.dataset,
+            let filters = {
                 ...app.base_filters,
                 ...app.computedFilters,
-            }).then((data) => {
+                dataset: app.dataset,
+            };
+
+            let res = await fetch(`http://localhost:8000/api/aggregates${queryUrl}`);
+            res = await res.json();
+            console.log(res);
+            this.data = await res;
+            console.log(queryUrl);
+            // TODO history.pushState(filters, "", queryUrl.slice("/search".length));
+
+
+            /* }).then((data) => {
                 Object.entries(data.data.grantAggregates).forEach(([key, value]) => {
                     if (key == "summary") {
                         app.summary = value[0];
@@ -426,11 +442,10 @@ var app = new Vue({
                     }
 
                 });
-
+*/
                 app.updateChoropleth();
 
                 app.loadingQ--;
-            });
 
             /* depending on the filters set find out what the data options would have been */
             if (this.filtersApplied.length) {
@@ -664,9 +679,12 @@ var app = new Vue({
 
              return array.length;
         },
-        getChartCardData(id) {
+        getChartCardData(id) { /* todo remove me */
               return chartCardData.filter(item => item.id === id)
-        }
+        },
+        getChartCardMetadata(id) {
+              return chartCardData.filter(item => item.id === id)
+        },
     },
     mounted() {
         this.updateData();
