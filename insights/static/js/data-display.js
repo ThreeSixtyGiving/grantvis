@@ -415,7 +415,7 @@ var app = new Vue({
                 dataset: app.dataset,
             };
 
-            let res = await fetch("http://localhost:8000/api/insights/search");
+            let res = await fetch("http://localhost:8000/api/aggregates/search");
             res = await res.json();
 
             console.log(res);
@@ -676,7 +676,13 @@ var app = new Vue({
         },
         getChartCardData(id) {
               return chartCardData.filter(item => item.id === id)
-        }
+        },
+        getBarStyle(count, maxValue){
+            return {
+                '--value': count,
+                '--width': `${clamp(((count / maxValue) * 100), 0.1, 100)}%`,
+            }
+        },
     },
     mounted() {
         this.updateData();
