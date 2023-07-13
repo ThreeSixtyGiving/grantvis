@@ -220,17 +220,30 @@
         </chart-card>
 
         <!-- Funders -->
-
-          <chart-card color="orange" v-bind:loading="loading" v-if="!loading && data.aggregations">
-            <chart-card-header :title="getChartCardData('byFunder')[0].title">
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganization" v-if="data.aggregations" ></bar-chart-card>
+<!--
+          <chart-card color="orange" v-bind:loading="loading" v-if="!loading && data.aggregations" >
+            <chart-card-header :title="getChartCardData('fundingOrganization')[0].title">
               (number of grants)
             </chart-card-header>
             <ul class="bar-chart" v-if="data.aggregations.fundingOrganization">
                 <li ref="byFunderItem" v-bind:data-label="item.name" class="bar-chart__item" v-for="item in data.aggregations.fundingOrganization.buckets"
-                  v-bind:class="{ 'hide-print' : null }"
-                  :style="getBarStyle(item.count, data.aggregations.fundingOrganization.buckets[0].count)" v-on:click="toggleInArray(filters.funders, item.key)">
+                  v-if="item.selected"
+                  :style="getBarStyle(item.count, data.aggregations.fundingOrganization.buckets[0].count)" v-on:click="updateData(item.url)">
                   <label class="bar-chart__label small">{{ item.name }}</label>
-                  <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': false }"><span v-bind:data-val="item.count.toLocaleString()"></span></span></div>
+                  <div class="bar-chart__bar"><span v-bind:data-val="item.count.toLocaleString()"></span></span></div>
+                </li>
+            </ul>
+            <ul class="bar-chart hide-print" v-if="data.aggregations.fundingOrganization">
+                <li
+                  class="bar-chart__item inactive-bar"
+                  ref="byFunderItem"
+                  v-bind:data-label="item.name"  v-for="item in data.aggregations.fundingOrganization.buckets"
+                  v-if="!item.selected"
+                  :style="getBarStyle(item.count, data.aggregations.fundingOrganization.buckets[0].count)"
+                  v-on:click="updateData(item.url)">
+                  <label class="bar-chart__label small">{{ item.name }}</label>
+                  <div class="bar-chart__bar" class="inactive-bar"><span v-bind:data-val="item.count.toLocaleString()"></span></span></div>
                 </li>
             </ul>
             <input type="text" v-model="find.funder" placeholder="Find a funder" class="search-field" v-if="safeLength(chartData.byFunder) + safeLength(inactiveChartData.byFunder) > 10"  />
@@ -242,7 +255,7 @@
                 {{ chartMissing('byFunder') | formatNumber }} grants not found.
               </p>
             </div>
-        </chart-card>
+        </chart-card> -->
 
         <!-- Funder Types -->
 

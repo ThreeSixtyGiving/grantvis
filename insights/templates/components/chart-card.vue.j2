@@ -1,4 +1,102 @@
+<script src="{{ url_for('static', filename='js/data/cards.js') }}"></script>
 {% raw %}
+<script type="text/x-template" id="bar-chart-card-template" >
+  <div v-bind:class="'grid__'+size"  >
+      <div class="base-card base-card--left" v-bind:class="'base-card--'+chartCardMetadata.colour" >
+          <div class="base-card__content" >
+                <header class="base-card__header" style="display: flex; align-items: center;" >
+                    <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
+                    <h4 class="base-card__subheading" style="margin-left: 5px">
+                        (number of grants)
+                    </h4>
+                </header>
+                <slot></slot>
+                <ul class="bar-chart">
+                    <li ref="byFunderItem" v-bind:data-label="item.name" class="bar-chart__item" v-for="item in data.buckets"
+                    v-if="item.selected"
+                    :style="getBarStyle(item.count, data.buckets[0].count)" v-on:click="updateData(item.url)">
+                    <label class="bar-chart__label small">{{ item.name }}</label>
+                    <div class="bar-chart__bar"><span v-bind:data-val="item.count.toLocaleString()"></span></span></div>
+                    </li>
+                </ul>
+                <ul class="bar-chart hide-print">
+                    <li
+                    class="bar-chart__item inactive-bar"
+                    ref="byFunderItem"
+                    v-bind:data-label="item.name"  v-for="item in data.buckets"
+                    v-if="!item.selected"
+                    :style="getBarStyle(item.count, data.buckets[0].count)"
+                    v-on:click="updateData(item.url)">
+                    <label class="bar-chart__label small">{{ item.name }}</label>
+                    <div class="bar-chart__bar inactive-bar"><span v-bind:data-val="item.count.toLocaleString()"></span></span></div>
+                    </li>
+                </ul>
+                <!-- TODO <input type="text" v-model="find.funder" placeholder="Find a funder" class="search-field" v-if="safeLength(chartData.byFunder) + safeLength(inactiveChartData.byFunder) > 10"  /> -->
+                <div>
+                <hr class="separator-light">
+                <p>{{ chartCardMetadata.instructions }}</p>
+                <p>Based on TODO  | formatNumber grants.</p>
+                <p >
+                    TODO | formatNumber grants not found.
+                </p>
+                </div>
+            </div>
+      </div>
+  </div>
+</script>
+
+
+</script>
+
+
+<script>
+
+function clamp(num, min, max){
+    return Math.min(Math.max(num, min), max);
+}
+
+
+/* TODO we only actually need the field name we can get both the data and the chartCardMetadata if they're in sync */
+Vue.component('bar-chart-card', {
+    template: "#bar-chart-card-template",
+    props: {
+        size: { type: String, default: "2" },
+        loading: { type: Boolean, default: true },
+        dataAll: { type: Object },
+        dataId: { type: String },
+    },
+    data() {
+        return {
+            chartCardMetadata: chartCardMetadata[this.dataId],
+            data: this.dataAll.aggregations[this.dataId],
+        };
+    },
+    methods: {
+        getBarStyle(count, maxValue){
+            return {
+                '--value': count,
+                '--width': `${clamp(((count / maxValue) * 100), 0.1, 100)}%`,
+            }
+        },
+        updateData(url){
+            this.$emit("select", url);
+
+        }
+    },
+    watch: {
+        'dataAll': {
+            handler: function () {
+                this.data = this.dataAll.aggregations[this.dataId]
+            },
+            deep: true
+        }
+    }
+
+});
+
+</script>
+
+
 <script type="text/x-template" id="chart-card-template" >
   <div v-bind:class="'grid__'+size"  >
       <div class="base-card base-card--left" v-bind:class="'base-card--'+color" >
