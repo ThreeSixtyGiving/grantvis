@@ -370,14 +370,16 @@ var app = new Vue({
             }
 
             let awardDates = false
+            let queryParamLength = 0
             for (const [key, value] of queryParams) {
+              queryParamLength += 1
               if (key.includes('awardDates')) {
                 awardDates = true;
               }
             }
             
             // Reload page on awardDate filter change to prevent duplicate chart data entering state
-            if (awardDates) {
+            if (awardDates || queryParamLength > 1) {
               window.location.href = window.location.pathname + '?' + queryParams;
             } else {
               history.pushState(this.filters, '', "?" + queryParams.toString());
