@@ -5,6 +5,7 @@ import { formatCurrency, formatDate, formatNumber, getAmountSuffix, formatNumber
 import { debounce } from './lib/debounce.js';
 import { chartCardData } from './data/card.js';
 
+
 const COLOURS = {
     yellow: "#EFC329",
     red: "#BC2C26",
@@ -424,7 +425,7 @@ var app = new Vue({
             console.log(res);
             this.data = await res;
             console.log(queryUrl);
-            history.pushState(filters, "", queryUrl.slice("/search".length));
+            // TODO history.pushState(filters, "", queryUrl.slice("/search".length));
 
 
             /* }).then((data) => {
