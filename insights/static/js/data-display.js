@@ -369,21 +369,7 @@ var app = new Vue({
                 this.dataUrl = PAGE_URLS['data'];
             }
 
-            let awardDates = false
-            let queryParamLength = 0
-            for (const [key, value] of queryParams) {
-              queryParamLength += 1
-              if (key.includes('awardDates')) {
-                awardDates = true;
-              }
-            }
-            
-            // Reload page on awardDate filter change to prevent duplicate chart data entering state
-            if (awardDates || queryParamLength > 1) {
-              window.location.href = window.location.pathname + '?' + queryParams;
-            } else {
-              history.pushState(this.filters, '', "?" + queryParams.toString());
-            }
+            window.location.href = window.location.pathname + '?' + queryParams;
 
         },
         resetFilter(name) {
