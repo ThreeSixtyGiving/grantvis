@@ -18,7 +18,7 @@
                     v-bind:data-label="item.name ? item.name : item.key"
                     v-for="item in data.buckets"
                     v-if="item.selected"
-                    :style="getBarStyle(item.doc_count)" v-on:click="updateData(item.url)">
+                    :style="getBarStyle(item.doc_count, data.buckets)" v-on:click="updateData(item.url)">
                     <label class="bar-chart__label small" v-if="item.to && item.from">{{item.from}} - {{item.to}}</label>
                     <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
                     <label class="bar-chart__label small" v-else>{{ item.key }}</label>
@@ -43,10 +43,10 @@
                     </li>
                 </ul>
                 <!--- Extra in-place filters -->
-                <input  v-if="chartCardMetadata.filterer.type == 'finder' && data.buckets.length > 10" type="text" v-model="find" placeholder="Find a funder" class="search-field"   />
-                <filter-item v-if="chartCardMetadata.filterer.type == 'number'" title="Amount">
+                <input  v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'finder' && data.buckets.length > 10" type="text" v-model="find" placeholder="Find a funder" class="search-field"   />
+                <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'number'" title="Amount">
                     <label for="number-min">Between</label>
-                    <input id="number-min" type="number" class="filter-input" placeholder="Minimum" v-model="filter.numberMin">
+                    <input id="number-min" type="number" class="filter-input" placeholder="Minimum" v-model="filters.numberMin">
                     <label for="number-max">and</label>
                     <input id="number-max" type="number" class="filter-input" placeholder="Maximum" v-model="filters.numberMax">
                     <a href="#" v-on:click.prevent="filters.numberMax = null; filters.amountMin = null;" v-if="filters.amountMax || filters.amountMin">Clear amounts</a>
@@ -93,7 +93,14 @@ Vue.component('bar-chart-card', {
     },
     methods: {
         getBarStyle(count, buckets){
-            let maxValue = Math.max(...buckets.map((d) => d.doc_count));
+            let maxValue = 1;
+
+            try {
+                maxValue = Math.max(...buckets.map((d) => d.doc_count));
+            } catch(e) {
+                console.warn(e);
+            }
+
 
             return {
                 '--value': count,
@@ -120,16 +127,16 @@ Vue.component('bar-chart-card', {
                     li.style.display = "none";
                 }
             });
-        },
+        }, /*
         'filters.numberMin': function(){
-            /* TODO debounce , make URL param e.g. &min_amount=23&max_amount=55 */
+            TODO debounce , make URL param e.g. &min_amount=23&max_amount=55
             this.chartCardMetadata.filterers.fields[0];
-        }
+        } */
     }
 });
 </script>
 
-<!-- To be deprecated -->
+<!-- everything below To be deprecated -->
 <script type="text/x-template" id="chart-card-template" >
   <div v-bind:class="'grid__'+size"  >
       <div class="base-card base-card--left" v-bind:class="'base-card--'+color" >
