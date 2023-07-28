@@ -6,7 +6,7 @@ import { debounce } from './lib/debounce.js';
 import { chartCardData } from './data/card.js';
 
 
-const COLOURS = {
+const COLORS = {
     yellow: "#EFC329",
     red: "#BC2C26",
     teal: "#4DACB6",
@@ -420,11 +420,9 @@ var app = new Vue({
                 dataset: app.dataset,
             };
 
-            let res = await fetch(`http://localhost:8000/api/aggregates${queryUrl}`);
+            let res = await fetch(`https://search.data.threesixtygiving.org/api/aggregates${queryUrl}`);
             res = await res.json();
-            console.log(res);
             this.data = await res;
-            console.log(queryUrl);
             // TODO history.pushState(filters, "", queryUrl.slice("/search".length));
 
 
@@ -498,8 +496,8 @@ var app = new Vue({
                 datasets: [{
                     label: field,
                     data: values.map((d) => d.value),
-                    backgroundColor: COLOURS['orange'],
-                    borderColor: COLOURS['orange'],
+                    backgroundColor: COLORS['orange'],
+                    borderColor: COLORS['orange'],
                     borderWidth: 0,
                     categoryPercentage: 1.0,
                     barPercentage: 1.0,
