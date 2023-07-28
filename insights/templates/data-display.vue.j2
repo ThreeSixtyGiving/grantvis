@@ -225,432 +225,50 @@
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganizationTSGType" v-if="data.aggregations" ></bar-chart-card>
         <!-- Amount awarded -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
-
-        <chart-card color="orange" v-bind:loading="loading" v-if="!loading">
-          <chart-card-header :title="getChartCardData('byAmountAwarded')[0].title">
-          (GBP, number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byAmountAwarded">
-            <li class="bar-chart__item" v-for="group in chartBars('byAmountAwarded', 'grants', 1)"
-                :style="group.style"
-                v-bind:class="{ 'hide-print' : group.inactive }"
-                v-on:click="applyAmountAwardedFilter(group)">
-               <label class="bar-chart__label">{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-
-          <filter-item title="Amount awarded">
-            <label for="amount-awarded-min">Between</label>
-            <input id="amount-awarded-min" type="number" class="filter-input" placeholder="Minimum"
-              v-model="filters.awardAmount.min">
-            <label for="amount-awarded-max">and</label>
-            <input id="amount-awarded-max" type="number" class="filter-input" placeholder="Maximum"
-              v-model="filters.awardAmount.max">
-            <a href="#" v-on:click.prevent="filters.awardAmount.max = null; filters.awardAmount.min = null;" v-if="filters.awardAmount.max || filters.awardAmount.min">Clear amounts</a>
-          </filter-item>
-          <hr class="separator-light">
-          <p>{{ getChartCardData('byAmountAwarded')[0].instructions }}</p>
-        </chart-card>
-
+        
         <!-- Award date -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="awardYear" v-if="data.aggregations" ></bar-chart-card>
+ 
+        <!-- Grant Programmes -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="grantProgramme" v-if="data.aggregations" ></bar-chart-card>
 
-        <chart-card colour="orange" v-bind:loading="loading" v-if="!loading && summary.minDate && summary.minDate.slice(0,7) != summary.maxDate.slice(0,7)" >
-          <chart-card-header :title="getChartCardData('byAwardDate')[0].title">
-          (number of grants)
-          </chart-card-header>
-
-          <bar-chart :chart-data="lineChartData('byAwardDate', 'grants', 0, 'month')" v-if="chartData.byAwardDate"
-            v-bind:height="100" v-bind:hide-legend="true">
-          </bar-chart>
-
-          <filter-item title="Award date">
-            <label for="award-date-min">From</label>
-            <span>
-              <select id="award-date-min-month" name="month" class="filter-input" v-model="filterDates.min.month">
-                <option selected></option>
-                <option value="01">January</option>
-                <option value="02">February</option>
-                <option value="03">March</option>
-                <option value="04">April</option>
-                <option value="05">May</option>
-                <option value="06">June</option>
-                <option value="07">July</option>
-                <option value="08">August</option>
-                <option value="09">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
-            </span>
-            <span>
-              <input id="award-date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-model="filterDates.min.year">
-            </span>
-            <label for="award-date-max">to</label>
-            <span>
-              <select id="award-date-max-month" name="month" class="filter-input" v-model="filterDates.max.month">
-                <option selected></option>
-                <option value="01">January</option>
-                <option value="02">February</option>
-                <option value="03">March</option>
-                <option value="04">April</option>
-                <option value="05">May</option>
-                <option value="06">June</option>
-                <option value="07">July</option>
-                <option value="08">August</option>
-                <option value="09">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
-            </span>
-            <span>
-              <input id="award-date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-model="filterDates.max.year">
-            </span>
-          </filter-item>
-          <hr class="separator-light">
-          <p>{{ getChartCardData('byAwardDate')[0].instructions }}</p>
-        </chart-card>
-
-      <!-- Grant Programmes -->
-
-      <chart-card color="orange" v-bind:loading="loading" v-if="!loading && chartData.byGrantProgramme && chartN('byGrantProgramme') > 0">
-        <chart-card-header :title="getChartCardData('byGrantProgramme')[0].title">
-          (number of grants)
-        </chart-card-header>
-        <ul class="bar-chart" v-if="chartData.byGrantProgramme">
-          <li class="bar-chart__item" v-for="(group, index) in chartBars('byGrantProgramme')"
-            :style="group.style"
-            v-on:click="toggleInArray(filters.grantProgrammes, group.id)"
-            v-bind:data-label="group.label"
-            v-bind:class="{ 'hide-print' : group.inactive }"
-            ref="byGrantProgrammeItem"
-            >
-            <label class="bar-chart__label small">{{ group.label }}</label>
-            <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-          </li>
-        </ul>
-        <input type="text" v-model="find.grantProgramme" placeholder="Find a programme" class="search-field" v-if="safeLength(chartData.byGrantProgramme) + safeLength(inactiveChartData.byGrantProgramme) > 10"  />
-        <div>
-          <hr class="separator-light">
-          <p>{{ getChartCardData('byGrantProgramme')[0].instructions }}</p>
-          <p>Based on {{ chartN('byGrantProgramme') | formatNumber }} grants.</p>
-          <p v-if="chartMissing('byGrantProgramme')">
-            {{ chartMissing('byGrantProgramme') | formatNumber }} grants did not have a grant programme.
-          </p>
-        </div>
-      </chart-card>
-
-
-      </div> <!-- / grid -->
-      <div class="spacer-3"></div>
-      <div class="grid grid--two-columns">
-
+        <div class="spacer-3"></div>
         <div class="grid__all">
           <h3 v-if="!loading">Grants locations</h3>
         </div>
 
-      <!-- countries -->
-      <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byCountryRegion') > 0">
-        <chart-card-header :title="getChartCardData('byCountry')[0].title">
-          (number of grants)
-        </chart-card-header>
-        <ul class="bar-chart" v-if="chartData.byCountryRegion">
-          <li class="bar-chart__item"
-           v-for="(group, index) in chartBars('byCountryRegion', 'grants', 0, false)"
-           :style="group.style"
-           v-on:click.prevent="toggleInArray(filters.area, group.id)"
-           v-bind:class="{ 'hide-print' : group.inactive }"
-           v-if="group.id"
-           >
-            <label class="bar-chart__label small">
-              {{ group.label }}
-              <span v-if="group.label.length === 0">{{group.id}}</span>
-            </label>
-            <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-          </li>
-        </ul>
-        <div>
-          <hr class="separator-light">
-          <p>{{ getChartCardData('byCountry')[0].instructions }}</p>
-          <p>Based on {{ chartN('byCountryRegion') | formatNumber }} grants.</p>
-          <p v-if="chartMissing('byCountryRegion')">
-            {{ chartMissing('byCountryRegion') | formatNumber }} grants did not have enough information to determine geography.
-          </p>
-        </div>
-      </chart-card>
-
+        <!-- Countries -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
         <!-- Regions -->
-        <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byCountryRegion','grants', 1) > 0">
-          <chart-card-header :title="getChartCardData('byRegion')[0].title">
-          (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byCountryRegion">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byCountryRegion', 'grants', 1, false)"
-              :style="group.style"
-              v-bind:class="{ 'hide-print' : group.inactive }"
-              v-on:click.prevent="toggleInArray(filters.area, group.id)"
-              v-if="group.id"
-              >
-                <label class="bar-chart__label small">
-                  {{ group.label }}
-                </label>
-
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byRegion')[0].instructions }}</p>
-            <p>Based on {{ chartN('byCountryRegion') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byCountryRegion')">
-              {{ chartMissing('byCountryRegion') | formatNumber }} grants did not have enough information to determine geography.
-            </p>
-            <p>This type of region data is only available for England (UK).</p>
-          </div>
-        </chart-card>
-
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
         <!--  Local Authorities -->
-        <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byLocalAuthority') > 0">
-          <chart-card-header :title="getChartCardData('byLocalAuthority')[0].title">
-          (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byLocalAuthority">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byLocalAuthority')"
-              :style="group.style"
-              v-bind:class="{ 'hide-print' : group.inactive }"
-              v-bind:data-label="group.label"
-              v-on:click.prevent="toggleInArray(filters.localAuthorities, group.id)"
-              v-if="group.id"
-              ref="byLocalAuthorityItem"
-              >
-                <label class="bar-chart__label small">
-                  {{ group.label }}
-                </label>
-
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-          <input type="text" v-model="find.localAuthority" placeholder="Find a local authority" class="search-field" v-if="safeLength(chartData.byLocalAuthority) + safeLength(inactiveChartData.byLocalAuthority) > 10"  />
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byLocalAuthority')[0].instructions }}</p>
-            <p>Based on {{ chartN('byLocalAuthority') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byLocalAuthority')">
-              {{ chartMissing('byLocalAuthority') | formatNumber }} grants did not have enough information to determine geography.
-            </p>
-          </div>
-        </chart-card>
-
-
-
-        <!-- choropleth -->
-        <chart-card color="red" v-if="!loading">
-          <chart-card-header :title="getChartCardData('byArea')[0].title"></chart-card-header>
-          <a name="map"></a>
-          <choropleth class="base-card__content" v-bind:layer-data="choroplethData" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byArea')[0].instructions }}</p>
-            <p v-if="chartMissing('byCountryRegion')">
-              {{ chartMissing('byCountryRegion') | formatNumber }} grants did not have location data available.
-            </p>
-          </div>
-        </chart-card>
-
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName" v-if="data.aggregations" ></bar-chart-card>
+        <!-- Choropleth -->
+        <!-- TODO -->
         <!-- Source of location information -->
-        <chart-card color="red" v-bind:loading="loading" v-if="!loading && chartN('byGeoSource') > 0">
-          <chart-card-header :title="getChartCardData('byGeoSource')[0].title">
-            (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byGeoSource">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byGeoSource')"
-              style="cursor: unset;"
-              :style="group.style">
-              <label class="bar-chart__label small" style="cursor: unset;">{{ group.label }}</label>
-              <div class="bar-chart__bar"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byGeoSource')[0].instructions }}</p>
-            <p>Based on {{ chartN('byGeoSource') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byGeoSource')">
-              {{ chartMissing('byGeoSource') | formatNumber }} grants did not have a location available.
-            </p>
-          </div>
-        </chart-card>
+        <!-- TODO -->
 
-      </div> <!-- /end grid -->
-
-      <div class="spacer-3"></div>
-      <div class="grid grid--two-columns">
-
+        <div class="spacer-3"></div>
         <div class="grid__all">
           <h3 v-if="!loading">Grant recipients</h3>
         </div>
 
-        <chart-card color="teal" v-bind:loading="loading" v-if="!loading">
-          <chart-card-header :title="getChartCardData('byRecipientType')[0].title">
-            (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byRecipientType && chartData.byRecipientType.length > 0">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byRecipientType')"
-              :style="group.style"
-              v-bind:class="{ 'hide-print' : group.inactive }"
-              v-on:click="toggleInArray(filters.recipientTypes, group.id)"
-            >
-              <label class="bar-chart__label small" >{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byRecipientType')[0].instructions }}</p>
-            <p>Based on {{ chartN('byRecipientType') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byRecipientType')">
-              {{ chartMissing('byRecipientType') | formatNumber }} values are not found.
-            </p>
-          </div>
-        </chart-card>
-
+        <!--  Type of grant recipient -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientTSGType" v-if="data.aggregations" ></bar-chart-card>
         <!-- Recipient org Type -->
-        <chart-card color="teal" v-bind:loading="loading" v-if="!loading">
-          <chart-card-header :title="getChartCardData('byOrgType')[0].title">
-            (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byOrgType">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byOrgType')"
-              :style="group.style"
-              v-bind:class="{ 'hide-print' : group.inactive }"
-              v-on:click="toggleInArray(filters.orgtype, group.id)"
-            >
-              <label class="bar-chart__label small" >{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byOrgType')[0].instructions }}</p>
-            <p>Based on {{ chartN('byOrgType') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byOrgType')">Recipient organisation type was not available for {{ chartMissing('byOrgType') | formatNumber }} grants because they were to individuals.
-            </p>
-            <p>Organisation type is based on official organisation identifiers, such as registered charity or
-              company numbers, found in the data.</p>
-            <p>"Identifier not recognised" means either that the organisation does not have an official
-              identifier, for example because it is an unregistered community group, or the publisher has not included
-              official identifiers in the data.</p>
-          </div>
-        </chart-card>
-
+        <!-- TODO -->
         <!-- Latest Income -->
-        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="!loading && chartN('byOrgSize') > 0" >
-          <chart-card-header :title="getChartCardData('byOrgSize')[0].title">
-          (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart non-interactive" v-if="chartData.byOrgSize">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byOrgSize')"
-              :style="group.style">
-              <label class="bar-chart__label">{{ group.label }}</label>
-              <div class="bar-chart__bar"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byOrgSize')[0].instructions }}</p>
-            <p>Based on {{ chartN('byOrgSize') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byOrgSize')">
-              Latest income is not available for {{ chartMissing('byOrgSize') | formatNumber }} grants.
-            </p>
-          </div>
-        </chart-card>
+        <!-- TODO -->
+        <!--Age of recipient org -->
+        <!-- TODO -->
 
-        <chart-card color="teal" v-bind:loading="loading" v-if="!loading && chartN('byOrgSize') == 0">
-          <chart-card-header :title="getChartCardData('byOrgSize')[0].title"></chart-card-header>
-          <p>
-            Latest income is not available for {{ chartMissing('byOrgSize') | formatNumber }} grants.
-          </p>
-          <p>
-            If the recipient organisations are charities then adding recipient identifiers will allow you to see a chart
-            with their latest income.
-          </p>
-        </chart-card>
+        </div> <!-- / grid -->
+        <div class="grid__all">
+          <h3 v-if="!loading">Grant types</h3>
+        </div>
 
-        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="!loading && chartN('byOrgAge') > 0">
-          <chart-card-header :title="getChartCardData('byOrgAge')[0].title">
-            (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart non-interactive" v-if="chartData.byOrgAge">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byOrgAge')"
-             :style="group.style">
-              <label class="bar-chart__label">{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-<!--          <filter-item title="Recipient age">
-            <label for="org-age-min">Between</label>
-            <input id="org-age-min" type="number" class="filter-input" v-model="filters.orgAge.min">
-            <label for="org-age-max">and</label>
-            <input id="org-age-max" type="number" class="filter-input" v-model="filters.orgAge.max">
-          </filter-item>
-        -->
-
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byOrgAge')[0].instructions }}</p>
-            <p>Based on {{ chartN('byOrgAge') | formatNumber }} grants.</p>
-            <p>Organisation age at the time of the grant award, based on the registration date of that organisation. Only
-              available for recipients with charity or company numbers.</p>
-            <p v-if="chartMissing('byOrgAge')">
-              Organisation age is not available for {{ chartMissing('byOrgAge') | formatNumber }} grants.
-            </p>
-          </div>
-        </chart-card>
-
-
-        <chart-card color="teal" v-bind:loading="loading" size="1" v-if="!loading && chartN('byOrgAge') == 0">
-          <chart-card-header title="Age of recipient organisations"></chart-card-header>
-          <p>
-            Organisation age is not available for {{ chartMissing('byOrgAge') | formatNumber }} grants.
-          </p>
-          <p>
-            If the recipient organisations are charities or companies then adding recipient identifiers will allow you to
-            see a chart with their age.
-          </p>
-        </chart-card>
-      </div> <!-- / grid -->
-
-      <div class="grid__all">
-        <h3 v-if="!loading">Grant types</h3>
-      </div>
-
-      <chart-card color="orange" v-bind:loading="loading" v-if="!loading">
-          <chart-card-header :title="getChartCardData('byGrantType')[0].title">
-            (number of grants)
-          </chart-card-header>
-          <ul class="bar-chart" v-if="chartData.byGrantType && chartData.byGrantType.length > 0">
-            <li class="bar-chart__item" v-for="(group, index) in chartBars('byGrantType')"
-              :style="group.style"
-              v-bind:class="{ 'hide-print' : group.inactive }"
-              v-on:click="toggleInArray(filters.grantTypes, group.id)"
-            >
-              <label class="bar-chart__label small" >{{ group.label }}</label>
-              <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
-            </li>
-          </ul>
-
-          <div>
-            <hr class="separator-light">
-            <p>{{ getChartCardData('byGrantType')[0].instructions }}</p>
-            <p>Based on {{ chartN('byGrantType') | formatNumber }} grants.</p>
-            <p v-if="chartMissing('byGrantType')">
-              {{ chartMissing('byGrantType') | formatNumber }} values are not found.
-            </p>
-          </div>
-        </chart-card>
-
+        <!--Age of recipient org -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="simple_grant_type" v-if="data.aggregations" ></bar-chart-card>
 
       </template>
 

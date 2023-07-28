@@ -1,6 +1,7 @@
 const MS_IN_DAY = (1000 * 60 * 60 * 24); // number of milliseconds in a day
 const date = new Date();
-let lastYearLabel, language;
+let daysRange, lastYearLabel, language;
+let days = []
 if (window.navigator.languages) {
   language = window.navigator.languages[0];
 } else {
@@ -11,7 +12,6 @@ if (window.navigator.languages) {
 const compiledData = {
   labels: ['Older'],
   datasets: [{
-    label: 'Data',
     backgroundColor: '#F26202',
     data: [0]
   }]
@@ -33,31 +33,25 @@ for (const [key, value] of params) {
 export const barChart = {
   extends: VueChartJs.Bar,
   mixins: [VueChartJs.mixins.reactiveProp],
-  props: ['chartData', 'hideLegend', 'percentages'],
+  props: ['chartData', 'hideLegend'],
   data() {
       return {}
   },
   computed: {
     options: function () {
-      
-      const daysRange = Math.ceil(
-        (
-            Math.max(...this.chartData.labels) - Math.min(...this.chartData.labels)
-        ) / MS_IN_DAY
-      )
 
-      
-      this.chartData.labels.forEach((label, index) => {
-        const daysOld = Math.ceil((date - new Date(label)) / MS_IN_DAY);
+      this.chartData.forEach((item, index) => {
+        const daysOld = Math.ceil((date - new Date(item.key)) / MS_IN_DAY);
+        days.push(item.key)
         if (daysOld > 365 * 20) {
-            // Push this.chartData older than 20 years into compiledData Older entry
-            compiledData.datasets[0].data[0] += this.chartData.datasets[0].data[index];
+          // Push this.chartData older than 20 years into compiledData Older entry
+          compiledData.datasets[0].data[0] += Number(this.chartData[index].doc_count);
         } else {
-            // Push all other data > 20 years old to compiledData dataset
-            compiledData.labels.push(label);
-            compiledData.datasets[0].data.push(this.chartData.datasets[0].data[index]);
-        }
-      });
+          // Insert all other data > 20 years old to compiledData dataset in reverse order
+            compiledData.labels.splice(1, 0, item.key);
+            compiledData.datasets[0].data.splice(1, 0, item.doc_count);
+          }
+        });
 
       return {
         responsive: true,
@@ -85,12 +79,14 @@ export const barChart = {
               autoSkip: false,
               callback(value, index, ticks) {
                 // Parse and display date labels
-                if (value instanceof Date) {
-                  const month = value.toLocaleString(language, { month: 'numeric' });
-                  const year = value.toLocaleString(language, { year: 'numeric' });
+                if (typeof value !== 'string') {
+                  const month = new Date(value).toLocaleString(language, { month: 'numeric' });
+                  const year = new Date(value).toLocaleString(language, { year: 'numeric' });
                   let label = null;
-                  
-                  if (daysRange >= 1460) {
+
+                  daysRange = Math.ceil((Math.max(...days) - Math.min(...days)) / MS_IN_DAY)
+                  console.log(daysRange)
+                  if (daysRange > 365 * 4) {
                     // Hide date labels older than 20 years
                     if (date.getFullYear() - year >= 20) {
                       label = null;
@@ -105,7 +101,7 @@ export const barChart = {
                     }
                   } else {
                     // Show month and year if date range < 1460 days (4 years)
-                    label = value.toLocaleString(language, { month: 'short', year: 'numeric' });
+                    label = new Date(value).toLocaleString(language, { month: 'short', year: 'numeric' });
                   }
                   
                   lastYearLabel = year;
