@@ -3,13 +3,13 @@ const chartCardData = [
     id: 'fundingOrganization',
     title: 'Funders',
     instructions: 'Click on the bars or labels to select one or more funders.',
-    colour: 'orange',
+    color: 'orange',
   },
   {
     id: 'fundingOrganizationTSGType',
     title: 'Funder types',
     instructions: 'Click on the bars or labels to select one or more funding organisation types.',
-    colour: 'orange',
+    color: 'orange',
   },
   {
     id: 'byAmountAwarded',
