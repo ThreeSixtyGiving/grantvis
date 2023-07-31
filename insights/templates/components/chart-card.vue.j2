@@ -36,8 +36,10 @@
                       :style="getBarStyle(item.doc_count, data.buckets)"
                       v-on:click="updateData(item.url)">
 
-                      <label class="bar-chart__label small" v-if="item.to && item.from">{{item.from.toLocaleString()}} - {{item.to.toLocaleString()}}</label>
+                      <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
                       <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
+                      <label class="bar-chart__label small" v-else-if="item.key === '0.0-500.0'">Up to £500</label>
+                      <label class="bar-chart__label small" v-else-if="item.key === '1.0E7-*'">Over £10m</label>
                       <label class="bar-chart__label small" v-else>{{ item.key }}</label>
 
                       <div :class="!itemSelected ? 'bar-chart__bar' : 'bar-chart__bar inactive-bar'"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
@@ -46,7 +48,7 @@
                 </template>
 
                 <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :chart-data="data.buckets" v-bind:height="100" v-bind:hide-legend="true">
+                  <bar-chart :chart-data="chartData.length ? chartData : data.buckets" v-bind:height="100" v-bind:hide-legend="true">
           </bar-chart>
                 </template>
 
@@ -62,7 +64,7 @@
                 <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'date'" title="Award date">
                   <label for="date-min">From</label>
                   <span>
-                    <select id="date-min-month" name="month" class="filter-input">
+                    <select id="date-min-month" name="month" class="filter-input" v-on:change="updateDateFilter()" v-model="filters.dates.min.month">
                       <option selected></option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -79,11 +81,11 @@
                     </select>
                   </span>
                   <span>
-                    <input id="date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4">
+                    <input id="date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:change="updateDateFilter()" v-model="filters.dates.min.year">
                   </span>
                   <label for="date-max">to</label>
                   <span>
-                    <select id="date-max-month" name="month" class="filter-input" >
+                    <select id="date-max-month" name="month" class="filter-input" v-model="filters.dates.max.month">
                       <option selected></option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -100,7 +102,7 @@
                     </select>
                   </span>
                   <span>
-                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4">
+                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-model="filters.dates.max.year">
                   </span>
                 </filter-item>
                 <div>
@@ -136,56 +138,130 @@ Vue.component('bar-chart-card', {
             chartCardMetadata: chartCardMetadata[this.dataId],
             // remove hyphenated identifier from dataId
             data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
+            chartData: [],
             find: "",
             itemSelected: false,
             filters: {
                 numberMin: 0,
                 numberMax: 0,
+                dates: {
+                    min: { month: null, year: null },
+                    max: { month: null, year: null }
+                }
             }
         };
     },
     methods: {
-        getBarStyle(count, buckets){
-            let maxValue = 1;
+      getBarStyle(count, buckets){
+          let maxValue = 1;
 
-            try {
-                maxValue = Math.max(...buckets.map((d) => d.doc_count));
-            } catch(e) {
-                console.warn(e);
-            }
+          try {
+              maxValue = Math.max(...buckets.map((d) => d.doc_count));
+          } catch(e) {
+              console.warn(e);
+          }
 
+          return {
+              '--value': count,
+              '--width': `${clamp(((count / maxValue) * 100), 0.1, 100)}%`,
+          }
+      },
+      updateData(url){
+          this.find = "";
+          this.itemSelected = true
+          this.$emit("select", url);
+      },
+      updateDateFilter () {
+        this.chartData = this.data.buckets
+        // let params = new URLSearchParams(document.location.search);
+        // let awardMinYear = null;
+        // for (const [key, value] of params) {
+        //   if (key.includes('awardDates.min.year')) {
+        //     this.filters.dates.min.year = value;
+        //   }
+        //   if (key.includes('awardDates.max.year')) {
+        //     this.filters.dates.max.year = value;
+        //   }
+        // }
 
-            return {
-                '--value': count,
-                '--width': `${clamp(((count / maxValue) * 100), 0.1, 100)}%`,
-            }
-        },
-        updateData(url){
-            this.find = "";
-            this.itemSelected = true
-            this.$emit("select", url);
+        
+        if (this.filters.dates.min.year) {
+          // params.set('awardDates.min.year', this.filters.dates.min.year)
+          // set queryparams to awardDates.min.year = this.filters.dates.min.year
+          this.chartData = this.chartData.filter(item => {
+              return new Date(item.key).getFullYear() >= this.filters.dates.min.year;
+            })
+          }
+          
+          if (this.filters.dates.max.year) {
+          // params.set('awardDates.max.year', this.filters.dates.max.year)
+          this.chartData = this.chartData.filter(item => {
+            return new Date(item.key).getFullYear() <= this.filters.dates.max.year;
+          })
         }
+        console.log(this.chartData)
+        // history.pushState({}, '', '?', params.toString())
+      }
     },
     watch: {
         'dataAll': {
             handler: function() {
-                this.data = this.dataAll.aggregations[this.dataId]
+                this.data = this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')];
             },
             deep: true
         },
         'find': function () {
-            var app = this;
+            const app = this;
             this.$refs.barItem.forEach((li) => {
                 li.style.display = null;
-                if (li.dataset.label && app.find && li.classList.contains("inactive-bar") && !li.dataset.label.toLowerCase().includes(app.find.toLowerCase())){
+                if (li.dataset.label && app.find && !li.dataset.label.toLowerCase().includes(app.find.toLowerCase())){
+                  if (this.itemSelected) {
+                    if (li.classList.contains("inactive-bar")) {
+                      li.style.display = "none";
+                    }
+                  } else {
                     li.style.display = "none";
+                  }
                 }
             });
-        }, /*
-        'filters.numberMin': function(){
-            TODO debounce , make URL param e.g. &min_amount=23&max_amount=55
-            this.chartCardMetadata.filterers.fields[0];
-        } */
+        },
+        'filters.numberMin': function() {
+          const app = this;
+          this.$refs.barItem.forEach((li) => {
+            li.style.display = null;
+            let min = Number(app.filters.numberMin)
+            let max = Number(app.filters.numberMax)
+            console.log(li.dataset)
+            let labels = li.dataset.label.split('-');
+            if (min > Number(labels[1]) || max < Number(labels[0])) {
+              if (this.itemSelected) {
+                if (li.classList.contains("inactive-bar")) {
+                  li.style.display = "none";
+                }
+              } else {
+                li.style.display = "none";
+              }
+            }
+          })
+        },
+        'filters.numberMax': function() {
+          const app = this;
+          this.$refs.barItem.forEach((li) => {
+            li.style.display = null;
+            let min = Number(app.filters.numberMin)
+            let max = Number(app.filters.numberMax)
+            let labels = li.dataset.label.split('-');
+            if (min > Number(labels[1]) || max < Number(labels[0])) {
+              if (this.itemSelected) {
+                if (li.classList.contains("inactive-bar")) {
+                  li.style.display = "none";
+                }
+              } else {
+                li.style.display = "none";
+              }
+            }
+          })
+        }
     }
 });
 </script>

@@ -13,6 +13,7 @@ const compiledData = {
   labels: ['Older'],
   datasets: [{
     backgroundColor: '#DE6E26',
+    hoverBackgroundColor: '#A8501A',
     data: [0]
   }]
 };
@@ -61,7 +62,11 @@ export const barChart = {
         tooltips: { 
           callbacks: {
             title: function(tooltipItem, data) {
-              return tooltipItem[0].xLabel.toLocaleString(language, {dateStyle: 'medium', timeStyle: 'short'});
+              if (typeof tooltipItem[0].xLabel !== 'string') {
+                return new Date(tooltipItem[0].xLabel).toLocaleString(language, { year: 'numeric' });
+              } else {
+                return tooltipItem[0].xLabel
+              }
             },
             label: function(tooltipItem, data) {
               return tooltipItem.yLabel.toLocaleString();
@@ -135,6 +140,6 @@ export const barChart = {
   },
   mounted() {
     // Switch dataset between original and 'Older' depending on if min date range filter
-    !awardMinYear ? this.renderChart(compiledData, this.options) : this.renderChart(this.chartData, this.options);
+    this.renderChart(compiledData, this.options)
   }
 }
