@@ -23,6 +23,7 @@ export const choropleth = {
         },
     data: function () {
         return {
+            data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
             map: null,
             regionCountryLayer: null,
             laLayer: null,

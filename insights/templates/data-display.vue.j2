@@ -238,13 +238,13 @@
         </div>
 
         <!-- Countries -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-countries" v-if="data.aggregations" ></bar-chart-card>
         <!-- Regions -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-regions" v-if="data.aggregations" ></bar-chart-card>
         <!--  Local Authorities -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName-la" v-if="data.aggregations" ></bar-chart-card>
         <!-- Choropleth -->
-        <!-- TODO -->
+        <!-- <choropleth class="base-card__content" v-if="data.aggregations" :data-all="data" data-id="recipientDistrictName-map" container="ch-1" height="680px" :zoom-control="true" ></choropleth> -->
         <!-- Source of location information -->
         <!-- TODO -->
 

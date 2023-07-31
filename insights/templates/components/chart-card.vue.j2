@@ -60,9 +60,9 @@
                     <a href="#" v-on:click.prevent="filters.numberMax = null; filters.amountMin = null;" v-if="filters.amountMax || filters.amountMin">Clear amounts</a>
                 </filter-item>
                 <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'date'" title="Award date">
-                  <label for="award-date-min">From</label>
+                  <label for="date-min">From</label>
                   <span>
-                    <select id="award-date-min-month" name="month" class="filter-input">
+                    <select id="date-min-month" name="month" class="filter-input">
                       <option selected></option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -79,11 +79,11 @@
                     </select>
                   </span>
                   <span>
-                    <input id="award-date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4">
+                    <input id="date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4">
                   </span>
-                  <label for="award-date-max">to</label>
+                  <label for="date-max">to</label>
                   <span>
-                    <select id="award-date-max-month" name="month" class="filter-input" >
+                    <select id="date-max-month" name="month" class="filter-input" >
                       <option selected></option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -100,7 +100,7 @@
                     </select>
                   </span>
                   <span>
-                    <input id="award-date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4">
+                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4">
                   </span>
                 </filter-item>
                 <div>
@@ -118,58 +118,6 @@
 
 
 <script>
-
-  function drawGraph () {
-const dataset = [
-            { label: "Category 1", value: 10 },
-            { label: "Category 2", value: 20 },
-            { label: "Category 3", value: 15 },
-            { label: "Category 4", value: 5 },
-            { label: "Category 5", value: 30 }
-        ];
-const width = 400;
-        const height = 300;
-        const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-
-        // Create an SVG element
-        const svg = d3.select("#chart")
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
-
-        // Define the scale for the x-axis (category labels)
-        const xScale = d3.scaleBand()
-            .domain(dataset.map(d => d.label))
-            .range([0, width])
-            .padding(0.1);
-
-        // Define the scale for the y-axis (values)
-        const yScale = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.value)])
-            .range([height, 0]);
-
-        // Create and append the bars to the chart
-        svg.selectAll(".bar")
-            .data(dataset)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", d => xScale(d.label))
-            .attr("width", xScale.bandwidth())
-            .attr("y", d => yScale(d.value))
-            .attr("height", d => height - yScale(d.value));
-
-        // Add x-axis to the chart
-        svg.append("g")
-            .attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(xScale));
-
-        // Add y-axis to the chart
-        svg.append("g")
-            .call(d3.axisLeft(yScale));
-  }
-
 function clamp(num, min, max){
     return Math.min(Math.max(num, min), max);
 }
@@ -186,7 +134,8 @@ Vue.component('bar-chart-card', {
     data() {
         return {
             chartCardMetadata: chartCardMetadata[this.dataId],
-            data: this.dataAll.aggregations[this.dataId],
+            // remove hyphenated identifier from dataId
+            data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
             find: "",
             itemSelected: false,
             filters: {
@@ -239,43 +188,5 @@ Vue.component('bar-chart-card', {
         } */
     }
 });
-</script>
-
-<!-- everything below To be deprecated -->
-<script type="text/x-template" id="chart-card-template" >
-  <div v-bind:class="'grid__'+size"  >
-      <div class="base-card base-card--left" v-bind:class="'base-card--'+color" >
-          <div class="base-card__content" >
-              <slot></slot>
-          </div>
-      </div>
-  </div>
-</script>
-
-<script type="text/x-template" id="chart-card-header-template">
-  <header class="base-card__header" style="display: flex; align-items: center;" >
-      <h3 class="base-card__heading" >{{ title }}</h3>
-      <h4 class="base-card__subheading" style="margin-left: 5px">
-        <slot></slot>
-      </h4>
-  </header>
-</script>
-
-<script>
-    Vue.component('chart-card', {
-        template: "#chart-card-template",
-        props: {
-            size: { type: String, default: "2" },
-            color: { type: String, default: "yellow" },
-            loading: { type: Boolean, default: true },
-        },
-    });
-
-    Vue.component('chart-card-header', {
-        template: "#chart-card-header-template",
-        props: {
-            title: { type: String },
-        },
-    });
 </script>
 {% endraw %}

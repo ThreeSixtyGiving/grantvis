@@ -12,7 +12,7 @@ if (window.navigator.languages) {
 const compiledData = {
   labels: ['Older'],
   datasets: [{
-    backgroundColor: '#F26202',
+    backgroundColor: '#DE6E26',
     data: [0]
   }]
 };
@@ -85,7 +85,6 @@ export const barChart = {
                   let label = null;
 
                   daysRange = Math.ceil((Math.max(...days) - Math.min(...days)) / MS_IN_DAY)
-                  console.log(daysRange)
                   if (daysRange > 365 * 4) {
                     // Hide date labels older than 20 years
                     if (date.getFullYear() - year >= 20) {

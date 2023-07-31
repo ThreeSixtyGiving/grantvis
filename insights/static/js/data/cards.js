@@ -32,31 +32,31 @@ const chartCardMetadata = {
       "color": "orange",
       "chartType": "bar-horizontal"
     },
-    // "recipientRegionName": {
-    //   "title": "Countries",
-    //   "instructions": "Click on the bars or labels to select one or more countries.",
-    //   "color": "red",
-    //   "chartType": "bar-horizontal"
-    // },
-    "recipientRegionName": {
+    "recipientRegionName-countries": {
+      "title": "Countries",
+      "instructions": "Click on the bars or labels to select one or more countries.",
+      "color": "red",
+      "chartType": "bar-horizontal"
+    },
+    "recipientRegionName-regions": {
       "title": "Regions in England",
       "instructions": "Click on the bars or labels to select one or more regions.",
       "color": "red",
       "chartType": "bar-horizontal"
     },
-    "recipientDistrictName": {
+    "recipientDistrictName-la": {
       "title": "Local authorities",
       "instructions": "Click on the bars or labels to select one or more local authorities.",
       "color": "red",
       "chartType": "bar-horizontal",
       "filterer":  { type: "finder" }
     },
-    // "recipientDistrictName": {
-    //   "title": "Distribution of Grants by location",
-    //   "instructions": "Zoom into a Country/Region to view Local Authority-level data. Click on an area to view number of grants, and click on the number of grants to select the area.",
-    //   "color": "red",
-    //   "chartType": "map-chloropleth"
-    // },
+    "recipientDistrictName-map": {
+      "title": "Distribution of Grants by location",
+      "instructions": "Zoom into a Country/Region to view Local Authority-level data. Click on an area to view number of grants, and click on the number of grants to select the area.",
+      "color": "red",
+      "chartType": "map-chloropleth"
+    },
     // "byGeoSource": {
     //   "title": "Source of location information",
     //   "instructions": "Data cannot be filtered using this chart.",
