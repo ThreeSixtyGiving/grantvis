@@ -19,7 +19,7 @@
                     v-bind:data-label="item.name ? item.name : item.key"
                     v-for="item in data.buckets"
                     v-if="item.selected"
-                    :style="getBarStyle(item.doc_count, data.buckets)" v-on:click="updateData(item.url)">
+                    :style="getBarStyle(item.doc_count)" v-on:click="updateData(item.url)">
                     <label class="bar-chart__label small" v-if="item.to && item.from">{{item.from}} - {{item.to}}</label>
                     <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
                     <label class="bar-chart__label small" v-else>{{ item.key }}</label>
@@ -33,7 +33,7 @@
                       ref="barItem"
                       v-bind:data-label="item.name ? item.name : item.key"  v-for="item in data.buckets"
                       v-if="!item.selected"
-                      :style="getBarStyle(item.doc_count, data.buckets)"
+                      :style="getBarStyle(item.doc_count)"
                       v-on:click="updateData(item.url)">
 
                       <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
@@ -48,7 +48,7 @@
                 </template>
 
                 <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :chart-data="chartData.length ? chartData : data.buckets" v-bind:height="100" v-bind:hide-legend="true">
+                  <bar-chart :chart-data="chartData" v-if="chartData" v-bind:height="100" v-bind:hide-legend="true">
           </bar-chart>
                 </template>
 
@@ -138,7 +138,7 @@ Vue.component('bar-chart-card', {
             chartCardMetadata: chartCardMetadata[this.dataId],
             // remove hyphenated identifier from dataId
             data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
-            chartData: [],
+            maxValue: 0,
             find: "",
             itemSelected: false,
             filters: {
@@ -151,20 +151,39 @@ Vue.component('bar-chart-card', {
             }
         };
     },
-    methods: {
-      getBarStyle(count, buckets){
-          let maxValue = 1;
-
-          try {
-              maxValue = Math.max(...buckets.map((d) => d.doc_count));
-          } catch(e) {
-              console.warn(e);
-          }
-
+    computed: {
+      chartData () {
+        if (this.dataId === 'awardYear') {
           return {
-              '--value': count,
-              '--width': `${clamp(((count / maxValue) * 100), 0.1, 100)}%`,
-          }
+            labels: this.data.buckets.map(item => item.key),
+            datasets: [{
+              backgroundColor: '#DE6E26',
+              hoverBackgroundColor: '#A8501A',
+              data: this.data.buckets.map(item => item.doc_count),
+            }]
+          };
+        } else {
+          return {}
+        }
+      }
+    },
+    methods: {
+      updateMaxValue (buckets) {
+        if (this.dataId === 'amountAwardedFixed') {
+          this.maxValue = Math.max(...buckets.map((d) => d.doc_count));
+        } else {
+          this.maxValue = buckets[0].doc_count;
+        }
+      },
+      getBarStyle (count) {
+        if (this.maxValue === 0) {
+          this.updateMaxValue(this.data.buckets)
+        }
+
+        return {
+            '--value': count,
+            '--width': `${clamp(((count / this.maxValue) * 100), 0.1, 100)}%`,
+        }
       },
       updateData(url){
           this.find = "";
@@ -172,9 +191,15 @@ Vue.component('bar-chart-card', {
           this.$emit("select", url);
       },
       updateDateFilter () {
-        this.chartData = this.data.buckets
+        const url = `/search?`
+        const params = new URLSearchParams(`min_date=${this.filters.dates.min.month}/${this.filters.dates.min.year}&max_date=${this.filters.dates.max.month}/${this.filters.dates.max.year}`)
+        
+        this.$emit("select", `${url}${params.toString()}`)
+
+        
+        // // this.chartData = this.data.buckets
         // let params = new URLSearchParams(document.location.search);
-        // let awardMinYear = null;
+        // // let awardMinYear = null;
         // for (const [key, value] of params) {
         //   if (key.includes('awardDates.min.year')) {
         //     this.filters.dates.min.year = value;
@@ -184,29 +209,31 @@ Vue.component('bar-chart-card', {
         //   }
         // }
 
-        
-        if (this.filters.dates.min.year) {
-          // params.set('awardDates.min.year', this.filters.dates.min.year)
-          // set queryparams to awardDates.min.year = this.filters.dates.min.year
-          this.chartData = this.chartData.filter(item => {
-              return new Date(item.key).getFullYear() >= this.filters.dates.min.year;
-            })
-          }
+        // // console.log(this.chartData)
+        // // if (this.filters.dates.min.year) {
+        //   params.set('awardDates.min.year', this.filters.dates.min.year)
+
+        //   // set queryparams to awardDates.min.year = this.filters.dates.min.year
+        //   // this.chartData = this.chartData.filter(item => {
+        //   //     return new Date(item.key).getFullYear() >= this.filters.dates.min.year;
+        //   //   })
+        //   }
           
-          if (this.filters.dates.max.year) {
-          // params.set('awardDates.max.year', this.filters.dates.max.year)
-          this.chartData = this.chartData.filter(item => {
-            return new Date(item.key).getFullYear() <= this.filters.dates.max.year;
-          })
-        }
-        console.log(this.chartData)
+        //   if (this.filters.dates.max.year) {
+        //   // params.set('awardDates.max.year', this.filters.dates.max.year)
+        //   this.chartData = this.chartData.filter(item => {
+        //     return new Date(item.key).getFullYear() <= this.filters.dates.max.year;
+        //   })
+        // }
+        // console.log(this.chartData)
         // history.pushState({}, '', '?', params.toString())
       }
     },
     watch: {
         'dataAll': {
             handler: function() {
-                this.data = this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')];
+              this.updateMaxValue(this.data.buckets);
+              this.data = this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')];
             },
             deep: true
         },

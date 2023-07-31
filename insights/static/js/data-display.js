@@ -420,7 +420,7 @@ var app = new Vue({
                 dataset: app.dataset,
             };
 
-            let res = await fetch(`https://search.data.threesixtygiving.org/api/aggregates/search${queryUrl}`);
+            let res = await fetch(`https://search.data.threesixtygiving.org/api/aggregates${queryUrl}`);
             res = await res.json();
             console.log(res);
             this.data = await res;

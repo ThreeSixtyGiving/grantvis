@@ -36,23 +36,27 @@ export const barChart = {
   mixins: [VueChartJs.mixins.reactiveProp],
   props: ['chartData', 'hideLegend'],
   data() {
-      return {}
+      return {
+
+      }
   },
   computed: {
     options: function () {
+      console.log(this.chartData)
 
-      this.chartData.forEach((item, index) => {
-        const daysOld = Math.ceil((date - new Date(item.key)) / MS_IN_DAY);
-        days.push(item.key)
-        if (daysOld > 365 * 20) {
-          // Push this.chartData older than 20 years into compiledData Older entry
-          compiledData.datasets[0].data[0] += Number(this.chartData[index].doc_count);
-        } else {
-          // Insert all other data > 20 years old to compiledData dataset in reverse order
-            compiledData.labels.splice(1, 0, item.key);
-            compiledData.datasets[0].data.splice(1, 0, item.doc_count);
-          }
-        });
+      // this needs to be in the VueChartJs format or use raw data
+      // this.chartData.datasets.data.forEach((item, index) => {
+      //   const daysOld = Math.ceil((date - new Date(item.key)) / MS_IN_DAY);
+      //   days.push(item.key)
+      //   if (daysOld > 365 * 20) {
+      //     // Push this.chartData older than 20 years into compiledData Older entry
+      //     compiledData.datasets[0].data[0] += Number(this.chartData[index].doc_count);
+      //   } else {
+      //     // Insert all other data > 20 years old to compiledData dataset in reverse order
+      //       compiledData.labels.splice(1, 0, item.key);
+      //       compiledData.datasets[0].data.splice(1, 0, item.doc_count);
+      //     }
+      //   });
 
       return {
         responsive: true,
@@ -140,6 +144,6 @@ export const barChart = {
   },
   mounted() {
     // Switch dataset between original and 'Older' depending on if min date range filter
-    this.renderChart(compiledData, this.options)
+    this.renderChart(this.chartData, this.options)
   }
 }
