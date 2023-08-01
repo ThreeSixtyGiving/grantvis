@@ -422,9 +422,7 @@ var app = new Vue({
 
             let res = await fetch(`https://search.data.threesixtygiving.org/api/aggregates${queryUrl}`);
             res = await res.json();
-            console.log(res);
             this.data = await res;
-            console.log(queryUrl);
             // TODO history.pushState(filters, "", queryUrl.slice("/search".length));
 
 

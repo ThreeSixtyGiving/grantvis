@@ -48,7 +48,7 @@
                 </template>
 
                 <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :chart-data="chartData" v-if="chartData" v-bind:height="100" v-bind:hide-legend="true">
+                  <bar-chart :chart-data="chartData" :source-data="data.buckets" v-if="chartData" v-bind:height="100" v-bind:hide-legend="true">
           </bar-chart>
                 </template>
 
@@ -85,7 +85,7 @@
                   </span>
                   <label for="date-max">to</label>
                   <span>
-                    <select id="date-max-month" name="month" class="filter-input" v-model="filters.dates.max.month">
+                    <select id="date-max-month" name="month" class="filter-input" v-on:change="updateDateFilter()" v-model="filters.dates.max.month">
                       <option selected></option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -102,7 +102,7 @@
                     </select>
                   </span>
                   <span>
-                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-model="filters.dates.max.year">
+                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:change="updateDateFilter()" v-model="filters.dates.max.year">
                   </span>
                 </filter-item>
                 <div>
@@ -141,6 +141,7 @@ Vue.component('bar-chart-card', {
             maxValue: 0,
             find: "",
             itemSelected: false,
+            dateParams: false,
             filters: {
                 numberMin: 0,
                 numberMax: 0,
@@ -192,42 +193,48 @@ Vue.component('bar-chart-card', {
       },
       updateDateFilter () {
         const url = `/search?`
-        const params = new URLSearchParams(`min_date=${this.filters.dates.min.month}/${this.filters.dates.min.year}&max_date=${this.filters.dates.max.month}/${this.filters.dates.max.year}`)
+        let minDate = ''
+        let maxDate = ''
+        let params = new URLSearchParams(document.location.search);
+
+        if (this.filters.dates.min.month && this.filters.dates.min.year) {
+          minDate = `${this.filters.dates.min.month}/${this.filters.dates.min.year}`
+          params.set('min_date', minDate)
+          console.log(params)
+        }
+        if (this.filters.dates.max.month && this.filters.dates.max.year) {
+          maxDate = `${this.filters.dates.max.month}/${this.filters.dates.max.year}`
+          params.set('max_date', maxDate)
+          console.log(params)
+        }
         
-        this.$emit("select", `${url}${params.toString()}`)
-
-        
-        // // this.chartData = this.data.buckets
-        // let params = new URLSearchParams(document.location.search);
-        // // let awardMinYear = null;
-        // for (const [key, value] of params) {
-        //   if (key.includes('awardDates.min.year')) {
-        //     this.filters.dates.min.year = value;
-        //   }
-        //   if (key.includes('awardDates.max.year')) {
-        //     this.filters.dates.max.year = value;
-        //   }
-        // }
-
-        // // console.log(this.chartData)
-        // // if (this.filters.dates.min.year) {
-        //   params.set('awardDates.min.year', this.filters.dates.min.year)
-
-        //   // set queryparams to awardDates.min.year = this.filters.dates.min.year
-        //   // this.chartData = this.chartData.filter(item => {
-        //   //     return new Date(item.key).getFullYear() >= this.filters.dates.min.year;
-        //   //   })
-        //   }
-          
-        //   if (this.filters.dates.max.year) {
-        //   // params.set('awardDates.max.year', this.filters.dates.max.year)
-        //   this.chartData = this.chartData.filter(item => {
-        //     return new Date(item.key).getFullYear() <= this.filters.dates.max.year;
-        //   })
-        // }
-        // console.log(this.chartData)
-        // history.pushState({}, '', '?', params.toString())
+        if (minDate !== '' || maxDate !== '') {
+          history.pushState({}, '', `?${params.toString()}`)
+          this.$emit("select", `${url}${params.toString()}`)
+        }
       }
+    },
+    mounted: function () {
+      let params = new URLSearchParams(document.location.search);
+      for (const [key, value] of params) {
+        if (key.includes('min_date')) {
+          this.dateParams = true;
+          let string = value.split('/')
+
+          this.filters.dates.min.month = string[0]
+          this.filters.dates.min.year = string[1]
+        }
+
+        if (key.includes('max_date')) {
+          this.dateParams = true;
+          let string = value.split('/')
+
+          this.filters.dates.max.month = string[0]
+          this.filters.dates.max.year = string[1]
+        }
+      }
+
+      this.dateParams && this.updateDateFilter()
     },
     watch: {
         'dataAll': {
