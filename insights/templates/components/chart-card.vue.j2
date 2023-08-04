@@ -48,8 +48,7 @@
                 </template>
 
                 <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :chart-data="chartData" :source-data="data.buckets" v-if="chartData" v-bind:height="100" v-bind:hide-legend="true">
-          </bar-chart>
+                  <bar-chart :chart-data="data.buckets" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
                 </template>
 
                 <!--- Extra in-place filters -->
@@ -152,22 +151,6 @@ Vue.component('bar-chart-card', {
             }
         };
     },
-    computed: {
-      chartData () {
-        if (this.dataId === 'awardYear') {
-          return {
-            labels: this.data.buckets.map(item => item.key),
-            datasets: [{
-              backgroundColor: '#DE6E26',
-              hoverBackgroundColor: '#A8501A',
-              data: this.data.buckets.map(item => item.doc_count),
-            }]
-          };
-        } else {
-          return {}
-        }
-      }
-    },
     methods: {
       updateMaxValue (buckets) {
         if (this.dataId === 'amountAwardedFixed') {
@@ -200,12 +183,10 @@ Vue.component('bar-chart-card', {
         if (this.filters.dates.min.month && this.filters.dates.min.year) {
           minDate = `${this.filters.dates.min.month}/${this.filters.dates.min.year}`
           params.set('min_date', minDate)
-          console.log(params)
         }
         if (this.filters.dates.max.month && this.filters.dates.max.year) {
           maxDate = `${this.filters.dates.max.month}/${this.filters.dates.max.year}`
           params.set('max_date', maxDate)
-          console.log(params)
         }
         
         if (minDate !== '' || maxDate !== '') {
