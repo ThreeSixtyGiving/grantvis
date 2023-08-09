@@ -1,8 +1,7 @@
-<script src="{{ url_for('static', filename='js/data/cards.js') }}"></script>
 {% raw %}
 <script type="text/x-template" id="bar-chart-card-template" >
   <div v-bind:class="'grid__'+size"  >
-      <div class="base-card base-card--left" v-bind:class="'base-card--'+chartCardMetadata.color" >
+      <div class="base-card base-card--left" v-bind:class="`base-card--${chartCardMetadata.color}`" >
           <div class="base-card__content" >
                 <header class="base-card__header" style="display: flex; align-items: center;" >
                     <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
@@ -18,23 +17,8 @@
                     ref="barItem"
                     v-bind:data-label="item.name ? item.name : item.key"
                     v-for="item in data.buckets"
-                    v-if="item.selected"
-                    :style="getBarStyle(item.doc_count)" v-on:click="updateData(item.url)">
-                    <label class="bar-chart__label small" v-if="item.to && item.from">{{item.from}} - {{item.to}}</label>
-                    <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
-                    <label class="bar-chart__label small" v-else>{{ item.key }}</label>
-
-                    <div class="bar-chart__bar"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
-                    </li>
-                  </ul>
-                  <ul class="bar-chart hide-print" v-bind:style="find ? 'min-height: 400px' : ''">
-                      <li
-                      :class="!itemSelected ? 'bar-chart__item' : 'bar-chart__item inactive-bar'"
-                      ref="barItem"
-                      v-bind:data-label="item.name ? item.name : item.key"  v-for="item in data.buckets"
-                      v-if="!item.selected"
-                      :style="getBarStyle(item.doc_count)"
-                      v-on:click="updateData(item.url)">
+                    v-if="item.selected || !itemsSelected"
+                    :style="getBarStyle(item)" v-on:click="updateData(item.url)">
 
                       <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
                       <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
@@ -42,17 +26,36 @@
                       <label class="bar-chart__label small" v-else-if="item.key === '1.0E7-*'">Over £10m</label>
                       <label class="bar-chart__label small" v-else>{{ item.key }}</label>
 
-                      <div :class="!itemSelected ? 'bar-chart__bar' : 'bar-chart__bar inactive-bar'"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
+                    <div class="bar-chart__bar"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
+                    </li>
+                  </ul>
+                  <ul class="bar-chart hide-print" v-if="itemsSelected" v-bind:style="find ? 'min-height: 400px' : ''">
+                      <li
+                      class="bar-chart__item inactive-bar"
+                      ref="barItem"
+                      v-for="item in data.buckets"
+                      v-bind:data-label="item.name ? item.name : item.key"
+                      v-if="!item.selected"
+                      :style="getBarStyle(item)"
+                      v-on:click="updateData(item.url);">
+
+                      <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
+                      <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
+                      <label class="bar-chart__label small" v-else-if="item.key === '0.0-500.0'">Up to £500</label>
+                      <label class="bar-chart__label small" v-else-if="item.key === '1.0E7-*'">Over £10m</label>
+                      <label class="bar-chart__label small" v-else>{{ item.key }}</label>
+
+                      <div class="bar-chart__bar inactive-bar'"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
                       </li>
                   </ul>
                 </template>
 
-                <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :chart-data="data.buckets" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
+                <template v-if="dataId === 'awardYear'">
+                  <award-date-bar-chart :current-api-url="currentApiUrl" v-on:select="updateData" :chart-data="data.buckets" v-bind:color="chartCardMetadata.color" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></award-date-bar-chart>
                 </template>
 
                 <!--- Extra in-place filters -->
-                <input  v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'finder' && data.buckets.length > 10" type="text" v-model="find" placeholder="Find a funder" class="search-field"   />
+                <input  v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'finder' && data.buckets.length > 10" type="text" v-model="find" :placeholder="`Find ${chartCardMetadata.title}`" class="search-field"   />
                 <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'number'" title="Amount">
                     <label for="number-min">Between</label>
                     <input id="number-min" type="number" class="filter-input" placeholder="Minimum" v-model="filters.numberMin">
@@ -63,7 +66,7 @@
                 <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'date'" title="Award date">
                   <label for="date-min">From</label>
                   <span>
-                    <select id="date-min-month" name="month" class="filter-input" v-on:change="updateDateFilter()" v-model="filters.dates.min.month">
+                    <select id="date-min-month" name="month" class="filter-input" v-on:select="updateDateFilter()" v-model="filters.dates.min.month">
                       <option selected></option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -80,7 +83,7 @@
                     </select>
                   </span>
                   <span>
-                    <input id="date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:change="updateDateFilter()" v-model="filters.dates.min.year">
+                    <input id="date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:keyup="updateDateFilter()" v-model="filters.dates.min.year">
                   </span>
                   <label for="date-max">to</label>
                   <span>
@@ -101,36 +104,52 @@
                     </select>
                   </span>
                   <span>
-                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:change="updateDateFilter()" v-model="filters.dates.max.year">
+                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:keyup="updateDateFilter()" v-model="filters.dates.max.year">
                   </span>
                 </filter-item>
                 <div>
                 <hr class="separator-light">
                 <p>{{ chartCardMetadata.instructions }}</p>
-                <p>Based on TODO  | formatNumber grants.</p>
-                <p >
-                    TODO | formatNumber grants not found.
-                </p>
                 </div>
             </div>
       </div>
   </div>
 </script>
 
-
 <script>
+
+
 function clamp(num, min, max){
     return Math.min(Math.max(num, min), max);
 }
 
+/*
+ debounce function based on https://underscorejs.org/docs/modules/debounce.html
+ modified by https://davidwalsh.name/javascript-debounce-function
+*/
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+}
 
 Vue.component('bar-chart-card', {
     template: "#bar-chart-card-template",
     props: {
         size: { type: String, default: "2" },
         loading: { type: Boolean, default: true },
-        dataAll: { type: Object },
-        dataId: { type: String },
+        dataAll: { type: Object , required: true },
+        dataId: { type: String, required: true },
+        currentApiUrl: { type: URL, required: true },
     },
     data() {
         return {
@@ -139,11 +158,10 @@ Vue.component('bar-chart-card', {
             data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
             maxValue: 0,
             find: "",
-            itemSelected: false,
             dateParams: false,
             filters: {
-                numberMin: 0,
-                numberMax: 0,
+                numberMin: null,
+                numberMax: null,
                 dates: {
                     min: { month: null, year: null },
                     max: { month: null, year: null }
@@ -153,75 +171,104 @@ Vue.component('bar-chart-card', {
     },
     methods: {
       updateMaxValue (buckets) {
-        if (this.dataId === 'amountAwardedFixed') {
+        if (this.itemsSelected){
+          this.maxValue = Math.max(...buckets.filter((d) => d.selected).map((d) => d.doc_count));
+          return;
+        }
+
+        /* Unlike other datasets these aren't ordered by the largest first, they're "Fixed" so we can't
+           just use the first value here.
+        */
+        if (this.dataId === 'amountAwardedFixed' || this.dataId === 'latestCharityIncomeFixed') {
           this.maxValue = Math.max(...buckets.map((d) => d.doc_count));
         } else {
           this.maxValue = buckets[0].doc_count;
         }
       },
-      getBarStyle (count) {
-        if (this.maxValue === 0) {
-          this.updateMaxValue(this.data.buckets)
+      getBarStyle(item) {
+        if (!this.maxValue){
+          this.updateMaxValue(this.data.buckets);
         }
 
         return {
-            '--value': count,
-            '--width': `${clamp(((count / this.maxValue) * 100), 0.1, 100)}%`,
+            '--value': item.doc_count,
+            '--width': `${clamp(((item.doc_count / this.maxValue) * 100), 0.1, 100)}%`,
         }
       },
       updateData(url){
           this.find = "";
-          this.itemSelected = true
           this.$emit("select", url);
       },
       updateDateFilter () {
-        const url = `/search?`
-        let minDate = ''
-        let maxDate = ''
-        let params = new URLSearchParams(document.location.search);
 
-        if (this.filters.dates.min.month && this.filters.dates.min.year) {
-          minDate = `${this.filters.dates.min.month}/${this.filters.dates.min.year}`
-          params.set('min_date', minDate)
+        if (this.filters.dates.min.month && !this.filters.dates.min.year){
+          return;
         }
-        if (this.filters.dates.max.month && this.filters.dates.max.year) {
-          maxDate = `${this.filters.dates.max.month}/${this.filters.dates.max.year}`
-          params.set('max_date', maxDate)
+
+        /* Min Month selected but not finished typing year */
+        if(this.filters.dates.min.month && this.filters.dates.min.year.length != 4){
+          return;
         }
-        
-        if (minDate !== '' || maxDate !== '') {
-          history.pushState({}, '', `?${params.toString()}`)
-          this.$emit("select", `${url}${params.toString()}`)
+
+        /* Max month selected but not finished typing year */
+        if(this.filters.dates.max.month && this.filters.dates.max.year.length != 4){
+          return;
         }
+
+        debounce(() => {
+          let minDate = ''
+          let maxDate = ''
+          let params = this.currentApiUrl.searchParams;
+
+          if (this.filters.dates.min.month && this.filters.dates.min.year) {
+            minDate = `${this.filters.dates.min.month}/${this.filters.dates.min.year}`
+            params.set('min_date', minDate)
+          }
+          if (this.filters.dates.max.month && this.filters.dates.max.year) {
+            maxDate = `${this.filters.dates.max.month}/${this.filters.dates.max.year}`
+            params.set('max_date', maxDate)
+          }
+
+          if (minDate !== '' || maxDate !== '') {
+            this.$emit("select", this.currentApiUrl.toString());
+          }
+        }, 2000)();
       }
     },
     mounted: function () {
-      let params = new URLSearchParams(document.location.search);
-      for (const [key, value] of params) {
-        if (key.includes('min_date')) {
-          this.dateParams = true;
-          let string = value.split('/')
+      if (this.dataId == 'awardDate'){
+        let params = this.currentApiUrl.searchParams;
+        for (const [key, value] of params) {
+          if (key.includes('min_date')) {
+            this.dateParams = true;
+            let string = value.split('/')
 
-          this.filters.dates.min.month = string[0]
-          this.filters.dates.min.year = string[1]
+            this.filters.dates.min.month = string[0]
+            this.filters.dates.min.year = string[1]
+          }
+
+          if (key.includes('max_date')) {
+            this.dateParams = true;
+            let string = value.split('/')
+
+            this.filters.dates.max.month = string[0]
+            this.filters.dates.max.year = string[1]
+          }
         }
 
-        if (key.includes('max_date')) {
-          this.dateParams = true;
-          let string = value.split('/')
-
-          this.filters.dates.max.month = string[0]
-          this.filters.dates.max.year = string[1]
-        }
+        this.dateParams && this.updateDateFilter();
       }
-
-      this.dateParams && this.updateDateFilter()
+    },
+    computed: {
+      itemsSelected() {
+        return this.currentApiUrl.searchParams.get(this.dataId) != null;
+      },
     },
     watch: {
         'dataAll': {
             handler: function() {
-              this.updateMaxValue(this.data.buckets);
-              this.data = this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')];
+              this.maxValue = 0;
+              this.data = this.dataAll.aggregations[this.dataId];
             },
             deep: true
         },
@@ -230,7 +277,7 @@ Vue.component('bar-chart-card', {
             this.$refs.barItem.forEach((li) => {
                 li.style.display = null;
                 if (li.dataset.label && app.find && !li.dataset.label.toLowerCase().includes(app.find.toLowerCase())){
-                  if (this.itemSelected) {
+                  if (this.itemsSelected) {
                     if (li.classList.contains("inactive-bar")) {
                       li.style.display = "none";
                     }
@@ -240,7 +287,19 @@ Vue.component('bar-chart-card', {
                 }
             });
         },
-        'filters.numberMin': function() {
+        'filters.numberMax': debounce(function() {
+
+          if (this.dataId == "amountAwardedFixed"){
+            if (!this.filters.numberMax){
+              this.currentApiUrl.searchParams.delete("max_amount");
+              this.$emit("select", this.currentApiUrl.toString());
+              return;
+            }
+
+            this.currentApiUrl.searchParams.set("max_amount", Number(this.filters.numberMax));
+            this.$emit("select", this.currentApiUrl.toString());
+          }
+          /* TODO this doesn't reset correctly
           const app = this;
           this.$refs.barItem.forEach((li) => {
             li.style.display = null;
@@ -249,7 +308,7 @@ Vue.component('bar-chart-card', {
             console.log(li.dataset)
             let labels = li.dataset.label.split('-');
             if (min > Number(labels[1]) || max < Number(labels[0])) {
-              if (this.itemSelected) {
+              if (this.itemsSelected) {
                 if (li.classList.contains("inactive-bar")) {
                   li.style.display = "none";
                 }
@@ -257,9 +316,21 @@ Vue.component('bar-chart-card', {
                 li.style.display = "none";
               }
             }
-          })
-        },
-        'filters.numberMax': function() {
+          })*/
+        }, 2000),
+        'filters.numberMin': debounce(function() {
+          if (this.dataId == "amountAwardedFixed"){
+            if (!this.filters.numberMin){
+              this.currentApiUrl.searchParams.delete("min_amount");
+              this.$emit("select", this.currentApiUrl.toString());
+              return;
+            }
+
+            this.currentApiUrl.searchParams.set("min_amount", Number(this.filters.numberMin));
+            this.$emit("select", this.currentApiUrl.toString());
+          }
+
+          /* Fixme this doesn't reset when max amount removed
           const app = this;
           this.$refs.barItem.forEach((li) => {
             li.style.display = null;
@@ -267,7 +338,7 @@ Vue.component('bar-chart-card', {
             let max = Number(app.filters.numberMax)
             let labels = li.dataset.label.split('-');
             if (min > Number(labels[1]) || max < Number(labels[0])) {
-              if (this.itemSelected) {
+              if (this.itemsSelected) {
                 if (li.classList.contains("inactive-bar")) {
                   li.style.display = "none";
                 }
@@ -275,8 +346,8 @@ Vue.component('bar-chart-card', {
                 li.style.display = "none";
               }
             }
-          })
-        }
+          })*/
+        }, 2000),
     }
 });
 </script>
