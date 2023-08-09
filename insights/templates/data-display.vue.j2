@@ -11,16 +11,10 @@
 {% block bodyscripts %}
 {{ super() }}
 <script>
-    const GRAPHQL_ENDPOINT = {{ url_for('graphql')|tojson }};
-    const BIN_LABELS = {{ bin_labels|tojson }};
-    const DATASET = {{ dataset|tojson }};
-    const BASE_FILTERS = {{ base_filters|tojson }};
     const MAPBOX_ACCESS_TOKEN = {{ config.MAPBOX_ACCESS_TOKEN|tojson }};
     const INSIGHTS_CONFIG = {{ config.INSIGHTS_CONFIG|tojson }};
-    const PAGE_URLS = {{ page_urls|tojson }};
-    const TITLE = {{ title|tojson }};
-    const SUBTITLE = {{ subtitle|tojson }};
-    const DATASET_EXPIRY_DAYS = {{ config.DATASET_EXPIRY_DAYS|tojson }};
+    const TITLE = "{{ title }}";
+    const SUBTITLE = "{{ subtitle }}";
   </script>
   <script type="module" src="{{ url_for('static', filename='js/data-display.js') }}"></script>
 {% endblock bodyscripts %}
@@ -225,10 +219,10 @@
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganizationTSGType" v-if="data.aggregations" ></bar-chart-card>
         <!-- Amount awarded -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
-        
+
         <!-- Award date -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="awardYear" v-if="data.aggregations" ></bar-chart-card>
- 
+
         <!-- Grant Programmes -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="grantProgramme" v-if="data.aggregations" ></bar-chart-card>
 

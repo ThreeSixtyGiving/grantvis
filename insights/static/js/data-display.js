@@ -122,12 +122,8 @@ var app = new Vue({
     el: '#data-display',
     data() {
         return {
+            dataset: "main", // TODO remove
             data: {},
-            dataset: DATASET,
-            datasetExpiryDays: DATASET_EXPIRY_DAYS,
-            title: TITLE,
-            subtitle: SUBTITLE,
-            bin_labels: BIN_LABELS,
             loading: false,
             loadingQ: 0,
             initialData: null,
@@ -147,13 +143,10 @@ var app = new Vue({
             },
             default_currency: 'GBP',
             funders: [],
-            base_filters: BASE_FILTERS,
             filters: initialFilters(true),
             source_ids: [],
             sources: [],
             grants: [],
-            mapUrl: PAGE_URLS['map'],
-            dataUrl: PAGE_URLS['data'],
             find: { funder: "", grantProgramme: "", localAuthority: "" },
             filtersToTitles: filtersToTitles,
             filterDates: { ...initialFilters(true).awardDates },
@@ -177,10 +170,6 @@ var app = new Vue({
             });
             ['area', 'orgtype', 'grantProgrammes', 'funders', 'funderTypes', 'recipientTypes', 'grantTypes'].forEach((field) => {
                 filters[field] = filters[field].map((item) => typeof item=="string" ? item : item.value );
-                if (Array.isArray(BASE_FILTERS[field])) {
-                    filters[field] = filters[field].concat(BASE_FILTERS[field]);
-                    filters[field] = [...new Set(filters[field])];
-                }
             });
             return filters;
         },
@@ -272,7 +261,6 @@ var app = new Vue({
         /* TODO make the find. watchers generic
            Filter the <li> in the graph list for the specified term
            requires ref to be set and data-label on the li
-        */
         'find.funder': function () {
             var app = this;
             this.$refs.byFunderItem.forEach((li) => {
@@ -283,7 +271,7 @@ var app = new Vue({
             });
         },
         'find.grantProgramme': function(){
-            /* Filter the <li> in the graph list for the specified term */
+            /* Filter the <li> in the graph list for the specified term *
             var app = this;
             this.$refs.byGrantProgrammeItem.forEach((li) => {
                 li.style.display = null;
@@ -293,7 +281,7 @@ var app = new Vue({
             });
         },
         'find.localAuthority': function () {
-            /* Filter the <li> in the graph list for the specified term */
+            /* Filter the <li> in the graph list for the specified term
             var app = this;
             this.$refs.byLocalAuthorityItem.forEach((li) => {
                 li.style.display = null;
@@ -301,7 +289,7 @@ var app = new Vue({
                     li.style.display = "none";
                 }
             });
-        },
+        }, */
         'loadingQ': function () {
             if (this.loadingQ > 0) {
                 this.loading = true;
