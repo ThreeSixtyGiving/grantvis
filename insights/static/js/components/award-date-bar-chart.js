@@ -1,26 +1,19 @@
 const MS_IN_DAY = (1000 * 60 * 60 * 24); // number of milliseconds in a day
 const date = new Date();
-let daysRange, lastYearLabel, language;
+let lastYearLabel, language;
 
 let days = []
 
-// Check if date range is filtered
-
-
-export const barChart = {
-  name: 'BarChart',
+export const awardDateBarChart = {
+  name: 'AwardDateBarChart',
   props: {
-    chartData: {
-      type: Array,
-      required: true,
-    }
+    chartData: { type: Array, required: true },
+    currentApiUrl: { type: URL, required: true },
+    color: { type: String, default: 'orange' },
   },
   data() {
     return {
-      compiledData: [{
-        key: 'Older',
-        doc_count: 0
-      }],
+      compiledData: [],
       bars: null,
       width: 600,
       height: 300,
@@ -28,8 +21,21 @@ export const barChart = {
     }
   },
   computed: {
+    fillColor: function(){
+      if (this.color === 'teal'){
+        return 'var(--color-teal)';
+      }
+
+      /* default */
+      return 'var(--color-orange)';
+    },
     processOlderData: function () {
-      this.compiledData[0].doc_count = 0;
+      this.compiledData = [{
+        key: 'Older',
+        key_as_string: 'Older',
+        doc_count: 0
+      }];
+
       this.chartData.forEach((item, index) => {
         const daysOld = Math.ceil((date - new Date(item.key)) / MS_IN_DAY);
         days.push(item.key)
@@ -42,12 +48,11 @@ export const barChart = {
         }
       });
 
-      // Check if date range is filtered
-      if (this.isMinYearSet()) {
+      // Check if date range is filtered /*
+      if (this.currentApiUrl.searchParams.get("min_date")) {
         return this.chartData.reverse()
-      } else {
-        return this.compiledData
       }
+      return this.compiledData;
     }
   },
   created() {
@@ -61,39 +66,36 @@ export const barChart = {
     chartData: {
       deep: true,
       handler() {
-        this.isMinYearSet()
         this.drawChart();
         this.setTooltips();
       },
     },
   },
   methods: {
-    isMinYearSet () {
-      let params = new URLSearchParams(document.location.search);
-      let awardDates = false
-
-      for (const [key, value] of params) {
-        if (key.includes('min_date')) {
-          awardDates = true;
-        }
+    itemClicked(data){
+      if (data.key == "Older"){
+        return;
       }
-      
-      return awardDates;
+
+      if (data.url){
+        this.$emit("select", data.url);
+      }
     },
     setTooltips(){
       this.bars.attr('data-tippy-content', (d)=>{
-          return `<strong>${this.parseLabels(d.key)}</strong><br>${d.doc_count.toLocaleString()}`;
+          return `<strong>Year ${d.key_as_string}</strong><br>${d.doc_count.toLocaleString()}`;
       });
       tippy(this.bars.nodes(), {
         allowHTML: true
       });
     },
     parseLabels (value) {
+      /* Note there is "key_as_string" property that has the key as a YYYY */
       if (typeof value !== 'string') {
         return new Date(value).toLocaleString(language, { year: 'numeric' });
-      } else {
-        return value;
       }
+
+      return value;
     },
     drawChart() {
       const dataset = this.processOlderData;
@@ -140,12 +142,26 @@ export const barChart = {
         .data(dataset)
         .enter().append('rect')
         .attr('class', 'bar')
-        .attr('x', d => x(this.parseLabels(d.key)))
+        .attr('x', d => x(this.parseLabels(d.key_as_string)))
         .attr('y', d => y(d.doc_count))
         .attr('width', x.bandwidth())
         .attr('height', d => this.height - y(d.doc_count))
         .style("margin-left", function(d) { return "0px"; })
-        .attr('fill', '#DE6E26')
+        .style("cursor", "pointer")
+        .attr('stroke', this.fillColor)
+        .attr('stroke-width', '1')
+        .attr('fill', (d) => {
+          /* If this year is unselected then don't fill in the bar */
+          if (this.currentApiUrl.searchParams.get('awardDate')) {
+            if (this.currentApiUrl.searchParams.getAll('awardDate').includes(d.key_as_string)){
+              return this.fillColor;
+            } else {
+              return 'white';
+            }
+          }
+          return  this.fillColor
+        })
+        .on('click', (event, data) => { this.itemClicked(data) } )
 
       svg.append('g')
         .attr('class', 'y-axis')

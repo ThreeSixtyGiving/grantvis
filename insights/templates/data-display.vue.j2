@@ -10,17 +10,12 @@
 
 {% block bodyscripts %}
 {{ super() }}
+<script src="{{ url_for('static', filename='js/data/cards.js') }}"></script>
 <script>
-    const GRAPHQL_ENDPOINT = {{ url_for('graphql')|tojson }};
-    const BIN_LABELS = {{ bin_labels|tojson }};
-    const DATASET = {{ dataset|tojson }};
-    const BASE_FILTERS = {{ base_filters|tojson }};
     const MAPBOX_ACCESS_TOKEN = {{ config.MAPBOX_ACCESS_TOKEN|tojson }};
     const INSIGHTS_CONFIG = {{ config.INSIGHTS_CONFIG|tojson }};
-    const PAGE_URLS = {{ page_urls|tojson }};
-    const TITLE = {{ title|tojson }};
-    const SUBTITLE = {{ subtitle|tojson }};
-    const DATASET_EXPIRY_DAYS = {{ config.DATASET_EXPIRY_DAYS|tojson }};
+    const TITLE = "{{ title }}";
+    const SUBTITLE = "{{ subtitle }}";
   </script>
   <script type="module" src="{{ url_for('static', filename='js/data-display.js') }}"></script>
 {% endblock bodyscripts %}
@@ -41,42 +36,17 @@
 <!-- insights VueJS application -->
 <div id="data-display" v-cloak>
   <header class="layout__header wrapper" v-if="data">
-
     <div class="base-section">
       <div class="grid grid--single-column">
           <hgroup class="layout__header">
             <div class="hero-section">
               <div class="wrapper">
                 <div class="hero hero--orange">
-                  <!-- .hero--orange, .hero--yellow, .hero--red -->
                   <div class="hero__column hero__logo">
                     <a href="/"><img src="https://cdn.threesixtygiving.org/images/360-logos/insights/360insights-color.svg"
                         alt="360 "></a>
                   </div>
-                  <div class="hero__column hero__lead" v-if="filtersApplied.length && !loading">
-                    <h2 class="hero__title">{{ subtitle }}</h2>
-                    <p class="hero__blurb">
-                        <template v-if="funders && funders.length <= 5">
-                          {{ funders.join(", ")}}
-                        </template>
-                        <template v-else>{{ title }}</template>
-
-                        <template v-if="summary.minDate">
-                          <template v-if="summary.minDate.slice(0,7) == summary.maxDate.slice(0,7)">
-                            <small>in</small> {{ summary.minDate | formatDate('month') }}
-                          </template>
-                          <template v-else-if="summary.minDate.slice(0,4) == summary.maxDate.slice(0,4)">
-                            <small>between</small> {{ summary.minDate | formatDate('month') }} <small>and</small> {{ summary.maxDate
-                            | formatDate('month') }}
-                          </template>
-                          <template v-else>
-                            <small>between</small> {{ summary.minDate | formatDate('year') }} <small>and</small> {{ summary.maxDate
-                            | formatDate('year') }}
-                          </template>
-                        </template>
-                    </p>
-                  </div>
-                  <div class="hero__column hero__lead" v-else>
+                  <div class="hero__column hero__lead">
                     <h2 class="hero__title">See your grantmaking in new ways</h2>
                     <p class="hero__blurb">Combine and visualise 360Giving, charity and other data to answer questions about your
                       grantmaking</p>
@@ -90,43 +60,10 @@
           </hgroup>
 
         <p class="header-group__excerpt">
-          <template v-if="grantnavUrl && dataset == 'main'">
-            <a v-bind:href="grantnavUrl" class="button hide-print" style="float:right">See in GrantNav</a>
-          </template>
-
+          <a v-if="grantnavUrl" v-bind:href="grantnavUrl" class="button hide-print" style="float:right; padding-bottom: 8px;">See in GrantNav</a>
           <a href="#" class="button hide-print" title="Print this page" style="margin-right: 5px; padding-bottom: 2px; float:right" onclick="window.print()"><i class="material-icons">print</i></a>
-
-          <template v-if="sources.length == 1 && sources[0].distribution[0]"> | <a
-              v-bind:href="sources[0].distribution[0].downloadURL">Download original file</a><br>
-            <template v-if="sources[0].publisher">Published by <a v-bind:href="sources[0].publisher.website">{{
-                sources[0].publisher.name }}</a> with a <a v-bind:href="sources[0].license">{{ sources[0].licenseName
-                }}</a> licence.</template></template>
-          <template v-else-if="sources.length == 1">Original filename: <code>{{ sources[0].title }}</code></template>
         </p>
-        <template v-if="sources.length > 1">
-          <details class="header-group__excerpt">
-            <summary>Data sources</summary>
-            <table class="table table--zebra">
-              <thead>
-                <tr>
-                  <th>Publisher</th>
-                  <th>Source file</th>
-                  <th>Licence</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="source in sources" :key="source.id">
-                  <td><a v-bind:href="source.publisher.website">{{ source.publisher.name }}</a></td>
-                  <td>
-                    <a v-bind:href="source.distribution[0].accessURL">{{ source.title }}</a><br>
-                    [<a v-bind:href="source.distribution[0].downloadURL">Download original file</a>]
-                  </td>
-                  <td><a v-bind:href="source.license">{{ source.licenseName }}</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </details>
-        </template>
+
       </div>
 
       <div class="spacer-3"></div>
@@ -162,29 +99,27 @@
           </div>
         </div>
 
-        <template v-for="currency in summary.currencies" v-if="currency.currency == currencyUsed">
-          <div class="grid__1">
-            <div class="base-card base-card--yellow"  >
-              <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | formatCurrency("GBP") }}{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | getAmountSuffix(true) }}</h2>
-                <p class="base-card__text">Total</p>
-              </div>
+        <div class="grid__1">
+          <div class="base-card base-card--yellow"  >
+            <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
+              <h2 class="base-card__title">{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | formatCurrency("GBP") }}{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | getAmountSuffix(true) }}</h2>
+              <p class="base-card__text">Total</p>
             </div>
           </div>
+        </div>
 
-          <div class="grid__1">
-            <div class="base-card base-card--black" >
-              <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ data.aggregations.funding_orgs.value.toLocaleString() }}</h2>
-                <p class="base-card__text">Funders</p>
-              </div>
+        <div class="grid__1">
+          <div class="base-card base-card--black" >
+            <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
+              <h2 class="base-card__title">{{ data.aggregations.funding_orgs.value.toLocaleString() }}</h2>
+              <p class="base-card__text">Funders</p>
             </div>
           </div>
-        </template>
-      </div>
+        </div>
+    </div>
     </div>
 
-    <div class="grid grid--two-columns" v-html="insights_config.dataexplainer"></div>
+    <div class="grid grid--two-columns" v-html="insightsConfig.dataexplainer"></div>
 
     <div v-if="data.aggregations && data.aggregations.currency_stats.buckets.length > 1">
       This data also contains
@@ -201,76 +136,92 @@
 
   <main class="layout__content">
     <div class="layout__content-inner" style="padding-top: 10px">
-      <div class="box box--orange" v-if="summary.grants === 0 && dataset !== 'main'">
-          <h3>No Dataset selected</h3>
-          <p>There are currently no 360Giving datasets selected. <a href="/">Select a dataset.</a></p>
-          <p>Note: Datasets imported from <a href="https://grantnav.threesixtygiving.org">GrantNav</a> expire after {{datasetExpiryDays}} days.</p>
-      </div>
-
-      <template v-else>
 
       <div class="grid grid--two-columns">
 
-        <chart-card color="teal" class="hide-print" v-if="filtersApplied.length">
-          <chart-card-header title="Dataset filters">
-            <a href="/" title="See all available datasets">(back to dataset selection)</a>
-          </chart-card-header>
-<!-- TODO filters titles for new / filters -->
-          <a href="#" v-bind:title="'Remove dataset filter '+filtersToTitles[filter]" class="filter filter--data-wrangling" v-for="filter in filtersApplied" v-on:click.prevent="resetFilter(filter)">{{filtersToTitles[filter]}} &times;</a>
-        </chart-card>
+      <div class="grid__2" v-if="filtersApplied">
+        <div class="base-card base-card--left base-card--teal">
+          <div class="base-card__content">
+            <header class="base-card__header" style="display: flex; align-items: center;">
+              <h3 class="base-card__heading">Dataset Filters</h3>
+            </header>
+            <a href="#" class="filter filter--data-wrangling"
+              v-for="(chart, id) in chartCardMetadata"
+              v-if="currentApiUrl.searchParams.get(id)"
+              v-bind:title="`Remove ${chart.title} filter`"
+              v-on:click.prevent="removeFilter(id)">{{chart.title}} &times;
+            </a>
 
-        <!-- Funders -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganization" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Funding organisation type -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganizationTSGType" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Amount awarded -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
-        
-        <!-- Award date -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="awardYear" v-if="data.aggregations" ></bar-chart-card>
- 
-        <!-- Grant Programmes -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="grantProgramme" v-if="data.aggregations" ></bar-chart-card>
+            <!-- special cases for min/max filters which can happen independently of the usual chart selection filters -->
+            <a href="#"
+             class="filter filter--data-wrangling"
+             v-if="(currentApiUrl.searchParams.get('min_date') || currentApiUrl.searchParams.get('max_date')) && !currentApiUrl.searchParams.get('awardDate')"
+             v-on:click.prevent="removeFilter('awardYear')">
+             Award date min - max &times;
+            </a>
 
-        <div class="spacer-3"></div>
-        <div class="grid__all">
-          <h3 v-if="!loading">Grants locations</h3>
+            <a href="#"
+             class="filter filter--data-wrangling"
+             v-if="currentApiUrl.searchParams.get('min_amount') || currentApiUrl.searchParams.get('max_amount') && !currentApiUrl.searchParams.get('amountAwardedFixed')"
+             v-on:click.prevent="removeFilter('amountAwardedFixed')">
+             Award amount min - max &times;
+            </a>
+            <!-- / special cases -->
+
+          </div>
         </div>
+      </div>
 
-        <!-- Countries -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-countries" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Regions -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-regions" v-if="data.aggregations" ></bar-chart-card>
-        <!--  Local Authorities -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName-la" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Choropleth -->
-        <!-- <choropleth class="base-card__content" v-if="data.aggregations" :data-all="data" data-id="recipientDistrictName-map" container="ch-1" height="680px" :zoom-control="true" ></choropleth> -->
-        <!-- Source of location information -->
-        <!-- TODO -->
+        <template v-if="data.aggregations">
 
-        <div class="spacer-3"></div>
-        <div class="grid__all">
-          <h3 v-if="!loading">Grant recipients</h3>
-        </div>
+          <!-- Funders -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="fundingOrganization"></bar-chart-card>
+          <!-- Funding organisation type -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="fundingOrganizationTSGType"></bar-chart-card>
+          <!-- Amount awarded -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl"  data-id="amountAwardedFixed"></bar-chart-card>
 
-        <!--  Type of grant recipient -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientTSGType" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Recipient org Type -->
-        <!-- TODO -->
-        <!-- Latest Income -->
-        <!-- TODO -->
-        <!--Age of recipient org -->
-        <!-- TODO -->
+          <!-- Award date -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="awardYear"></bar-chart-card>
 
-        </div> <!-- / grid -->
-        <div class="grid__all">
-          <h3 v-if="!loading">Grant types</h3>
-        </div>
+          <!-- Grant Programmes -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="grantProgramme"></bar-chart-card>
 
-        <!--Age of recipient org -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="simple_grant_type" v-if="data.aggregations" ></bar-chart-card>
+          <div class="spacer-3"></div>
+          <div class="grid__all">
+            <h3 v-if="!loading">Grants locations</h3>
+          </div>
 
-      </template>
+          <!-- Countries & Regions -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
+          <!--  Local Authorities -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="recipientDistrictName" v-if="data.aggregations" ></bar-chart-card>
+          <!-- Choropleth -->
+          <choropleth class="base-card__content" v-on:select="updateData($event)" :current-api-url="currentApiUrl" :data-all="data" data-id="distributionChloropleth" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
+
+          <div class="spacer-3"></div>
+          <div class="grid__all">
+            <h3 v-if="!loading">Grant recipients</h3>
+          </div>
+
+          <!-- Type of grant recipient -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientTSGType" :current-api-url="currentApiUrl"></bar-chart-card>
+          <!-- Recipient org Type -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientOrganizationType" :current-api-url="currentApiUrl"></bar-chart-card>
+          <!-- Latest Income -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="latestCharityIncomeFixed" :current-api-url="currentApiUrl"></bar-chart-card>
+          <!--Age of recipient org -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="orgAgeWhenAwarded" :current-api-url="currentApiUrl"></bar-chart-card>
+
+          </div> <!-- / grid -->
+          <div class="grid__all">
+            <h3 v-if="!loading">Grant types</h3>
+          </div>
+
+          <!--Age of recipient org -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="simple_grant_type" :current-api-url="currentApiUrl"></bar-chart-card>
+
+      </template> <!-- / if data.aggregations -->
 
     </div> <!-- / layout content inner -->
   </main>
