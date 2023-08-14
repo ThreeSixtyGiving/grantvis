@@ -10,6 +10,7 @@
 
 {% block bodyscripts %}
 {{ super() }}
+<script src="{{ url_for('static', filename='js/data/cards.js') }}"></script>
 <script>
     const MAPBOX_ACCESS_TOKEN = {{ config.MAPBOX_ACCESS_TOKEN|tojson }};
     const INSIGHTS_CONFIG = {{ config.INSIGHTS_CONFIG|tojson }};
@@ -47,27 +48,13 @@
                     <a href="/"><img src="https://cdn.threesixtygiving.org/images/360-logos/insights/360insights-color.svg"
                         alt="360 "></a>
                   </div>
-                  <div class="hero__column hero__lead" v-if="filtersApplied.length && !loading">
+                  <div class="hero__column hero__lead" v-if="activeFilters.length && !loading">
                     <h2 class="hero__title">{{ subtitle }}</h2>
                     <p class="hero__blurb">
                         <template v-if="funders && funders.length <= 5">
                           {{ funders.join(", ")}}
                         </template>
                         <template v-else>{{ title }}</template>
-
-                        <template v-if="summary.minDate">
-                          <template v-if="summary.minDate.slice(0,7) == summary.maxDate.slice(0,7)">
-                            <small>in</small> {{ summary.minDate | formatDate('month') }}
-                          </template>
-                          <template v-else-if="summary.minDate.slice(0,4) == summary.maxDate.slice(0,4)">
-                            <small>between</small> {{ summary.minDate | formatDate('month') }} <small>and</small> {{ summary.maxDate
-                            | formatDate('month') }}
-                          </template>
-                          <template v-else>
-                            <small>between</small> {{ summary.minDate | formatDate('year') }} <small>and</small> {{ summary.maxDate
-                            | formatDate('year') }}
-                          </template>
-                        </template>
                     </p>
                   </div>
                   <div class="hero__column hero__lead" v-else>
@@ -84,43 +71,14 @@
           </hgroup>
 
         <p class="header-group__excerpt">
-          <template v-if="grantnavUrl && dataset == 'main'">
+          <template v-if="grantnavUrl">
             <a v-bind:href="grantnavUrl" class="button hide-print" style="float:right">See in GrantNav</a>
           </template>
 
           <a href="#" class="button hide-print" title="Print this page" style="margin-right: 5px; padding-bottom: 2px; float:right" onclick="window.print()"><i class="material-icons">print</i></a>
 
-          <template v-if="sources.length == 1 && sources[0].distribution[0]"> | <a
-              v-bind:href="sources[0].distribution[0].downloadURL">Download original file</a><br>
-            <template v-if="sources[0].publisher">Published by <a v-bind:href="sources[0].publisher.website">{{
-                sources[0].publisher.name }}</a> with a <a v-bind:href="sources[0].license">{{ sources[0].licenseName
-                }}</a> licence.</template></template>
-          <template v-else-if="sources.length == 1">Original filename: <code>{{ sources[0].title }}</code></template>
         </p>
-        <template v-if="sources.length > 1">
-          <details class="header-group__excerpt">
-            <summary>Data sources</summary>
-            <table class="table table--zebra">
-              <thead>
-                <tr>
-                  <th>Publisher</th>
-                  <th>Source file</th>
-                  <th>Licence</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="source in sources" :key="source.id">
-                  <td><a v-bind:href="source.publisher.website">{{ source.publisher.name }}</a></td>
-                  <td>
-                    <a v-bind:href="source.distribution[0].accessURL">{{ source.title }}</a><br>
-                    [<a v-bind:href="source.distribution[0].downloadURL">Download original file</a>]
-                  </td>
-                  <td><a v-bind:href="source.license">{{ source.licenseName }}</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </details>
-        </template>
+
       </div>
 
       <div class="spacer-3"></div>
@@ -156,26 +114,24 @@
           </div>
         </div>
 
-        <template v-for="currency in summary.currencies" v-if="currency.currency == currencyUsed">
-          <div class="grid__1">
-            <div class="base-card base-card--yellow"  >
-              <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | formatCurrency("GBP") }}{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | getAmountSuffix(true) }}</h2>
-                <p class="base-card__text">Total</p>
-              </div>
+        <div class="grid__1">
+          <div class="base-card base-card--yellow"  >
+            <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
+              <h2 class="base-card__title">{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | formatCurrency("GBP") }}{{ data.aggregations.currency_stats.buckets[0].amount_stats.sum | getAmountSuffix(true) }}</h2>
+              <p class="base-card__text">Total</p>
             </div>
           </div>
+        </div>
 
-          <div class="grid__1">
-            <div class="base-card base-card--black" >
-              <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
-                <h2 class="base-card__title">{{ data.aggregations.funding_orgs.value.toLocaleString() }}</h2>
-                <p class="base-card__text">Funders</p>
-              </div>
+        <div class="grid__1">
+          <div class="base-card base-card--black" >
+            <div class="base-card__content" style="display: flex; flex-direction: column; justify-content: center;  min-height: 173px">
+              <h2 class="base-card__title">{{ data.aggregations.funding_orgs.value.toLocaleString() }}</h2>
+              <p class="base-card__text">Funders</p>
             </div>
           </div>
-        </template>
-      </div>
+        </div>
+    </div>
     </div>
 
     <div class="grid grid--two-columns" v-html="insights_config.dataexplainer"></div>
@@ -195,23 +151,24 @@
 
   <main class="layout__content">
     <div class="layout__content-inner" style="padding-top: 10px">
-      <div class="box box--orange" v-if="summary.grants === 0 && dataset !== 'main'">
-          <h3>No Dataset selected</h3>
-          <p>There are currently no 360Giving datasets selected. <a href="/">Select a dataset.</a></p>
-          <p>Note: Datasets imported from <a href="https://grantnav.threesixtygiving.org">GrantNav</a> expire after {{datasetExpiryDays}} days.</p>
-      </div>
-
-      <template v-else>
 
       <div class="grid grid--two-columns">
 
-        <chart-card color="teal" class="hide-print" v-if="filtersApplied.length">
-          <chart-card-header title="Dataset filters">
-            <a href="/" title="See all available datasets">(back to dataset selection)</a>
-          </chart-card-header>
-<!-- TODO filters titles for new / filters -->
-          <a href="#" v-bind:title="'Remove dataset filter '+filtersToTitles[filter]" class="filter filter--data-wrangling" v-for="filter in filtersApplied" v-on:click.prevent="resetFilter(filter)">{{filtersToTitles[filter]}} &times;</a>
-        </chart-card>
+      <div class="grid__2">
+        <div class="base-card base-card--left base-card--teal">
+          <div class="base-card__content">
+            <header class="base-card__header" style="display: flex; align-items: center;">
+              <h3 class="base-card__heading">Dataset Filters</h3>
+            </header>
+            <a href="#" class="filter filter--data-wrangling"
+              v-for="(chart, id) in chartCardMetadata"
+              v-if="activeFilters.includes(id)"
+              v-bind:title="`Remove ${chart.title} filter`"
+              v-on:click.prevent="removeFilter(id)">{{chart.title}} &times;
+            </a>
+          </div>
+        </div>
+      </div>
 
         <!-- Funders -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganization" v-if="data.aggregations" ></bar-chart-card>
@@ -231,9 +188,7 @@
           <h3 v-if="!loading">Grants locations</h3>
         </div>
 
-        <!-- Countries -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-countries" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Regions -->
+        <!-- Countries & Regions -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-regions" v-if="data.aggregations" ></bar-chart-card>
         <!--  Local Authorities -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName-la" v-if="data.aggregations" ></bar-chart-card>

@@ -1,8 +1,7 @@
-<script src="{{ url_for('static', filename='js/data/cards.js') }}"></script>
 {% raw %}
 <script type="text/x-template" id="bar-chart-card-template" >
   <div v-bind:class="'grid__'+size"  >
-      <div class="base-card base-card--left" v-bind:class="'base-card--'+chartCardMetadata.color" >
+      <div class="base-card base-card--left" v-bind:class="`base-card--${chartCardMetadata.color}`" >
           <div class="base-card__content" >
                 <header class="base-card__header" style="display: flex; align-items: center;" >
                     <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
@@ -18,23 +17,8 @@
                     ref="barItem"
                     v-bind:data-label="item.name ? item.name : item.key"
                     v-for="item in data.buckets"
-                    v-if="item.selected"
+                    v-if="item.selected || !itemsSelected"
                     :style="getBarStyle(item.doc_count)" v-on:click="updateData(item.url)">
-                    <label class="bar-chart__label small" v-if="item.to && item.from">{{item.from}} - {{item.to}}</label>
-                    <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
-                    <label class="bar-chart__label small" v-else>{{ item.key }}</label>
-
-                    <div class="bar-chart__bar"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
-                    </li>
-                  </ul>
-                  <ul class="bar-chart hide-print" v-bind:style="find ? 'min-height: 400px' : ''">
-                      <li
-                      :class="!itemSelected ? 'bar-chart__item' : 'bar-chart__item inactive-bar'"
-                      ref="barItem"
-                      v-bind:data-label="item.name ? item.name : item.key"  v-for="item in data.buckets"
-                      v-if="!item.selected"
-                      :style="getBarStyle(item.doc_count)"
-                      v-on:click="updateData(item.url)">
 
                       <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
                       <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
@@ -42,7 +26,26 @@
                       <label class="bar-chart__label small" v-else-if="item.key === '1.0E7-*'">Over £10m</label>
                       <label class="bar-chart__label small" v-else>{{ item.key }}</label>
 
-                      <div :class="!itemSelected ? 'bar-chart__bar' : 'bar-chart__bar inactive-bar'"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
+                    <div class="bar-chart__bar"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
+                    </li>
+                  </ul>
+                  <ul class="bar-chart hide-print" v-if="itemsSelected" v-bind:style="find ? 'min-height: 400px' : ''">
+                      <li
+                      class="bar-chart__item inactive-bar"
+                      ref="barItem"
+                      v-for="item in data.buckets"
+                      v-bind:data-label="item.name ? item.name : item.key"
+                      v-if="!item.selected"
+                      :style="getBarStyle(item.doc_count)"
+                      v-on:click="updateData(item.url);">
+
+                      <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
+                      <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
+                      <label class="bar-chart__label small" v-else-if="item.key === '0.0-500.0'">Up to £500</label>
+                      <label class="bar-chart__label small" v-else-if="item.key === '1.0E7-*'">Over £10m</label>
+                      <label class="bar-chart__label small" v-else>{{ item.key }}</label>
+
+                      <div class="bar-chart__bar inactive-bar'"><span v-bind:data-val="item.doc_count.toLocaleString()"></span></span></div>
                       </li>
                   </ul>
                 </template>
@@ -52,7 +55,7 @@
                 </template>
 
                 <!--- Extra in-place filters -->
-                <input  v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'finder' && data.buckets.length > 10" type="text" v-model="find" placeholder="Find a funder" class="search-field"   />
+                <input  v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'finder' && data.buckets.length > 10" type="text" v-model="find" :placeholder="`Find ${chartCardMetadata.title}`" class="search-field"   />
                 <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'number'" title="Amount">
                     <label for="number-min">Between</label>
                     <input id="number-min" type="number" class="filter-input" placeholder="Minimum" v-model="filters.numberMin">
@@ -107,10 +110,6 @@
                 <div>
                 <hr class="separator-light">
                 <p>{{ chartCardMetadata.instructions }}</p>
-                <p>Based on TODO  | formatNumber grants.</p>
-                <p >
-                    TODO | formatNumber grants not found.
-                </p>
                 </div>
             </div>
       </div>
@@ -139,7 +138,7 @@ Vue.component('bar-chart-card', {
             data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
             maxValue: 0,
             find: "",
-            itemSelected: false,
+            itemsSelected: false,
             dateParams: false,
             filters: {
                 numberMin: 0,
@@ -153,11 +152,11 @@ Vue.component('bar-chart-card', {
     },
     methods: {
       updateMaxValue (buckets) {
-        if (this.dataId === 'amountAwardedFixed') {
+       // if (this.dataId === 'amountAwardedFixed') {
           this.maxValue = Math.max(...buckets.map((d) => d.doc_count));
-        } else {
-          this.maxValue = buckets[0].doc_count;
-        }
+        //} else {
+         // this.maxValue = buckets[0].doc_count;
+       // }
       },
       getBarStyle (count) {
         if (this.maxValue === 0) {
@@ -171,7 +170,7 @@ Vue.component('bar-chart-card', {
       },
       updateData(url){
           this.find = "";
-          this.itemSelected = true
+          this.itemsSelected = true
           this.$emit("select", url);
       },
       updateDateFilter () {
@@ -188,7 +187,7 @@ Vue.component('bar-chart-card', {
           maxDate = `${this.filters.dates.max.month}/${this.filters.dates.max.year}`
           params.set('max_date', maxDate)
         }
-        
+
         if (minDate !== '' || maxDate !== '') {
           history.pushState({}, '', `?${params.toString()}`)
           this.$emit("select", `${url}${params.toString()}`)
@@ -249,7 +248,7 @@ Vue.component('bar-chart-card', {
             console.log(li.dataset)
             let labels = li.dataset.label.split('-');
             if (min > Number(labels[1]) || max < Number(labels[0])) {
-              if (this.itemSelected) {
+              if (this.itemsSelected) {
                 if (li.classList.contains("inactive-bar")) {
                   li.style.display = "none";
                 }
@@ -267,7 +266,7 @@ Vue.component('bar-chart-card', {
             let max = Number(app.filters.numberMax)
             let labels = li.dataset.label.split('-');
             if (min > Number(labels[1]) || max < Number(labels[0])) {
-              if (this.itemSelected) {
+              if (this.itemsSelected) {
                 if (li.classList.contains("inactive-bar")) {
                   li.style.display = "none";
                 }

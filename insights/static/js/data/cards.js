@@ -30,17 +30,12 @@ const chartCardMetadata = {
       "title": "Grant programmes",
       "instructions": "Click on the bars or labels to select one or more grant programmes.",
       "color": "orange",
-      "chartType": "bar-horizontal"
+      "chartType": "bar-horizontal",
+      "filterer":  { type: "finder" }
     },
     "recipientRegionName-countries": {
-      "title": "Countries",
+      "title": "Countries and regions",
       "instructions": "Click on the bars or labels to select one or more countries.",
-      "color": "red",
-      "chartType": "bar-horizontal"
-    },
-    "recipientRegionName-regions": {
-      "title": "Regions in England",
-      "instructions": "Click on the bars or labels to select one or more regions.",
       "color": "red",
       "chartType": "bar-horizontal"
     },
