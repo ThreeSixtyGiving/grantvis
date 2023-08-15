@@ -189,7 +189,7 @@ var app = new Vue({
             this.activeFilters = Array.from(queryParamsObj.keys());
 
             /* Update Grantnav button url */
-            this.grantnavUrl = `https://grantnav.threesixtygiving.org${queryUrl}`;
+            this.grantnavUrl = `https://grantnav.threesixtygiving.org/search${url.search}`;
 
             /* Update our browser url */
             history.pushState(null, '', url.search);
