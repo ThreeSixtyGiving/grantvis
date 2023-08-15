@@ -18,7 +18,7 @@
                     v-bind:data-label="item.name ? item.name : item.key"
                     v-for="item in data.buckets"
                     v-if="item.selected || !itemsSelected"
-                    :style="getBarStyle(item.doc_count)" v-on:click="updateData(item.url)">
+                    :style="getBarStyle(item)" v-on:click="updateData(item.url)">
 
                       <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
                       <label class="bar-chart__label small" v-else-if="item.name">{{ item.name }}</label>
@@ -36,7 +36,7 @@
                       v-for="item in data.buckets"
                       v-bind:data-label="item.name ? item.name : item.key"
                       v-if="!item.selected"
-                      :style="getBarStyle(item.doc_count)"
+                      :style="getBarStyle(item)"
                       v-on:click="updateData(item.url);">
 
                       <label class="bar-chart__label small" v-if="item.to && item.from">£{{Number(item.from + 1).toLocaleString()}} - £{{item.to.toLocaleString()}}</label>
@@ -152,25 +152,30 @@ Vue.component('bar-chart-card', {
     },
     methods: {
       updateMaxValue (buckets) {
-       // if (this.dataId === 'amountAwardedFixed') {
-          this.maxValue = Math.max(...buckets.map((d) => d.doc_count));
-        //} else {
-         // this.maxValue = buckets[0].doc_count;
-       // }
-      },
-      getBarStyle (count) {
-        if (this.maxValue === 0) {
-          this.updateMaxValue(this.data.buckets)
+        if (this.itemsSelected){
+          this.maxValue = Math.max(...buckets.filter((d) => d.selected).map((d) => d.doc_count));
+          return;
         }
 
+        if (this.dataId === 'amountAwardedFixed') {
+          this.maxValue = Math.max(...buckets.map((d) => d.doc_count));
+        } else {
+          this.maxValue = buckets[0].doc_count;
+        }
+      },
+      getBarStyle(item) {
+        if (!this.maxValue){
+          /* no maxValue, running update */
+          this.updateMaxValue(this.data.buckets);
+        }
         return {
-            '--value': count,
-            '--width': `${clamp(((count / this.maxValue) * 100), 0.1, 100)}%`,
+            '--value': item.doc_count,
+            '--width': `${clamp(((item.doc_count / this.maxValue) * 100), 0.1, 100)}%`,
         }
       },
       updateData(url){
           this.find = "";
-          this.itemsSelected = true
+          this.itemsSelected = url.indexOf(this.dataId) != -1
           this.$emit("select", url);
       },
       updateDateFilter () {
@@ -219,8 +224,11 @@ Vue.component('bar-chart-card', {
     watch: {
         'dataAll': {
             handler: function() {
-              this.updateMaxValue(this.data.buckets);
-              this.data = this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')];
+              let newData = this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')];
+              /* Update the max value first so that new data has this value available */
+              this.updateMaxValue(newData.buckets);
+              /* Now update and trigger new load */
+              this.data = newData;
             },
             deep: true
         },
@@ -229,7 +237,7 @@ Vue.component('bar-chart-card', {
             this.$refs.barItem.forEach((li) => {
                 li.style.display = null;
                 if (li.dataset.label && app.find && !li.dataset.label.toLowerCase().includes(app.find.toLowerCase())){
-                  if (this.itemSelected) {
+                  if (this.itemsSelected) {
                     if (li.classList.contains("inactive-bar")) {
                       li.style.display = "none";
                     }
