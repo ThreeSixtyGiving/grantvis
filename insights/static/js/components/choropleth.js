@@ -19,25 +19,57 @@ export const choropleth = {
             container: { type: String },
             height: { type: String },
             zoomControl: { type: Boolean, default: true },
-            layerData: { type: Array, default: [] },
+            dataAll: { type: Object },
+            dataId: { type: String },
         },
     data: function () {
         return {
-            data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
             map: null,
             regionCountryLayer: null,
             laLayer: null,
             mapbox_access_token: MAPBOX_ACCESS_TOKEN,
             keys: ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026'],
+            chartCardMetadata: chartCardMetadata[this.dataId],
+            layerData: this.createLayerData(),
         };
     },
     watch: {
         'layerData': {
             handler: function(){ this.updateMap(); },
         },
+        'dataAll': {
+            handler: function() {
+              this.updateMap();
+            },
+            deep: true
+        },
     },
 
     methods: {
+        createLayerData() {
+            let layerData = [
+                {
+                    layerName: "regionCountryLayer",
+                    areas: this.dataAll.aggregations.recipientRegionName.buckets,
+                    layerBoundariesJsonFile: "country_region.geojson",
+                    popupHandler: function(layer){
+                        return `<a href="#" data-filter="area" data-area="${layer.feature.properties.areaId}" onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}))" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
+                    },
+                },
+                {
+                    layerName: "laLayer",
+                    areas: this.dataAll.aggregations.recipientDistrictName.buckets,
+                    layerBoundariesJsonFile: "lalt.geojson",
+                    popupHandler: function(layer){
+                        return `<a href="#" data-filter="localAuthorities" data-area="${layer.feature.properties.areaId}" onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}))" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
+                    },
+                }
+            ]
+
+            return layerData;
+        },
+
+
         updateMap() {
 
             var component = this;
@@ -82,9 +114,8 @@ export const choropleth = {
 
                 layer.areas.forEach((area) => {
                   /* Create a lookup object for name->id with grant count */
-                    areaSelectLookup[area.name] = {
-                        grantCount: area.grant_count,
-                        areaId: area.id
+                    areaSelectLookup[area.key] = {
+                        grantCount: area.doc_count,
                     };
                 });
 
@@ -198,12 +229,26 @@ export const choropleth = {
         }
     },
 
-    template: '<div>\
-                <div v-bind:id="container" ref="mapElement" v-bind:style="{ height: height }"></div> \
-                  <div style="display: flex">\
-                    <p style="margin: auto 0.5em auto 0;">Key: Least grants</p>\
-                    <span v-for="key in keys" style="align-self: center; width: 15px; height: 15px" v-bind:style="`background-color: ${key}`"></span>\
-                    <p style="margin: auto 0 auto 0.5em "> Most grants</p>\
-                 </div>\
-               </div>',
+    template: `
+            <div class="grid__2 base-card base-card--left" v-bind:class="'base-card--'+chartCardMetadata.color" >
+                <div class="base-card__content" >
+                        <header class="base-card__header" style="display: flex; align-items: center;" >
+                            <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
+                            <h4 class="base-card__subheading" style="margin-left: 5px">
+                                (number of grants)
+                            </h4>
+                    </header>
+                    <div v-bind:id="container" ref="mapElement" v-bind:style="{ height: height }"></div>
+                    <div style="display: flex">
+                        <p style="margin: auto 0.5em auto 0;">Key: Least grants</p>
+                        <span v-for="key in keys" style="align-self: center; width: 15px; height: 15px" v-bind:style="'background-color:'+key"></span>
+                        <p style="margin: auto 0 auto 0.5em "> Most grants</p>
+                    </div>
+                </div>
+               <div>
+                <hr class="separator-light">
+                <p>{{ chartCardMetadata.instructions }}</p>
+                </div>
+            </div>
+        `,
 }
