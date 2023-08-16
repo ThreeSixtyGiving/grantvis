@@ -53,7 +53,8 @@ export const choropleth = {
                     areas: this.dataAll.aggregations.recipientRegionName.buckets,
                     layerBoundariesJsonFile: "country_region.geojson",
                     popupHandler: function(layer){
-                        return `<a href="#" data-filter="area" data-area="${layer.feature.properties.areaId}" onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}))" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
+                        /* This is outside of the vuejs scopes so need to do things a slightly different way */
+                        return `<a href="#" data-filter="recipientRegionName" data-url='${layer.feature.properties.url}' onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}));" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
                     },
                 },
                 {
@@ -61,7 +62,7 @@ export const choropleth = {
                     areas: this.dataAll.aggregations.recipientDistrictName.buckets,
                     layerBoundariesJsonFile: "lalt.geojson",
                     popupHandler: function(layer){
-                        return `<a href="#" data-filter="localAuthorities" data-area="${layer.feature.properties.areaId}" onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}))" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
+                        return `<a href="#" data-filter="recipientDistrictName" data-url="${layer.feature.properties.url}" onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}));" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
                     },
                 }
             ]
@@ -116,6 +117,7 @@ export const choropleth = {
                   /* Create a lookup object for name->id with grant count */
                     areaSelectLookup[area.key] = {
                         grantCount: area.doc_count,
+                        url: area.url,
                     };
                 });
 
@@ -136,14 +138,15 @@ export const choropleth = {
                     if (areaSelectLookup[name]) {
                         feature.properties.name = name;
                         feature.properties.grantCount = areaSelectLookup[name].grantCount;
+                        feature.properties.url = areaSelectLookup[name].url;
 
                         if (areaSelectLookup[name].grantCount > maxGrantCount){
                             maxGrantCount = areaSelectLookup[name].grantCount;
                         }
 
-                        feature.properties.areaId = areaSelectLookup[name].areaId;
                     } else {
                         feature.properties.name = name;
+                        feature.properties.url = "#";
                         feature.properties.grantCount = 0;
                     }
                 });
@@ -227,6 +230,18 @@ export const choropleth = {
         if (this.layerData.length){
             this.updateMap();
         }
+
+
+
+    },
+    created(){
+        const app = this;
+        document.addEventListener("map-select", function(event){
+            event.preventDefault();
+            console.log("map-select", event.target.dataset.url);
+            /* Push this event up to data-display to set the filter */
+            app.$emit("select", event.target.dataset.url);
+        });
     },
 
     template: `

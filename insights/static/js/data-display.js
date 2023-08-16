@@ -196,65 +196,6 @@ var app = new Vue({
 
             this.loadingQ--;
         },
-        updateChoropleth() {
-          return;
-
-            if (!this.chartData.byCountryRegion || !this.chartData.byLocalAuthority) {
-                return [];
-            };
-
-            let areas = [];
-            let laAreas = [];
-
-            this.chartData.byCountryRegion.forEach((area) => {
-                if (!area.bucketGroup[0].id) {
-                    return;
-                }
-
-                let choroplethArea = {};
-
-                /* England is split into regions */
-                if (area.bucketGroup[0].id == "E92000001") {
-                    choroplethArea = { ...area.bucketGroup[1] };
-                } else {
-                    choroplethArea = { ...area.bucketGroup[0] };
-                }
-
-                choroplethArea.grant_count = area.grants;
-                areas.push(choroplethArea);
-            });
-
-            this.chartData.byLocalAuthority.forEach((area) => {
-                if (!area.bucketGroup[0].id) {
-                    return;
-                }
-
-                let choroplethArea = {};
-                choroplethArea = { ...area.bucketGroup[0] };
-                choroplethArea.grant_count = area.grants;
-
-                laAreas.push(choroplethArea);
-            });
-
-            this.choroplethData = [
-                {
-                    layerName: "regionCountryLayer",
-                    areas: areas,
-                    layerBoundariesJsonFile: "country_region.geojson",
-                    popupHandler: function(layer){
-                        return `<a href="#" data-filter="area" data-area="${layer.feature.properties.areaId}" onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}))" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
-                    },
-                },
-                {
-                    layerName: "laLayer",
-                    areas: laAreas,
-                    layerBoundariesJsonFile: "lalt.geojson",
-                    popupHandler: function(layer){
-                        return `<a href="#" data-filter="localAuthorities" data-area="${layer.feature.properties.areaId}" onClick="this.dispatchEvent(new Event('map-select', {bubbles: true}))" >${layer.feature.properties.name} : ${layer.feature.properties.grantCount.toLocaleString()} grants</a>`;
-                    },
-                }
-            ]
-        },
         removeFilter(id){
           let queryParams = new URLSearchParams(window.location.search);
           queryParams.delete(id);
@@ -292,12 +233,5 @@ var app = new Vue({
         } else {
           this.updateData();
         }
-
-        let app = this;
-
-        document.addEventListener("map-select", function(event){
-            event.preventDefault();
-            app.toggleInArray(app.filters[event.target.dataset.filter], event.target.dataset.area);
-        });
     }
 })
