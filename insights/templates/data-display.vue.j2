@@ -194,7 +194,6 @@
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName-la" v-if="data.aggregations" ></bar-chart-card>
         <!-- Choropleth -->
         <!-- <choropleth class="base-card__content" v-if="data.aggregations" :data-all="data" data-id="recipientDistrictName-map" container="ch-1" height="680px" :zoom-control="true" ></choropleth> -->
-        <!-- Source of location information -->
         <!-- TODO -->
 
         <div class="spacer-3"></div>
@@ -205,6 +204,7 @@
         <!--  Type of grant recipient -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientTSGType" v-if="data.aggregations" ></bar-chart-card>
         <!-- Recipient org Type -->
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientOrganizationType" v-if="data.aggregations" ></bar-chart-card>
         <!-- TODO -->
         <!-- Latest Income -->
         <!-- TODO -->

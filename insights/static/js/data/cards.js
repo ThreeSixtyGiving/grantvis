@@ -88,5 +88,11 @@ const chartCardMetadata = {
       "instructions": "Click on the bars or labels to select one or more grant types",
       "color": "orange",
       "chartType": "bar-horizontal"
+  },
+  "recipientOrganizationType": {
+      "title": "Recipient organisation type",
+      "instructions": "Click on the bars or labels to select one or more recipient organisation types.",
+      "color": "teal",
+      "chartType": "bar-horizontal"
   }
 }
