@@ -175,7 +175,7 @@
         <!-- Funding organisation type -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganizationTSGType" v-if="data.aggregations" ></bar-chart-card>
         <!-- Amount awarded -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :current-api-url="currentApiUrl" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
 
         <!-- Award date -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="awardYear" v-if="data.aggregations" ></bar-chart-card>
@@ -189,7 +189,7 @@
         </div>
 
         <!-- Countries & Regions -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-regions" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-countries" v-if="data.aggregations" ></bar-chart-card>
         <!--  Local Authorities -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName-la" v-if="data.aggregations" ></bar-chart-card>
         <!-- Choropleth -->

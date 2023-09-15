@@ -102,69 +102,8 @@ var app = new Vue({
             grantnavUrl: "",
             subtitle: SUBTITLE,
             title: TITLE,
+            apiQuery: null,
         }
-    },
-    computed: {
-        /*grantnavUrl: function () {
-            /* Create the grantnav search url from the current filter selection
-            // TODO, look this up from the config
-            var url = 'https://grantnav.threesixtygiving.org/search?';
-
-            var searchParams = new URLSearchParams();
-
-            if (this.filters.orgtype.length || this.filters.localAuthorities.length) {
-                return null;
-            }
-
-            if (this.filters.awardAmount.min) {
-                searchParams.append('min_amount', this.filters.awardAmount.min);
-            }
-            if (this.filters.awardAmount.max) {
-                searchParams.append('max_amount', this.filters.awardAmount.max);
-            }
-
-            if (this.filters.awardDates.min.month && this.filters.awardDates.min.year) {
-                searchParams.append('min_date', this.filters.awardDates.min.month + '/' + this.filters.awardDates.min.year);
-            }
-            if (this.filters.awardDates.max.month && this.filters.awardDates.max.year) {
-                searchParams.append('max_date', this.filters.awardDates.max.month + '/' + this.filters.awardDates.max.year);
-            }
-
-            var text_query = '';
-            this.filters.area.forEach((area) => {
-                var area_prefix = area.slice(0, 3);
-                if (['E06', 'E07', 'E08', 'E09', 'N09', 'S12', 'W06'].includes(area_prefix)) {
-                    text_query += ' additional_data.recipientDistrictGeoCode:' + area;
-                } else if (['E12'].includes(area_prefix)) {
-                    text_query += ' additional_data.recipientOrganizationLocation.rgn:' + area;
-                } else if (['E92', 'N92', 'S92', 'W92'].includes(area_prefix)) {
-                    text_query += ' additional_data.recipientOrganizationLocation.ctry:' + area;
-                }
-            });
-            if (text_query) {
-                searchParams.append('query', text_query);
-            }
-
-            this.filters.funderTypes.forEach((funderType) => {
-                searchParams.append('fundingOrganizationTSGType', funderType)
-            });
-            this.filters.funders.forEach((funder) => {
-                searchParams.append('fundingOrganization', funder);
-            });
-            this.filters.grantProgrammes.forEach((grantProgramme) => {
-                searchParams.append('grantProgramme', grantProgramme);
-            });
-
-            this.filters.recipientTypes.forEach((recipientType) => {
-                searchParams.append('recipientTSGType', recipientType);
-            });
-
-            this.filters.grantTypes.forEach((grantType) => {
-                searchParams.append('simple_grant_type', grantType);
-            });
-
-            return url + searchParams.toString();
-        }*/
     },
     watch: {
         'loadingQ': function () {
@@ -180,6 +119,8 @@ var app = new Vue({
             this.loadingQ++;
 
             const url = new URL(`https://search.data.threesixtygiving.org/api/aggregates${queryUrl}`);
+
+            this.currentApiUrl = url;
 
             let res = await fetch(url);
             this.data = await res.json();
@@ -203,29 +144,6 @@ var app = new Vue({
           this.updateData(`/search${queryParams.toString()}`);
         },
 
-        toggleInArray(array, item){
-            let idx = array.indexOf(item);
-            if (idx > -1){
-                /* Item exists remove it */
-                array.splice(idx, 2);
-            } else {
-                array.push(item);
-            }
-        },
-        safeLength(array){
-            /* utility for avoiding race conditions on determining length in templates */
-            if (!array){
-                return 0;
-             }
-
-             return array.length;
-        },
-        getChartCardData(id) { /* todo remove me */
-              return chartCardData.filter(item => item.id === id)
-        },
-        getChartCardMetadata(id) {
-              return chartCardData.filter(item => item.id === id)
-        },
     },
     mounted() {
         if (window.location.search){

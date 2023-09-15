@@ -130,6 +130,7 @@ Vue.component('bar-chart-card', {
         loading: { type: Boolean, default: true },
         dataAll: { type: Object },
         dataId: { type: String },
+        currentApiUrl: { type: URL },
     },
     data() {
         return {
@@ -141,8 +142,8 @@ Vue.component('bar-chart-card', {
             itemsSelected: false,
             dateParams: false,
             filters: {
-                numberMin: 0,
-                numberMax: 0,
+                numberMin: null,
+                numberMax: null,
                 dates: {
                     min: { month: null, year: null },
                     max: { month: null, year: null }
@@ -247,7 +248,21 @@ Vue.component('bar-chart-card', {
                 }
             });
         },
-        'filters.numberMin': function() {
+        'filters.numberMax': function() {
+
+          /* TODO debounce */
+
+          if (this.dataId == "amountAwardedFixed"){
+            if (!this.filters.numberMax){
+              this.currentApiUrl.searchParams.delete("max_amount");
+              this.$emit("select", this.currentApiUrl.toString());
+              return;
+            }
+
+            this.currentApiUrl.searchParams.set("max_amount", Number(this.filters.numberMax));
+            this.$emit("select", this.currentApiUrl.toString());
+          }
+          /* Todo this doesn't reset correctly
           const app = this;
           this.$refs.barItem.forEach((li) => {
             li.style.display = null;
@@ -264,9 +279,23 @@ Vue.component('bar-chart-card', {
                 li.style.display = "none";
               }
             }
-          })
+          })*/
         },
-        'filters.numberMax': function() {
+        'filters.numberMin': function() {
+          /* TODO debounce */
+
+          if (this.dataId == "amountAwardedFixed"){
+            if (!this.filters.numberMin){
+              this.currentApiUrl.searchParams.delete("min_amount");
+              this.$emit("select", this.currentApiUrl.toString());
+              return;
+            }
+
+            this.currentApiUrl.searchParams.set("min_amount", Number(this.filters.numberMin));
+            this.$emit("select", this.currentApiUrl.toString());
+          }
+
+          /* Fixme this doesn't reset when max amount removed
           const app = this;
           this.$refs.barItem.forEach((li) => {
             li.style.display = null;
@@ -282,7 +311,7 @@ Vue.component('bar-chart-card', {
                 li.style.display = "none";
               }
             }
-          })
+          })*/
         }
     }
 });
