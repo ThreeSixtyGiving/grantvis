@@ -189,11 +189,11 @@
         </div>
 
         <!-- Countries & Regions -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName-countries" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
         <!--  Local Authorities -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName-la" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName" v-if="data.aggregations" ></bar-chart-card>
         <!-- Choropleth -->
-        <choropleth class="base-card__content" v-on:select="updateData($event)" v-if="data.aggregations" :data-all="data" data-id="recipientDistrictName-map" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
+        <choropleth class="base-card__content" v-on:select="updateData($event)" v-if="data.aggregations" :current-api-url="currentApiUrl" :data-all="data" data-id="distributionChloropleth" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
         <!-- TODO -->
 
         <div class="spacer-3"></div>

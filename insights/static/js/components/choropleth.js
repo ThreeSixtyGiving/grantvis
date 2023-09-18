@@ -21,6 +21,7 @@ export const choropleth = {
             zoomControl: { type: Boolean, default: true },
             dataAll: { type: Object },
             dataId: { type: String },
+            currentApiUrl: { type: URL },
         },
     data: function () {
         return {
@@ -93,13 +94,28 @@ export const choropleth = {
             }
 
             function defaultStyle(feature) {
+                const searchParams = component.currentApiUrl.searchParams;
+                let opacity = 0;
+                /* A selection has happened */
+                if (searchParams.getAll("recipientRegionName")){
+                    if (searchParams.getAll("recipientRegionName").indexOf(feature.properties.name) !== -1){
+                        opacity = 0.7;
+                    }
+                }
+
+
+                if (searchParams.getAll("recipientDistrictName")) {
+                    if (searchParams.getAll("recipientDistrictName").indexOf(feature.properties.name) !== -1){
+                        opacity = 0.7;
+                    }
+                }
 
                 return {
                     weight: 2,
                     opacity: 1,
                     color: 'white',
                     dashArray: '3',
-                    fillOpacity: 0.7,
+                    fillOpacity: opacity,
                     fillColor: getColor(feature.properties.grantCount, feature.properties.maxGrantCount)
                 };
 

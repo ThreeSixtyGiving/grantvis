@@ -116,12 +116,33 @@
   </div>
 </script>
 
-
 <script>
+
+
 function clamp(num, min, max){
     return Math.min(Math.max(num, min), max);
 }
 
+/* from https://davidwalsh.name/javascript-debounce-function
+ Returns a function, that, as long as it continues to be invoked, will not
+ be triggered. The function will be called after it stops being called for
+ N milliseconds. If `immediate` is passed, trigger the function on the
+ leading edge, instead of the trailing.
+*/
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+}
 
 Vue.component('bar-chart-card', {
     template: "#bar-chart-card-template",
@@ -225,7 +246,7 @@ Vue.component('bar-chart-card', {
     watch: {
         'dataAll': {
             handler: function() {
-              let newData = this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')];
+              let newData = this.dataAll.aggregations[this.dataId];
               /* Update the max value first so that new data has this value available */
               this.updateMaxValue(newData.buckets);
               /* Now update and trigger new load */
@@ -248,9 +269,7 @@ Vue.component('bar-chart-card', {
                 }
             });
         },
-        'filters.numberMax': function() {
-
-          /* TODO debounce */
+        'filters.numberMax': debounce(function() {
 
           if (this.dataId == "amountAwardedFixed"){
             if (!this.filters.numberMax){
@@ -280,8 +299,8 @@ Vue.component('bar-chart-card', {
               }
             }
           })*/
-        },
-        'filters.numberMin': function() {
+        }, 3000),
+        'filters.numberMin': debounce(function() {
           /* TODO debounce */
 
           if (this.dataId == "amountAwardedFixed"){
@@ -312,7 +331,7 @@ Vue.component('bar-chart-card', {
               }
             }
           })*/
-        }
+        }, 3000),
     }
 });
 </script>

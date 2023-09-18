@@ -33,20 +33,20 @@ const chartCardMetadata = {
       "chartType": "bar-horizontal",
       "filterer":  { type: "finder" }
     },
-    "recipientRegionName-countries": {
+    "recipientRegionName": {
       "title": "Countries and regions",
       "instructions": "Click on the bars or labels to select one or more countries.",
       "color": "red",
       "chartType": "bar-horizontal"
     },
-    "recipientDistrictName-la": {
+    "recipientDistrictName": {
       "title": "Local authorities",
       "instructions": "Click on the bars or labels to select one or more local authorities.",
       "color": "red",
       "chartType": "bar-horizontal",
       "filterer":  { type: "finder" }
     },
-    "recipientDistrictName-map": {
+    "distributionChloropleth": {
       "title": "Distribution of Grants by location",
       "instructions": "Zoom into a Country/Region to view Local Authority-level data. Click on an area to view number of grants, and click on the number of grants to select the area.",
       "color": "red",
