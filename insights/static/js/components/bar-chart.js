@@ -10,17 +10,12 @@ let days = []
 export const barChart = {
   name: 'BarChart',
   props: {
-    chartData: {
-      type: Array,
-      required: true,
-    }
+    chartData: { type: Array, required: true },
+    currentApiUrl: { type: URL, required: true },
   },
   data() {
     return {
-      compiledData: [{
-        key: 'Older',
-        doc_count: 0
-      }],
+      compiledData: [],
       bars: null,
       width: 600,
       height: 300,
@@ -29,7 +24,11 @@ export const barChart = {
   },
   computed: {
     processOlderData: function () {
-      this.compiledData[0].doc_count = 0;
+      this.compiledData = [{
+        key: 'Older',
+        doc_count: 0
+      }];
+
       this.chartData.forEach((item, index) => {
         const daysOld = Math.ceil((date - new Date(item.key)) / MS_IN_DAY);
         days.push(item.key)
@@ -42,12 +41,11 @@ export const barChart = {
         }
       });
 
-      // Check if date range is filtered
-      if (this.isMinYearSet()) {
+      // Check if date range is filtered /*
+      if (this.currentApiUrl.searchParams.get("min_date")) {
         return this.chartData.reverse()
-      } else {
-        return this.compiledData
       }
+      return this.compiledData;
     }
   },
   created() {
@@ -61,25 +59,13 @@ export const barChart = {
     chartData: {
       deep: true,
       handler() {
-        this.isMinYearSet()
+        console.log("moooooooooo");
         this.drawChart();
         this.setTooltips();
       },
     },
   },
   methods: {
-    isMinYearSet () {
-      let params = new URLSearchParams(document.location.search);
-      let awardDates = false
-
-      for (const [key, value] of params) {
-        if (key.includes('min_date')) {
-          awardDates = true;
-        }
-      }
-      
-      return awardDates;
-    },
     setTooltips(){
       this.bars.attr('data-tippy-content', (d)=>{
           return `<strong>${this.parseLabels(d.key)}</strong><br>${d.doc_count.toLocaleString()}`;
@@ -97,6 +83,7 @@ export const barChart = {
     },
     drawChart() {
       const dataset = this.processOlderData;
+      console.log("daraw chart0");
 
       d3.select(this.$refs.chart)
         .select('svg')

@@ -178,7 +178,7 @@
         <bar-chart-card v-on:select="updateData($event)" :current-api-url="currentApiUrl" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
 
         <!-- Award date -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="awardYear" v-if="data.aggregations" ></bar-chart-card>
+        <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="awardYear" v-if="data.aggregations" ></bar-chart-card>
 
         <!-- Grant Programmes -->
         <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="grantProgramme" v-if="data.aggregations" ></bar-chart-card>

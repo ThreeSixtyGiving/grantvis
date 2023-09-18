@@ -51,7 +51,7 @@
                 </template>
 
                 <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :chart-data="data.buckets" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
+                  <bar-chart :current-api-url="currentApiUrl" :chart-data="data.buckets" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
                 </template>
 
                 <!--- Extra in-place filters -->
@@ -204,7 +204,7 @@ Vue.component('bar-chart-card', {
         const url = `/search?`
         let minDate = ''
         let maxDate = ''
-        let params = new URLSearchParams(document.location.search);
+        let params = this.currentApiUrl.searchParams;
 
         if (this.filters.dates.min.month && this.filters.dates.min.year) {
           minDate = `${this.filters.dates.min.month}/${this.filters.dates.min.year}`
@@ -222,26 +222,29 @@ Vue.component('bar-chart-card', {
       }
     },
     mounted: function () {
-      let params = new URLSearchParams(document.location.search);
-      for (const [key, value] of params) {
-        if (key.includes('min_date')) {
-          this.dateParams = true;
-          let string = value.split('/')
 
-          this.filters.dates.min.month = string[0]
-          this.filters.dates.min.year = string[1]
+      if (this.dataId == 'awardDate'){
+        let params = this.currentApiUrl.searchParams;
+        for (const [key, value] of params) {
+          if (key.includes('min_date')) {
+            this.dateParams = true;
+            let string = value.split('/')
+
+            this.filters.dates.min.month = string[0]
+            this.filters.dates.min.year = string[1]
+          }
+
+          if (key.includes('max_date')) {
+            this.dateParams = true;
+            let string = value.split('/')
+
+            this.filters.dates.max.month = string[0]
+            this.filters.dates.max.year = string[1]
+          }
         }
 
-        if (key.includes('max_date')) {
-          this.dateParams = true;
-          let string = value.split('/')
-
-          this.filters.dates.max.month = string[0]
-          this.filters.dates.max.year = string[1]
-        }
+        this.dateParams && this.updateDateFilter();
       }
-
-      this.dateParams && this.updateDateFilter()
     },
     watch: {
         'dataAll': {

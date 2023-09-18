@@ -23,53 +23,6 @@ Vue.filter('formatNumber', formatNumber);
 Vue.filter('getAmountSuffix', getAmountSuffix);
 Vue.filter('formatNumberSuffix', formatNumberSuffix);
 
-function constructMonth(month, year) {
-    if (month && year) {
-        return year + '-' + month;
-    }
-    else {
-        return null;
-    }
-}
-
-function initialFilters(useQueryParams) {
-
-}
-
-/* Friendly names map for filter options */
-/* TODO */
-var filtersToTitles = {
-    awardAmount: "Award amounts",
-    awardDates: "Award dates",
-    orgSize: "Size of recipient organisations",
-    orgAge: "Age of recipient organisations",
-    orgtype: "Recipient organisation type",
-    grantProgrammes: "Grant programmes",
-    funders: "Funders",
-    funderTypes: "Funder types",
-    area: "Location",
-    localAuthorities: "Local Authorities",
-    recipientTypes: "Recipient types",
-    grantTypes: "Grant type",
-}
-
-var chartToFilters = {
-    byGrantProgramme: 'grantProgrammes',
-    byFunder: 'funders',
-    byFunderType: 'funderTypes',
-    byCountryRegion: 'area',
-    byOrgType: 'orgtype',
-    byLocalAuthority: 'localAuthorities',
-    byRecipientType: 'recipientTypes',
-    byGrantType: 'grantTypes',
-}
-
-/* Same as above but k,v swapped */
-var filtersToChart = Object.fromEntries(Object.entries(chartToFilters).map(([key,val]) => [val, key] ));
-
-function clamp(num, min, max){
-    return Math.min(Math.max(num, min), max);
-}
 
 var app = new Vue({
     el: '#data-display',

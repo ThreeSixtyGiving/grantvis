@@ -95,18 +95,22 @@ export const choropleth = {
 
             function defaultStyle(feature) {
                 const searchParams = component.currentApiUrl.searchParams;
-                let opacity = 0;
+                let opacity = 0.7;
+
                 /* A selection has happened */
-                if (searchParams.getAll("recipientRegionName")){
-                    if (searchParams.getAll("recipientRegionName").indexOf(feature.properties.name) !== -1){
+                if (searchParams.getAll("recipientDistrictName").length && feature.properties.LAD20NM) {
+                    if (searchParams.getAll("recipientDistrictName").includes(feature.properties.name)) {
                         opacity = 0.7;
+                    } else {
+                        opacity = 0;
                     }
                 }
 
-
-                if (searchParams.getAll("recipientDistrictName")) {
-                    if (searchParams.getAll("recipientDistrictName").indexOf(feature.properties.name) !== -1){
+                if (searchParams.getAll("recipientRegionName").length && feature.properties.nuts118nm) {
+                    if (searchParams.getAll("recipientRegionName").includes(feature.properties.name)) {
                         opacity = 0.7;
+                    } else {
+                        opacity = 0;
                     }
                 }
 
