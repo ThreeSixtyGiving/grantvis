@@ -46,7 +46,7 @@ var app = new Vue({
             },
             default_currency: 'GBP',
             chartCardMetadata: chartCardMetadata,
-            insights_config: INSIGHTS_CONFIG,
+            insightsConfig: INSIGHTS_CONFIG,
             grantnavUrl: "",
             subtitle: SUBTITLE,
             title: TITLE,
@@ -70,14 +70,27 @@ var app = new Vue({
 
             this.currentApiUrl = url;
 
+            if (this.insightsConfig.query){
+              url.searchParams.set("query", this.insightsConfig.query);
+            }
+
             let res = await fetch(url);
             this.data = await res.json();
 
             /* Update Grantnav button url */
             this.grantnavUrl = `https://grantnav.threesixtygiving.org/search${url.search}`;
 
+            let urlHistory = new URLSearchParams(url.search);
+
+            /* In insights these are not "public facing parameters" and only
+               apply to grantnav
+            */
+            urlHistory.delete("sort")
+            urlHistory.delete("query");
+            urlHistory.delete("default_field");
+
             /* Update our browser url */
-            history.pushState(null, '', url.search);
+            history.pushState(null, '', `?${urlHistory.toString()}`);
 
             this.loadingQ--;
         },
@@ -86,6 +99,17 @@ var app = new Vue({
           this.updateData(`/search${this.currentApiUrl.search}`);
         },
 
+    },
+    computed: {
+      filtersApplied(){
+        for(let chart of Object.keys(chartCardMetadata)){
+          if (this.currentApiUrl.searchParams.get(chart) != null){
+            return true;
+          }
+        }
+
+        return false;
+      },
     },
     mounted() {
         if (window.location.search){

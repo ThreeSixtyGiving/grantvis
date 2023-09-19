@@ -48,16 +48,16 @@
                     <a href="/"><img src="https://cdn.threesixtygiving.org/images/360-logos/insights/360insights-color.svg"
                         alt="360 "></a>
                   </div>
-                  <div class="hero__column hero__lead" >
+<!--                 <div class="hero__column hero__lead" >
                     <h2 class="hero__title">{{ subtitle }}</h2>
                     <p class="hero__blurb">
-                      <!-- TODO
+                       TODO
                         <template v-if="funders && funders.length <= 5">
                           {{ funders.join(", ")}}
-                        </template>  v-else -->
+                        </template>  v-else
                         <template>{{ title }}</template>
                     </p>
-                  </div>
+                  </div> -->
                   <div class="hero__column hero__lead">
                     <h2 class="hero__title">See your grantmaking in new ways</h2>
                     <p class="hero__blurb">Combine and visualise 360Giving, charity and other data to answer questions about your
@@ -135,7 +135,7 @@
     </div>
     </div>
 
-    <div class="grid grid--two-columns" v-html="insights_config.dataexplainer"></div>
+    <div class="grid grid--two-columns" v-html="insightsConfig.dataexplainer"></div>
 
     <div v-if="data.aggregations && data.aggregations.currency_stats.buckets.length > 1">
       This data also contains
@@ -155,7 +155,7 @@
 
       <div class="grid grid--two-columns">
 
-      <div class="grid__2">
+      <div class="grid__2" v-if="filtersApplied">
         <div class="base-card base-card--left base-card--teal">
           <div class="base-card__content">
             <header class="base-card__header" style="display: flex; align-items: center;">
@@ -170,6 +170,7 @@
           </div>
         </div>
       </div>
+
         <template v-if="data.aggregations">
 
           <!-- Funders -->

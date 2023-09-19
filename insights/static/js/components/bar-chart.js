@@ -59,7 +59,6 @@ export const barChart = {
     chartData: {
       deep: true,
       handler() {
-        console.log("moooooooooo");
         this.drawChart();
         this.setTooltips();
       },
@@ -83,7 +82,6 @@ export const barChart = {
     },
     drawChart() {
       const dataset = this.processOlderData;
-      console.log("daraw chart0");
 
       d3.select(this.$refs.chart)
         .select('svg')

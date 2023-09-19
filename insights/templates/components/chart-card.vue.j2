@@ -66,7 +66,7 @@
                 <filter-item v-if="chartCardMetadata.filterer && chartCardMetadata.filterer.type == 'date'" title="Award date">
                   <label for="date-min">From</label>
                   <span>
-                    <select id="date-min-month" name="month" class="filter-input" v-on:change="updateDateFilter()" v-model="filters.dates.min.month">
+                    <select id="date-min-month" name="month" class="filter-input" v-on:select="updateDateFilter()" v-model="filters.dates.min.month">
                       <option selected></option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -83,7 +83,7 @@
                     </select>
                   </span>
                   <span>
-                    <input id="date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:change="updateDateFilter()" v-model="filters.dates.min.year">
+                    <input id="date-min-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:keyup="updateDateFilter()" v-model="filters.dates.min.year">
                   </span>
                   <label for="date-max">to</label>
                   <span>
@@ -104,7 +104,7 @@
                     </select>
                   </span>
                   <span>
-                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:change="updateDateFilter()" v-model="filters.dates.max.year">
+                    <input id="date-max-year" type="text" class="filter-input" style="width: 6ch" placeholder="yyyy" minlength="4" maxlength="4" v-on:keyup="updateDateFilter()" v-model="filters.dates.max.year">
                   </span>
                 </filter-item>
                 <div>
@@ -197,6 +197,22 @@ Vue.component('bar-chart-card', {
           this.$emit("select", url);
       },
       updateDateFilter () {
+
+        if (this.filters.dates.min.month && !this.filters.dates.min.year){
+          return;
+        }
+
+        /* Min Month selected but not finished typing year */
+        if(this.filters.dates.min.month && this.filters.dates.min.year.length != 4){
+          return;
+        }
+
+        /* Max month selected but not finished typing year */
+        if(this.filters.dates.max.month && this.filters.dates.max.year.length != 4){
+          return;
+        }
+
+        f = debounce(() => {
         const url = `/search?`
         let minDate = ''
         let maxDate = ''
@@ -212,9 +228,12 @@ Vue.component('bar-chart-card', {
         }
 
         if (minDate !== '' || maxDate !== '') {
-          history.pushState({}, '', `?${params.toString()}`)
-          this.$emit("select", `${url}${params.toString()}`)
+          this.$emit("select", this.currentApiUrl.toString());
         }
+      }, 2000);
+
+      f();
+
       }
     },
     mounted: function () {
@@ -299,7 +318,7 @@ Vue.component('bar-chart-card', {
               }
             }
           })*/
-        }, 3000),
+        }, 2000),
         'filters.numberMin': debounce(function() {
           if (this.dataId == "amountAwardedFixed"){
             if (!this.filters.numberMin){
@@ -329,7 +348,7 @@ Vue.component('bar-chart-card', {
               }
             }
           })*/
-        }, 3000),
+        }, 2000),
     }
 });
 </script>

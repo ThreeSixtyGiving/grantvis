@@ -43,15 +43,8 @@ def create_app():
 
     app = Flask(__name__)
     app.config.from_mapping(
-        DATASTORE_URL=os.environ.get("DATASTORE_URL"),
-        SQLALCHEMY_DATABASE_URI=database_url,
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
         MAPBOX_ACCESS_TOKEN=os.environ.get("MAPBOX_ACCESS_TOKEN"),
         SECRET_KEY=secret_key(),
-        # https://flask-caching.readthedocs.io/en/latest/index.html#built-in-cache-backends
-        CACHE_TYPE=os.environ.get("CACHE_TYPE", "FileSystemCache"),
-        CACHE_DIR=os.environ.get("CACHE_DIR", "/tmp/insights-cac"),
-        CACHE_DEFAULT_TIMEOUT=os.environ.get("CACHE_TIMEOUT", 0),
         INSIGHTS_CONFIG=config_data,
     )
 
@@ -59,8 +52,6 @@ def create_app():
     # keys. This is especially important as the key order needs to be maintained
     # for graph labels. (bin_labels)
     app.jinja_env.policies["json.dumps_kwargs"] = {"sort_keys": False}
-
-    cache = Cache(app)
 
     @app.context_processor
     def inject_nav():
@@ -81,8 +72,6 @@ def create_app():
         return render_template(
             "data-display.vue.j2",
             context={
-                "title": "Fixme",
-                "subtile": "fixme",
                 "config": config_data,
             },
         )
