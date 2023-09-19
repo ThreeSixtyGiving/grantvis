@@ -3,20 +3,12 @@ import os
 import random
 import string
 import sys
-from urllib.parse import parse_qs
 
 from flask import (
     Flask,
-    abort,
     render_template,
     url_for,
-    request,
-    redirect,
-    flash,
-    Response,
 )
-from flask_caching import Cache
-
 
 __version__ = "0.1.0"
 
@@ -32,14 +24,8 @@ def create_app():
         )
         return "".join(random.choice(string.ascii_lowercase) for i in range(40))
 
-    database_url = os.environ.get("DATABASE_URL", "")
-
     with open("config/" + os.environ.get("INSIGHTS_CONFIG", "main") + ".json") as f:
         config_data = json.load(f)
-
-    # dokku uses postgres:// and sqlalchamy requires postgresql:// fix the url here
-    if database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://")
 
     app = Flask(__name__)
     app.config.from_mapping(
