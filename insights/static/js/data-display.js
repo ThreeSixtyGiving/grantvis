@@ -45,15 +45,12 @@ var app = new Vue({
                 }],
             },
             default_currency: 'GBP',
-            activeFilters: [],
-            funders: [],
-            choroplethData: [],
             chartCardMetadata: chartCardMetadata,
             insights_config: INSIGHTS_CONFIG,
             grantnavUrl: "",
             subtitle: SUBTITLE,
             title: TITLE,
-            apiQuery: null,
+            currentApiUrl: new URL(window.location),
         }
     },
     watch: {
@@ -76,10 +73,6 @@ var app = new Vue({
             let res = await fetch(url);
             this.data = await res.json();
 
-            /* Update active filters */
-            let queryParamsObj = new URLSearchParams(url.search);
-            this.activeFilters = Array.from(queryParamsObj.keys());
-
             /* Update Grantnav button url */
             this.grantnavUrl = `https://grantnav.threesixtygiving.org/search${url.search}`;
 
@@ -89,10 +82,8 @@ var app = new Vue({
             this.loadingQ--;
         },
         removeFilter(id){
-          let queryParams = new URLSearchParams(window.location.search);
-          queryParams.delete(id);
-
-          this.updateData(`/search${queryParams.toString()}`);
+          this.currentApiUrl.searchParams.delete(id);
+          this.updateData(`/search${this.currentApiUrl.search}`);
         },
 
     },

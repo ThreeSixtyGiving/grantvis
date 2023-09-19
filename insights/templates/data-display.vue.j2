@@ -48,16 +48,17 @@
                     <a href="/"><img src="https://cdn.threesixtygiving.org/images/360-logos/insights/360insights-color.svg"
                         alt="360 "></a>
                   </div>
-                  <div class="hero__column hero__lead" v-if="activeFilters.length && !loading">
+                  <div class="hero__column hero__lead" >
                     <h2 class="hero__title">{{ subtitle }}</h2>
                     <p class="hero__blurb">
+                      <!-- TODO
                         <template v-if="funders && funders.length <= 5">
                           {{ funders.join(", ")}}
-                        </template>
-                        <template v-else>{{ title }}</template>
+                        </template>  v-else -->
+                        <template>{{ title }}</template>
                     </p>
                   </div>
-                  <div class="hero__column hero__lead" v-else>
+                  <div class="hero__column hero__lead">
                     <h2 class="hero__title">See your grantmaking in new ways</h2>
                     <p class="hero__blurb">Combine and visualise 360Giving, charity and other data to answer questions about your
                       grantmaking</p>
@@ -162,62 +163,64 @@
             </header>
             <a href="#" class="filter filter--data-wrangling"
               v-for="(chart, id) in chartCardMetadata"
-              v-if="activeFilters.includes(id)"
+              v-if="currentApiUrl.searchParams.get(id)"
               v-bind:title="`Remove ${chart.title} filter`"
               v-on:click.prevent="removeFilter(id)">{{chart.title}} &times;
             </a>
           </div>
         </div>
       </div>
+        <template v-if="data.aggregations">
 
-        <!-- Funders -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganization" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Funding organisation type -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="fundingOrganizationTSGType" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Amount awarded -->
-        <bar-chart-card v-on:select="updateData($event)" :current-api-url="currentApiUrl" :data-all="data" data-id="amountAwardedFixed" v-if="data.aggregations" ></bar-chart-card>
+          <!-- Funders -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="fundingOrganization"></bar-chart-card>
+          <!-- Funding organisation type -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="fundingOrganizationTSGType"></bar-chart-card>
+          <!-- Amount awarded -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl"  data-id="amountAwardedFixed"></bar-chart-card>
 
-        <!-- Award date -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="awardYear" v-if="data.aggregations" ></bar-chart-card>
+          <!-- Award date -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="awardYear"></bar-chart-card>
 
-        <!-- Grant Programmes -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="grantProgramme" v-if="data.aggregations" ></bar-chart-card>
+          <!-- Grant Programmes -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="grantProgramme"></bar-chart-card>
 
-        <div class="spacer-3"></div>
-        <div class="grid__all">
-          <h3 v-if="!loading">Grants locations</h3>
-        </div>
+          <div class="spacer-3"></div>
+          <div class="grid__all">
+            <h3 v-if="!loading">Grants locations</h3>
+          </div>
 
-        <!-- Countries & Regions -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
-        <!--  Local Authorities -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientDistrictName" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Choropleth -->
-        <choropleth class="base-card__content" v-on:select="updateData($event)" v-if="data.aggregations" :current-api-url="currentApiUrl" :data-all="data" data-id="distributionChloropleth" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
-        <!-- TODO -->
+          <!-- Countries & Regions -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="recipientRegionName" v-if="data.aggregations" ></bar-chart-card>
+          <!--  Local Authorities -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" :current-api-url="currentApiUrl" data-id="recipientDistrictName" v-if="data.aggregations" ></bar-chart-card>
+          <!-- Choropleth -->
+          <choropleth class="base-card__content" v-on:select="updateData($event)" v-if="data.aggregations" :current-api-url="currentApiUrl" :data-all="data" data-id="distributionChloropleth" container="ch-1" height="680px" :zoom-control="true" ></choropleth>
+          <!-- TODO -->
 
-        <div class="spacer-3"></div>
-        <div class="grid__all">
-          <h3 v-if="!loading">Grant recipients</h3>
-        </div>
+          <div class="spacer-3"></div>
+          <div class="grid__all">
+            <h3 v-if="!loading">Grant recipients</h3>
+          </div>
 
-        <!--  Type of grant recipient -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientTSGType" v-if="data.aggregations" ></bar-chart-card>
-        <!-- Recipient org Type -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientOrganizationType" v-if="data.aggregations" ></bar-chart-card>
-        <!-- TODO -->
-        <!-- Latest Income -->
-        <!-- TODO -->
-        <!--Age of recipient org -->
-        <!-- TODO -->
+          <!--  Type of grant recipient -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientTSGType" :current-api-url="currentApiUrl"></bar-chart-card>
+          <!-- Recipient org Type -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="recipientOrganizationType" :current-api-url="currentApiUrl"></bar-chart-card>
+          <!-- TODO -->
+          <!-- Latest Income -->
+          <!-- TODO -->
+          <!--Age of recipient org -->
+          <!-- TODO -->
 
-        </div> <!-- / grid -->
-        <div class="grid__all">
-          <h3 v-if="!loading">Grant types</h3>
-        </div>
+          </div> <!-- / grid -->
+          <div class="grid__all">
+            <h3 v-if="!loading">Grant types</h3>
+          </div>
 
-        <!--Age of recipient org -->
-        <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="simple_grant_type" v-if="data.aggregations" ></bar-chart-card>
+          <!--Age of recipient org -->
+          <bar-chart-card v-on:select="updateData($event)" :data-all="data" data-id="simple_grant_type" :current-api-url="currentApiUrl"></bar-chart-card>
+
 
       </template>
 

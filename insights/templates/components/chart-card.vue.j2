@@ -123,11 +123,9 @@ function clamp(num, min, max){
     return Math.min(Math.max(num, min), max);
 }
 
-/* from https://davidwalsh.name/javascript-debounce-function
- Returns a function, that, as long as it continues to be invoked, will not
- be triggered. The function will be called after it stops being called for
- N milliseconds. If `immediate` is passed, trigger the function on the
- leading edge, instead of the trailing.
+/*
+ debounce function based on https://underscorejs.org/docs/modules/debounce.html
+ modified by https://davidwalsh.name/javascript-debounce-function
 */
 function debounce(func, wait, immediate) {
 	var timeout;
@@ -149,9 +147,9 @@ Vue.component('bar-chart-card', {
     props: {
         size: { type: String, default: "2" },
         loading: { type: Boolean, default: true },
-        dataAll: { type: Object },
-        dataId: { type: String },
-        currentApiUrl: { type: URL },
+        dataAll: { type: Object , required: true },
+        dataId: { type: String, required: true },
+        currentApiUrl: { type: URL, required: true },
     },
     data() {
         return {
@@ -160,7 +158,6 @@ Vue.component('bar-chart-card', {
             data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
             maxValue: 0,
             find: "",
-            itemsSelected: false,
             dateParams: false,
             filters: {
                 numberMin: null,
@@ -187,9 +184,9 @@ Vue.component('bar-chart-card', {
       },
       getBarStyle(item) {
         if (!this.maxValue){
-          /* no maxValue, running update */
           this.updateMaxValue(this.data.buckets);
         }
+
         return {
             '--value': item.doc_count,
             '--width': `${clamp(((item.doc_count / this.maxValue) * 100), 0.1, 100)}%`,
@@ -197,7 +194,6 @@ Vue.component('bar-chart-card', {
       },
       updateData(url){
           this.find = "";
-          this.itemsSelected = url.indexOf(this.dataId) != -1
           this.$emit("select", url);
       },
       updateDateFilter () {
@@ -222,7 +218,6 @@ Vue.component('bar-chart-card', {
       }
     },
     mounted: function () {
-
       if (this.dataId == 'awardDate'){
         let params = this.currentApiUrl.searchParams;
         for (const [key, value] of params) {
@@ -246,14 +241,16 @@ Vue.component('bar-chart-card', {
         this.dateParams && this.updateDateFilter();
       }
     },
+    computed: {
+      itemsSelected() {
+        return this.currentApiUrl.searchParams.get(this.dataId) != null;
+      },
+    },
     watch: {
         'dataAll': {
             handler: function() {
-              let newData = this.dataAll.aggregations[this.dataId];
-              /* Update the max value first so that new data has this value available */
-              this.updateMaxValue(newData.buckets);
-              /* Now update and trigger new load */
-              this.data = newData;
+              this.maxValue = 0;
+              this.data = this.dataAll.aggregations[this.dataId];
             },
             deep: true
         },
@@ -304,8 +301,6 @@ Vue.component('bar-chart-card', {
           })*/
         }, 3000),
         'filters.numberMin': debounce(function() {
-          /* TODO debounce */
-
           if (this.dataId == "amountAwardedFixed"){
             if (!this.filters.numberMin){
               this.currentApiUrl.searchParams.delete("min_amount");
