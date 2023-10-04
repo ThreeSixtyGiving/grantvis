@@ -34,11 +34,6 @@ def create_app():
         INSIGHTS_CONFIG=config_data,
     )
 
-    # Make sure that the tojson filter function does *not* use the jinja default of sorting the
-    # keys. This is especially important as the key order needs to be maintained
-    # for graph labels. (bin_labels)
-    app.jinja_env.policies["json.dumps_kwargs"] = {"sort_keys": False}
-
     @app.context_processor
     def inject_nav():
         return dict(
