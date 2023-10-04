@@ -12,6 +12,7 @@ export const barChart = {
   props: {
     chartData: { type: Array, required: true },
     currentApiUrl: { type: URL, required: true },
+    color: { type: String, default: 'orange' },
   },
   data() {
     return {
@@ -23,6 +24,15 @@ export const barChart = {
     }
   },
   computed: {
+    fillColor: function(){
+      if (this.color === 'orange'){
+        return 'var(--color-orange)';
+      }
+
+      if (this.color === 'teal'){
+        return 'var(--color-teal)';
+      }
+    },
     processOlderData: function () {
       this.compiledData = [{
         key: 'Older',
@@ -130,7 +140,7 @@ export const barChart = {
         .attr('width', x.bandwidth())
         .attr('height', d => this.height - y(d.doc_count))
         .style("margin-left", function(d) { return "0px"; })
-        .attr('fill', '#DE6E26')
+        .attr('fill', this.fillColor)
 
       svg.append('g')
         .attr('class', 'y-axis')

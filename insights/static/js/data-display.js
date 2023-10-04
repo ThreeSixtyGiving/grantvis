@@ -66,7 +66,8 @@ var app = new Vue({
       async updateData(queryUrl = "/search") {
             this.loadingQ++;
 
-            const url = new URL(`https://search.data.threesixtygiving.org/api/aggregates${queryUrl}`);
+            //const url = new URL(`https://search.data.threesixtygiving.org/api/aggregates${queryUrl}`);
+            const url = new URL(`http://localhost:8000/api/aggregates${queryUrl}`);
 
             this.currentApiUrl = url;
 

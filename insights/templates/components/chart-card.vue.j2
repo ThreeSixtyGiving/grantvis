@@ -51,7 +51,7 @@
                 </template>
 
                 <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :current-api-url="currentApiUrl" :chart-data="data.buckets" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
+                  <bar-chart :current-api-url="currentApiUrl" :chart-data="data.buckets" v-bind:color="chartCardMetadata.color" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
                 </template>
 
                 <!--- Extra in-place filters -->
@@ -176,7 +176,10 @@ Vue.component('bar-chart-card', {
           return;
         }
 
-        if (this.dataId === 'amountAwardedFixed') {
+        /* Unlike other datasets these aren't ordered by the largest first, they're "Fixed" so we can't
+           just use the first value here.
+        */
+        if (this.dataId === 'amountAwardedFixed' || this.dataId === 'latestCharityIncomeFixed') {
           this.maxValue = Math.max(...buckets.map((d) => d.doc_count));
         } else {
           this.maxValue = buckets[0].doc_count;
