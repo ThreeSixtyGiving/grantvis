@@ -25,13 +25,12 @@ export const barChart = {
   },
   computed: {
     fillColor: function(){
-      if (this.color === 'orange'){
-        return 'var(--color-orange)';
-      }
-
       if (this.color === 'teal'){
         return 'var(--color-teal)';
       }
+
+      /* default */
+      return 'var(--color-orange)';
     },
     processOlderData: function () {
       this.compiledData = [{
