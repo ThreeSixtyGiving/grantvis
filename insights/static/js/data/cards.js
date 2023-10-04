@@ -64,11 +64,11 @@ const chartCardMetadata = {
     "color": "teal",
     "chartType": "bar-horizontal"
   },
-  "charityRegisteredDate": {
-    "title": "Recipient organisations registered",
-    "instructions": "How many grants are received by an organisation by the organisation's registered year. Only available for recipients with charity or company numbers.",
+  "orgAgeWhenAwarded": {
+    "title": "Age of recipient organisations",
+    "instructions": "Data cannot be filtered using this chart. Organisation age at the time of the grant award, based on the registration date of that organisation. Only available for recipients with charity or company numbers.",
     "color": "teal",
-    "chartType": "bar-vertical",
+    "chartType": "bar-horizontal",
   },
   "simple_grant_type": {
     "title": "Type of grant",
