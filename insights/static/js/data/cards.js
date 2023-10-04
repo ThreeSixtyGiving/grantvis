@@ -66,7 +66,7 @@ const chartCardMetadata = {
   },
   "charityRegisteredDate": {
     "title": "Recipient organisations registered",
-    "instructions": "When recipient organisations were registered. Only available for recipients with charity or company numbers.",
+    "instructions": "How many grants are received by an organisation by the organisation's registered year. Only available for recipients with charity or company numbers.",
     "color": "teal",
     "chartType": "bar-vertical",
   },
