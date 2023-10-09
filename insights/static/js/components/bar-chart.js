@@ -4,8 +4,7 @@ let daysRange, lastYearLabel, language;
 
 let days = []
 
-// Check if date range is filtered
-
+/* TODO awardDate assumptions made here */
 
 export const barChart = {
   name: 'BarChart',
@@ -74,6 +73,11 @@ export const barChart = {
     },
   },
   methods: {
+    itemClicked(data){
+      if (data.url){
+        this.$emit("select", data.url);
+      }
+    },
     setTooltips(){
       this.bars.attr('data-tippy-content', (d)=>{
           return `<strong>${this.parseLabels(d.key)}</strong><br>${d.doc_count.toLocaleString()}`;
@@ -83,6 +87,7 @@ export const barChart = {
       });
     },
     parseLabels (value) {
+      /* TODO This may not be needed as there is "key_as_string" property that already does this */
       if (typeof value !== 'string') {
         return new Date(value).toLocaleString(language, { year: 'numeric' });
       } else {
@@ -139,7 +144,21 @@ export const barChart = {
         .attr('width', x.bandwidth())
         .attr('height', d => this.height - y(d.doc_count))
         .style("margin-left", function(d) { return "0px"; })
-        .attr('fill', this.fillColor)
+        .style("cursor", "pointer")
+        .attr('stroke', this.fillColor)
+        .attr('stroke-width', '1')
+        .attr('fill', (d) => {
+          /* If a year is selected then don't fill it */
+          if (this.currentApiUrl.searchParams.get('awardDate')) {
+            if (this.currentApiUrl.searchParams.getAll('awardDate').includes(this.parseLabels(d.key))){
+              return this.fillColor;
+            } else {
+              return 'white';
+            }
+          }
+          return  this.fillColor
+        })
+        .on('click', (event, data) => { this.itemClicked(data) } )
 
       svg.append('g')
         .attr('class', 'y-axis')

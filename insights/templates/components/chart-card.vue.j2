@@ -51,7 +51,7 @@
                 </template>
 
                 <template v-if="chartCardMetadata.chartType === 'bar-vertical'">
-                  <bar-chart :current-api-url="currentApiUrl" :chart-data="data.buckets" v-bind:color="chartCardMetadata.color" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
+                  <bar-chart :current-api-url="currentApiUrl" v-on:select="updateData" :chart-data="data.buckets" v-bind:color="chartCardMetadata.color" v-if="data.buckets" v-bind:height="100" v-bind:hide-legend="true"></bar-chart>
                 </template>
 
                 <!--- Extra in-place filters -->
@@ -303,7 +303,7 @@ Vue.component('bar-chart-card', {
             this.currentApiUrl.searchParams.set("max_amount", Number(this.filters.numberMax));
             this.$emit("select", this.currentApiUrl.toString());
           }
-          /* Todo this doesn't reset correctly
+          /* TODO this doesn't reset correctly
           const app = this;
           this.$refs.barItem.forEach((li) => {
             li.style.display = null;
