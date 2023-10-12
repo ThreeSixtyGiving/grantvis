@@ -1,4 +1,3 @@
-import { lineChart } from './components/line-chart.js';
 import { barChart } from './components/bar-chart.js';
 import { formatCurrency, formatDate, formatNumber, getAmountSuffix, formatNumberSuffix } from './components/filters.js';
 
@@ -15,7 +14,6 @@ import { choropleth } from './components/choropleth.js';
 Vue.component('choropleth', choropleth);
 
 Vue.component('bar-chart', barChart);
-Vue.component('line-chart', lineChart);
 
 Vue.filter('formatCurrency', formatCurrency);
 Vue.filter('formatDate', formatDate);
