@@ -325,7 +325,7 @@
 
         <!-- Award date -->
 
-        <chart-card color="orange" v-bind:loading="loading" v-if="!loading && summary.minDate && summary.minDate.slice(0,7) != summary.maxDate.slice(0,7)">
+        <chart-card colour="orange" v-bind:loading="loading" v-if="!loading && summary.minDate && summary.minDate.slice(0,7) != summary.maxDate.slice(0,7)" >
           <chart-card-header :title="getChartCardData('byAwardDate')[0].title">
           (number of grants)
           </chart-card-header>
