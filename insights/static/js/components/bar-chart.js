@@ -12,7 +12,7 @@ const compiledData = {
   labels: ['Older'],
   datasets: [{
     label: 'Data',
-    backgroundColor: '#DE6E26',
+    backgroundColor: '#F26202',
     data: [0]
   }]
 };
