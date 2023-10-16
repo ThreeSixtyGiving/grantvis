@@ -305,7 +305,7 @@
                 :style="group.style"
                 v-bind:class="{ 'hide-print' : group.inactive }"
                 v-on:click="applyAmountAwardedFilter(group)">
-               <label class="bar-chart__label" style="white-space: nowrap;">{{ group.label }}</label>
+               <label class="bar-chart__label">{{ group.label }}</label>
               <div class="bar-chart__bar" v-bind:class="{ 'inactive-bar': group.inactive }"><span v-bind:data-val="group.value.toLocaleString()"></span></span></div>
             </li>
           </ul>
