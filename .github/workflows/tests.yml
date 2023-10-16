@@ -27,7 +27,7 @@ jobs:
     - name: Setup
       run: |
         python -m pip install --upgrade pip
-        pip install -r dev-requirements.txt
+        pip install -r requirements_dev.txt
         git submodule update --init --recursive
     - name: Test with pytest
       run: pytest tests/ --cov-append --cov
