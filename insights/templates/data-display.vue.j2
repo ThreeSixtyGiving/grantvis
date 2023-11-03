@@ -46,10 +46,20 @@
                     <a href="/"><img src="https://cdn.threesixtygiving.org/images/360-logos/insights/360insights-color.svg"
                         alt="360 "></a>
                   </div>
-                  <div class="hero__column hero__lead">
+
+                  <div class="hero__column hero__lead" v-if="!currentApiUrl.searchParams.get('fundingOrganization')">
                     <h2 class="hero__title">See your grantmaking in new ways</h2>
                     <p class="hero__blurb">Combine and visualise 360Giving, charity and other data to answer questions about your
                       grantmaking</p>
+                  </div>
+                  <div class="hero__column hero__lead" v-else>
+                    <h2 class="hero__title">Grants made by:</h2>
+                    <p class="hero__blurb" v-if="data.aggregations">
+                      {{ data.aggregations.fundingOrganization.buckets.filter((i) => {return i.selected}).map((i) => {return i.name}).join(", ") }}
+                      <template v-if="data.aggregations.awardYear.buckets.length">
+                        <small>between</small> {{data.aggregations.awardYear.buckets[data.aggregations.awardYear.buckets.length-1].key_as_string }} <small>and</small> {{data.aggregations.awardYear.buckets[0].key_as_string }}
+                      </template>
+                    </p>
                   </div>
                 </div>
               </div>
