@@ -14,7 +14,7 @@
     rel="stylesheet">
   <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon/favicon.ico') }}" />
 
-  {% if config.ENV == 'development' %}
+  {% if debug %}
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
   <script src="https://d3js.org/d3.v6.js"></script>
   <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
@@ -27,7 +27,7 @@
   <script src="https://d3js.org/d3.v6.js"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
   <script src="https://unpkg.com/vue-chartjs@3.5.1/dist/vue-chartjs.min.js"></script>
   {% endif %}
@@ -45,7 +45,9 @@
     {% block content %}
     {% endblock content %}
 
+    {% if not debug %}
     {% include 'components/cookie-consent.html.j2' %}
+    {% endif %}
 
     {% block footer %}
     {% include 'components/footer.html.j2' %}

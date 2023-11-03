@@ -41,7 +41,8 @@ def create_app():
                 "360Insights": url_for("data"),
                 "About": url_for("about"),
                 "GrantNav": "https://grantnav.threesixtygiving.org/",
-            }
+            },
+            debug=app.config["DEBUG"],
         )
 
     @app.route("/about")
