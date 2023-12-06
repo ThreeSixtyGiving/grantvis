@@ -110,6 +110,7 @@
                 <div>
                 <hr class="separator-light">
                 <p>{{ chartCardMetadata.instructions }}</p>
+                <p v-if="totalNotInGraph > 0">{{totalNotInGraph.toLocaleString()}} grants did not have information on {{chartCardMetadata.title}}.</p>
                 </div>
             </div>
       </div>
@@ -263,6 +264,9 @@ Vue.component('bar-chart-card', {
       itemsSelected() {
         return this.currentApiUrl.searchParams.get(this.dataId) != null;
       },
+      totalNotInGraph() {
+        return this.dataAll.hits.total.value - this.data.buckets.reduce((total, item) => total + item.doc_count, 0)
+      }
     },
     watch: {
         'dataAll': {
