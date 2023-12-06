@@ -66,7 +66,7 @@ const chartCardMetadata = {
   },
   "orgAgeWhenAwarded": {
     "title": "Age of recipient organisations",
-    "instructions": "Data cannot be filtered using this chart. Organisation age at the time of the grant award, based on the registration date of that organisation. Only available for recipients with charity or company numbers.",
+    "instructions": "Organisation age at the time of the grant award, based on the registration date of that organisation. Only available for recipients with charity or company numbers.",
     "color": "teal",
     "chartType": "bar-horizontal",
   },
