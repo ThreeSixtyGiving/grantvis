@@ -291,7 +291,7 @@ export const choropleth = {
                <div>
                 <hr class="separator-light">
                 <p>{{ chartCardMetadata.instructions }}</p>
-                <p v-if="totalNotOnMap > 0">{{totalNotOnMap.toLocaleString()}} grants are not shown as they did not have did not have enough information to determine geography.</p>
+                <p v-if="totalNotOnMap > 0">{{totalNotOnMap.toLocaleString()}} grants are not shown as they did not include enough information to determine geography.</p>
                 </div>
             </div>
         `,
