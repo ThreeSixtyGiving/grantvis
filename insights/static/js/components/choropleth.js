@@ -32,6 +32,7 @@ export const choropleth = {
       keys: ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026'],
       chartCardMetadata: chartCardMetadata[this.dataId],
       layerData: this.createLayerData(),
+      totalNotOnMap: 0,
     };
   },
   watch: {
@@ -73,6 +74,9 @@ export const choropleth = {
       return layerData;
     },
 
+    updateTotalNotOnMap(field = "recipientRegionName") {
+        this.totalNotOnMap = this.dataAll.hits.total.value - this.dataAll.aggregations[field].buckets.reduce((total, item) => total + item.doc_count, 0)
+    },
 
     updateMap() {
 
@@ -213,12 +217,14 @@ export const choropleth = {
 
         if (!this.map.hasLayer(this.laLayer)) {
           this.laLayer.addTo(this.map);
+          this.updateTotalNotOnMap("recipientDistrictName");
         }
 
       } else {
         /* low detail layer */
         if (!this.map.hasLayer(this.regionCountryLayer)) {
           this.regionCountryLayer.addTo(this.map);
+          this.updateTotalNotOnMap("recipientRegionName");
         }
 
         if (this.map.hasLayer(this.laLayer)) {
@@ -253,9 +259,9 @@ export const choropleth = {
       this.updateMap();
     }
 
-
-
+    this.updateTotalNotOnMap("recipientRegionName");
   },
+
   created() {
     const app = this;
     document.addEventListener("map-select", function (event) {
@@ -285,6 +291,7 @@ export const choropleth = {
                <div>
                 <hr class="separator-light">
                 <p>{{ chartCardMetadata.instructions }}</p>
+                <p v-if="totalNotOnMap > 0">{{totalNotOnMap.toLocaleString()}} grants are not shown as they did not have did not have enough information to determine geography.</p>
                 </div>
             </div>
         `,
