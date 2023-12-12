@@ -264,11 +264,11 @@ Vue.component('bar-chart-card', {
       itemsSelected() {
         return this.currentApiUrl.searchParams.get(this.dataId) != null;
       },
-      totalNotInGraph() {
-        return this.dataAll.hits.total.value - this.data.buckets.reduce((total, item) => total + item.doc_count, 0);
-      },
       totalInGraph() {
         return this.data.buckets.reduce((total, item) => total + item.doc_count, 0);
+      },
+      totalNotInGraph() {
+        return this.dataAll.hits.total.value - this.totalInGraph;
       }
     },
     watch: {
