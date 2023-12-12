@@ -2,6 +2,7 @@
 [
     {
         layerName: "name",
+        field: "fieldNameInDataAll",
         areas: [
              { areaName : name, grant_count: int },
         ],
@@ -13,7 +14,30 @@
 
 
 export const choropleth = {
-  props: ['container', 'height', 'layerData', 'zoomControl'],
+  template: `
+      <div class="grid__2 base-card base-card--left" v-bind:class="'base-card--'+chartCardMetadata.color" >
+        <a name="map" />
+          <div class="base-card__content" >
+                  <header class="base-card__header" style="display: flex; align-items: center;" >
+                      <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
+                      <h4 class="base-card__subheading" style="margin-left: 5px">
+                          ({{totalOnMap.toLocaleString()}} grants)
+                      </h4>
+              </header>
+              <div v-bind:id="container" ref="mapElement" v-bind:style="{ height: height }"></div>
+              <div style="display: flex">
+                  <p style="margin: auto 0.5em auto 0;">Key: Least grants</p>
+                  <span v-for="key in keys" style="align-self: center; width: 15px; height: 15px" v-bind:style="'background-color:'+key"></span>
+                  <p style="margin: auto 0 auto 0.5em "> Most grants</p>
+              </div>
+          </div>
+          <div>
+          <hr class="separator-light">
+          <span v-html="chartCardMetadata.instructions"></span>
+          <p v-if="totalNotOnMap > 0">{{totalNotOnMap.toLocaleString()}} grants are not shown as they did not include enough information to determine geography.</p>
+          </div>
+      </div>
+    `,
 
   props: {
     container: { type: String },
@@ -23,6 +47,7 @@ export const choropleth = {
     dataId: { type: String },
     currentApiUrl: { type: URL },
   },
+
   data: function () {
     return {
       map: null,
@@ -33,6 +58,7 @@ export const choropleth = {
       chartCardMetadata: chartCardMetadata[this.dataId],
       layerData: this.createLayerData(),
       totalNotOnMap: 0,
+      totalOnMap: 0,
     };
   },
   watch: {
@@ -48,12 +74,12 @@ export const choropleth = {
       deep: true
     },
   },
-
   methods: {
     createLayerData() {
       let layerData = [
         {
           layerName: "regionCountryLayer",
+          field: "recipientRegionName",
           areas: this.dataAll.aggregations.recipientRegionName.buckets,
           layerBoundariesJsonFile: "country_region.geojson",
           popupHandler: function (layer) {
@@ -63,6 +89,7 @@ export const choropleth = {
         },
         {
           layerName: "laLayer",
+          field: "recipientDistrictName",
           areas: this.dataAll.aggregations.recipientDistrictName.buckets,
           layerBoundariesJsonFile: "lalt.geojson",
           popupHandler: function (layer) {
@@ -70,14 +97,17 @@ export const choropleth = {
           },
         }
       ]
-
       return layerData;
     },
-
-    updateTotalNotOnMap(field = "recipientRegionName") {
-        this.totalNotOnMap = this.dataAll.hits.total.value - this.dataAll.aggregations[field].buckets.reduce((total, item) => total + item.doc_count, 0)
+    updateTotalNotOnMap(field) {
+      /* selection has happened only count selected */
+      if (this.currentApiUrl.searchParams.getAll(field).length){
+        this.totalOnMap = this.dataAll.aggregations[field].buckets.filter((item) => item.selected).reduce((total, item) => total + item.doc_count, 0);
+      } else {
+        this.totalOnMap = this.dataAll.aggregations[field].buckets.reduce((total, item) => total + item.doc_count, 0);
+      }
+      this.totalNotOnMap = this.dataAll.hits.total.value - this.totalOnMap;
     },
-
     updateMap() {
 
       var component = this;
@@ -169,7 +199,6 @@ export const choropleth = {
             if (areaSelectLookup[name].grantCount > maxGrantCount) {
               maxGrantCount = areaSelectLookup[name].grantCount;
             }
-
           } else {
             feature.properties.name = name;
             feature.properties.url = "#";
@@ -188,6 +217,7 @@ export const choropleth = {
 
         if (addToMap) {
           component[layer.layerName].addTo(component.map);
+          component.updateTotalNotOnMap(layer.field);
         }
       }
 
@@ -258,8 +288,6 @@ export const choropleth = {
     if (this.layerData.length) {
       this.updateMap();
     }
-
-    this.updateTotalNotOnMap("recipientRegionName");
   },
 
   created() {
@@ -271,28 +299,4 @@ export const choropleth = {
       app.$emit("select", event.target.dataset.url);
     });
   },
-
-  template: `
-            <div class="grid__2 base-card base-card--left" v-bind:class="'base-card--'+chartCardMetadata.color" >
-                <div class="base-card__content" >
-                        <header class="base-card__header" style="display: flex; align-items: center;" >
-                            <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
-                            <h4 class="base-card__subheading" style="margin-left: 5px">
-                                (number of grants)
-                            </h4>
-                    </header>
-                    <div v-bind:id="container" ref="mapElement" v-bind:style="{ height: height }"></div>
-                    <div style="display: flex">
-                        <p style="margin: auto 0.5em auto 0;">Key: Least grants</p>
-                        <span v-for="key in keys" style="align-self: center; width: 15px; height: 15px" v-bind:style="'background-color:'+key"></span>
-                        <p style="margin: auto 0 auto 0.5em "> Most grants</p>
-                    </div>
-                </div>
-               <div>
-                <hr class="separator-light">
-                <p>{{ chartCardMetadata.instructions }}</p>
-                <p v-if="totalNotOnMap > 0">{{totalNotOnMap.toLocaleString()}} grants are not shown as they did not include enough information to determine geography.</p>
-                </div>
-            </div>
-        `,
 }

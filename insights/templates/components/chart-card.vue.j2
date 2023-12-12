@@ -6,7 +6,7 @@
                 <header class="base-card__header" style="display: flex; align-items: center;" >
                     <h3 class="base-card__heading" >{{ chartCardMetadata.title }}</h3>
                     <h4 class="base-card__subheading" style="margin-left: 5px">
-                        (number of grants)
+                        ({{totalInGraph.toLocaleString()}} grants)
                     </h4>
                 </header>
                 <slot></slot>
@@ -109,7 +109,7 @@
                 </filter-item>
                 <div>
                 <hr class="separator-light">
-                <p>{{ chartCardMetadata.instructions }}</p>
+                <span v-html="chartCardMetadata.instructions"></span>
                 <p v-if="totalNotInGraph > 0">{{totalNotInGraph.toLocaleString()}} grants are not shown as they did not include information to determine {{chartCardMetadata.title.toLowerCase()}}.</p>
                 </div>
             </div>
@@ -265,7 +265,10 @@ Vue.component('bar-chart-card', {
         return this.currentApiUrl.searchParams.get(this.dataId) != null;
       },
       totalNotInGraph() {
-        return this.dataAll.hits.total.value - this.data.buckets.reduce((total, item) => total + item.doc_count, 0)
+        return this.dataAll.hits.total.value - this.data.buckets.reduce((total, item) => total + item.doc_count, 0);
+      },
+      totalInGraph() {
+        return this.data.buckets.reduce((total, item) => total + item.doc_count, 0);
       }
     },
     watch: {
