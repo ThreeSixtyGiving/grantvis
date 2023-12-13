@@ -265,6 +265,10 @@ Vue.component('bar-chart-card', {
         return this.currentApiUrl.searchParams.get(this.dataId) != null;
       },
       totalInGraph() {
+        if (this.itemsSelected){
+          return this.data.buckets.filter((item) => item.selected).reduce((total, item) => total + item.doc_count, 0);
+
+        }
         return this.data.buckets.reduce((total, item) => total + item.doc_count, 0);
       },
       totalNotInGraph() {
