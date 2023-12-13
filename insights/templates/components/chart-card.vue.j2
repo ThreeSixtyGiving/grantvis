@@ -172,6 +172,7 @@ Vue.component('bar-chart-card', {
     },
     methods: {
       updateMaxValue (buckets) {
+        /* This maxValue is used to work out the scale of the graphs */
         if (this.itemsSelected){
           this.maxValue = Math.max(...buckets.filter((d) => d.selected).map((d) => d.doc_count));
           return;
@@ -180,7 +181,7 @@ Vue.component('bar-chart-card', {
         /* Unlike other datasets these aren't ordered by the largest first, they're "Fixed" so we can't
            just use the first value here.
         */
-        if (this.dataId === 'amountAwardedFixed' || this.dataId === 'latestCharityIncomeFixed') {
+        if (this.dataId === 'amountAwardedFixed' || this.dataId === 'latestCharityIncomeFixed' || this.dataId === 'orgAgeWhenAwarded') {
           this.maxValue = Math.max(...buckets.map((d) => d.doc_count));
         } else {
           this.maxValue = buckets[0].doc_count;
@@ -267,7 +268,6 @@ Vue.component('bar-chart-card', {
       totalInGraph() {
         if (this.itemsSelected){
           return this.data.buckets.filter((item) => item.selected).reduce((total, item) => total + item.doc_count, 0);
-
         }
         return this.data.buckets.reduce((total, item) => total + item.doc_count, 0);
       },
