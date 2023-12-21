@@ -11,7 +11,7 @@
                 </header>
                 <slot></slot>
                 <template v-if="chartCardMetadata.chartType === 'bar-horizontal'">
-                  <ul class="bar-chart">
+                  <ul class="bar-chart" v-bind:style="itemsSelected ? 'max-height: unset' : ''">
                     <li
                     class="bar-chart__item"
                     ref="barItem"
