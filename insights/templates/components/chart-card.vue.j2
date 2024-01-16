@@ -1,5 +1,5 @@
 {% raw %}
-<script type="text/x-template" id="bar-chart-card-template" >
+<script type="text/x-template" id="bar-chart-card-template">
   <div v-bind:class="'grid__'+size"  >
       <div class="base-card base-card--left" v-bind:class="`base-card--${chartCardMetadata.color}`" >
           <div class="base-card__content" >
@@ -122,60 +122,60 @@
 <script>
 
 
-function clamp(num, min, max){
+  function clamp(num, min, max) {
     return Math.min(Math.max(num, min), max);
-}
+  }
 
-/*
- debounce function based on https://underscorejs.org/docs/modules/debounce.html
- modified by https://davidwalsh.name/javascript-debounce-function
-*/
-function debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
-}
+  /*
+   debounce function based on https://underscorejs.org/docs/modules/debounce.html
+   modified by https://davidwalsh.name/javascript-debounce-function
+  */
+  function debounce(func, wait, immediate) {
+    var timeout;
+    return function () {
+      var context = this, args = arguments;
+      var later = function () {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
+  }
 
-Vue.component('bar-chart-card', {
+  Vue.component('bar-chart-card', {
     template: "#bar-chart-card-template",
     props: {
-        size: { type: String, default: "2" },
-        loading: { type: Boolean, default: true },
-        dataAll: { type: Object , required: true },
-        dataId: { type: String, required: true },
-        currentApiUrl: { type: URL, required: true },
+      size: { type: String, default: "2" },
+      loading: { type: Boolean, default: true },
+      dataAll: { type: Object, required: true },
+      dataId: { type: String, required: true },
+      currentApiUrl: { type: URL, required: true },
     },
     data() {
-        return {
-            chartCardMetadata: chartCardMetadata[this.dataId],
-            // remove hyphenated identifier from dataId
-            data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
-            maxValue: 0,
-            find: "",
-            dateParams: false,
-            filters: {
-                numberMin: null,
-                numberMax: null,
-                dates: {
-                    min: { month: null, year: null },
-                    max: { month: null, year: null }
-                }
-            }
-        };
+      return {
+        chartCardMetadata: chartCardMetadata[this.dataId],
+        // remove hyphenated identifier from dataId
+        data: this.dataAll.aggregations[this.dataId.replace(/-(.*)$/gm, '')],
+        maxValue: 0,
+        find: "",
+        dateParams: false,
+        filters: {
+          numberMin: null,
+          numberMax: null,
+          dates: {
+            min: { month: null, year: null },
+            max: { month: null, year: null }
+          }
+        }
+      };
     },
     methods: {
-      updateMaxValue (buckets) {
+      updateMaxValue(buckets) {
         /* This maxValue is used to work out the scale of the graphs */
-        if (this.itemsSelected){
+        if (this.itemsSelected) {
           this.maxValue = Math.max(...buckets.filter((d) => d.selected).map((d) => d.doc_count));
           return;
         }
@@ -190,32 +190,32 @@ Vue.component('bar-chart-card', {
         }
       },
       getBarStyle(item) {
-        if (!this.maxValue){
+        if (!this.maxValue) {
           this.updateMaxValue(this.data.buckets);
         }
 
         return {
-            '--value': item.doc_count,
-            '--width': `${clamp(((item.doc_count / this.maxValue) * 100), 0.1, 100)}%`,
+          '--value': item.doc_count,
+          '--width': `${clamp(((item.doc_count / this.maxValue) * 100), 0.1, 100)}%`,
         }
       },
-      updateData(url){
-          this.find = "";
-          this.$emit("select", url);
+      updateData(url) {
+        this.find = "";
+        this.$emit("select", url);
       },
-      updateDateFilter () {
+      updateDateFilter() {
 
-        if (this.filters.dates.min.month && !this.filters.dates.min.year){
+        if (this.filters.dates.min.month && !this.filters.dates.min.year) {
           return;
         }
 
         /* Min Month selected but not finished typing year */
-        if(this.filters.dates.min.month && this.filters.dates.min.year.length != 4){
+        if (this.filters.dates.min.month && this.filters.dates.min.year.length != 4) {
           return;
         }
 
         /* Max month selected but not finished typing year */
-        if(this.filters.dates.max.month && this.filters.dates.max.year.length != 4){
+        if (this.filters.dates.max.month && this.filters.dates.max.year.length != 4) {
           return;
         }
 
@@ -240,7 +240,7 @@ Vue.component('bar-chart-card', {
       }
     },
     mounted: function () {
-      if (this.dataId == 'awardDate'){
+      if (this.dataId == 'awardDate') {
         let params = this.currentApiUrl.searchParams;
         for (const [key, value] of params) {
           if (key.includes('min_date')) {
@@ -268,7 +268,7 @@ Vue.component('bar-chart-card', {
         return this.currentApiUrl.searchParams.get(this.dataId) != null;
       },
       totalInGraph() {
-        if (this.itemsSelected){
+        if (this.itemsSelected) {
           return this.data.buckets.filter((item) => item.selected).reduce((total, item) => total + item.doc_count, 0);
         }
         return this.data.buckets.reduce((total, item) => total + item.doc_count, 0);
@@ -278,90 +278,90 @@ Vue.component('bar-chart-card', {
       }
     },
     watch: {
-        'dataAll': {
-            handler: function() {
-              this.maxValue = 0;
-              this.data = this.dataAll.aggregations[this.dataId];
-            },
-            deep: true
+      'dataAll': {
+        handler: function () {
+          this.maxValue = 0;
+          this.data = this.dataAll.aggregations[this.dataId];
         },
-        'find': function () {
-            const app = this;
-            this.$refs.barItem.forEach((li) => {
-                li.style.display = null;
-                if (li.dataset.label && app.find && !li.dataset.label.toLowerCase().includes(app.find.toLowerCase())){
-                  if (this.itemsSelected) {
-                    if (li.classList.contains("inactive-bar")) {
-                      li.style.display = "none";
-                    }
-                  } else {
-                    li.style.display = "none";
-                  }
-                }
-            });
-        },
-        'filters.numberMax': debounce(function() {
-
-          if (this.dataId == "amountAwardedFixed"){
-            if (!this.filters.numberMax){
-              this.currentApiUrl.searchParams.delete("max_amount");
-              this.$emit("select", this.currentApiUrl.toString());
-              return;
-            }
-
-            this.currentApiUrl.searchParams.set("max_amount", Number(this.filters.numberMax));
-            this.$emit("select", this.currentApiUrl.toString());
-          }
-          /* TODO this doesn't reset correctly
-          const app = this;
-          this.$refs.barItem.forEach((li) => {
-            li.style.display = null;
-            let min = Number(app.filters.numberMin)
-            let max = Number(app.filters.numberMax)
-            console.log(li.dataset)
-            let labels = li.dataset.label.split('-');
-            if (min > Number(labels[1]) || max < Number(labels[0])) {
-              if (this.itemsSelected) {
-                if (li.classList.contains("inactive-bar")) {
-                  li.style.display = "none";
-                }
-              } else {
+        deep: true
+      },
+      'find': function () {
+        const app = this;
+        this.$refs.barItem.forEach((li) => {
+          li.style.display = null;
+          if (li.dataset.label && app.find && !li.dataset.label.toLowerCase().includes(app.find.toLowerCase())) {
+            if (this.itemsSelected) {
+              if (li.classList.contains("inactive-bar")) {
                 li.style.display = "none";
               }
+            } else {
+              li.style.display = "none";
             }
-          })*/
-        }, 2000),
-        'filters.numberMin': debounce(function() {
-          if (this.dataId == "amountAwardedFixed"){
-            if (!this.filters.numberMin){
-              this.currentApiUrl.searchParams.delete("min_amount");
-              this.$emit("select", this.currentApiUrl.toString());
-              return;
-            }
+          }
+        });
+      },
+      'filters.numberMax': debounce(function () {
 
-            this.currentApiUrl.searchParams.set("min_amount", Number(this.filters.numberMin));
+        if (this.dataId == "amountAwardedFixed") {
+          if (!this.filters.numberMax) {
+            this.currentApiUrl.searchParams.delete("max_amount");
             this.$emit("select", this.currentApiUrl.toString());
+            return;
           }
 
-          /* Fixme this doesn't reset when max amount removed
-          const app = this;
-          this.$refs.barItem.forEach((li) => {
-            li.style.display = null;
-            let min = Number(app.filters.numberMin)
-            let max = Number(app.filters.numberMax)
-            let labels = li.dataset.label.split('-');
-            if (min > Number(labels[1]) || max < Number(labels[0])) {
-              if (this.itemsSelected) {
-                if (li.classList.contains("inactive-bar")) {
-                  li.style.display = "none";
-                }
-              } else {
+          this.currentApiUrl.searchParams.set("max_amount", Number(this.filters.numberMax));
+          this.$emit("select", this.currentApiUrl.toString());
+        }
+        /* TODO this doesn't reset correctly
+        const app = this;
+        this.$refs.barItem.forEach((li) => {
+          li.style.display = null;
+          let min = Number(app.filters.numberMin)
+          let max = Number(app.filters.numberMax)
+          console.log(li.dataset)
+          let labels = li.dataset.label.split('-');
+          if (min > Number(labels[1]) || max < Number(labels[0])) {
+            if (this.itemsSelected) {
+              if (li.classList.contains("inactive-bar")) {
                 li.style.display = "none";
               }
+            } else {
+              li.style.display = "none";
             }
-          })*/
-        }, 2000),
+          }
+        })*/
+      }, 2000),
+      'filters.numberMin': debounce(function () {
+        if (this.dataId == "amountAwardedFixed") {
+          if (!this.filters.numberMin) {
+            this.currentApiUrl.searchParams.delete("min_amount");
+            this.$emit("select", this.currentApiUrl.toString());
+            return;
+          }
+
+          this.currentApiUrl.searchParams.set("min_amount", Number(this.filters.numberMin));
+          this.$emit("select", this.currentApiUrl.toString());
+        }
+
+        /* Fixme this doesn't reset when max amount removed
+        const app = this;
+        this.$refs.barItem.forEach((li) => {
+          li.style.display = null;
+          let min = Number(app.filters.numberMin)
+          let max = Number(app.filters.numberMax)
+          let labels = li.dataset.label.split('-');
+          if (min > Number(labels[1]) || max < Number(labels[0])) {
+            if (this.itemsSelected) {
+              if (li.classList.contains("inactive-bar")) {
+                li.style.display = "none";
+              }
+            } else {
+              li.style.display = "none";
+            }
+          }
+        })*/
+      }, 2000),
     }
-});
+  });
 </script>
 {% endraw %}
