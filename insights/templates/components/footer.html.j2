@@ -44,6 +44,9 @@
                     <li><a href="https://dataquality.threesixtygiving.org/">Data Quality Tool</a></li>
                     <li><a href="https://data.threesixtygiving.org/">Registry</a></li>
                     <li><a href="https://qualitydashboard.threesixtygiving.org/">Quality Dashboard</a></li>
+                    {% if not config.INSIGHTS_CONFIG.default %}
+                    <li><a href="https://insights.threesixtygiving.org/">360Insights</a></li>
+                    {% endif %}
                 </ul>
             </div>
 
