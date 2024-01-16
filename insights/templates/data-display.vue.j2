@@ -14,8 +14,7 @@
 <script>
     const MAPBOX_ACCESS_TOKEN = {{ config.MAPBOX_ACCESS_TOKEN|tojson }};
     const INSIGHTS_CONFIG = {{ config.INSIGHTS_CONFIG|tojson }};
-    const TITLE = "{{ title }}";
-    const SUBTITLE = "{{ subtitle }}";
+    const GRANTNAV_BASE_URL = {{ config.GRANTNAV_BASE_URL|tojson }};
   </script>
   <script type="module" src="{{ url_for('static', filename='js/data-display.js') }}"></script>
 {% endblock bodyscripts %}

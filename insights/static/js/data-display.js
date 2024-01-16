@@ -21,6 +21,7 @@ var app = new Vue({
             loadingQ: 0,
             chartCardMetadata: chartCardMetadata,
             insightsConfig: INSIGHTS_CONFIG,
+            grantnavBaseUrl: GRANTNAV_BASE_URL,
             grantnavUrl: "",
             currentApiUrl: new URL(window.location),
         }
@@ -38,8 +39,7 @@ var app = new Vue({
       async updateData(queryUrl = "/search") {
             this.loadingQ++;
 
-            const url = new URL(`https://search.data.threesixtygiving.org/api/aggregates${queryUrl}`);
-//            const url = new URL(`http://localhost:8000/api/aggregates${queryUrl}`);
+            const url = new URL(`${this.grantnavBaseUrl}/api/aggregates${queryUrl}`);
             let urlSearch = url.searchParams;
             this.currentApiUrl = url;
 
@@ -74,7 +74,7 @@ var app = new Vue({
             this.data = await res.json();
 
             /* Update Grantnav button url */
-            this.grantnavUrl = `https://grantnav.threesixtygiving.org/search${url.search}`;
+            this.grantnavUrl = `${this.grantnavBaseUrl}/search${url.search}`;
 
 
             /* In insights these are not "public facing parameters" and only
