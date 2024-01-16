@@ -32,6 +32,9 @@ def create_app():
         MAPBOX_ACCESS_TOKEN=os.environ.get("MAPBOX_ACCESS_TOKEN"),
         SECRET_KEY=secret_key(),
         INSIGHTS_CONFIG=config_data,
+        GRANTNAV_BASE_URL=os.environ.get(
+            "GRANTNAV_BASE_URL", "https://grantnav.threesixtygiving.org"
+        ),
     )
 
     @app.context_processor
