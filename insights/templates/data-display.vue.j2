@@ -131,15 +131,12 @@
     <div class="grid grid--two-columns" v-html="insightsConfig.dataexplainer"></div>
 
     <div v-if="data.aggregations && data.aggregations.currency_stats.buckets.length > 1">
-      This data also contains
-      <ul>
-        <li v-for="currency in data.aggregations.currency_stats.buckets" v-if="currency.key != 'GBP'">
+      <p>This data also contains:
+          <template v-for="(currency, i) in data.aggregations.currency_stats.buckets" v-if="currency.key != 'GBP'">
           {{currency.doc_count| formatNumberSuffix}} grants awarded in {{currency.key}} totalling {{ currency.amount_stats.sum |
-          formatCurrency(currency.key) }}{{ currency.amount_stats.sum| getAmountSuffix(true) }}.
-        </li>
-      </ul>
+          formatCurrency(currency.key) }}{{ currency.amount_stats.sum| getAmountSuffix(true) }}.</template>
+      </p>
     </div>
-
       <!-- / totals summary boxes -->
   </header>
 
