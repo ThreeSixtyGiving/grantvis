@@ -1,5 +1,8 @@
 {
   "title": "360Insights",
+  "logo": "images/360insights-color.svg",
   "dataexplainer": "",
+  "header": "See your grantmaking in new ways",
+  "blurb": "Combine and visualise 360Giving, charity and other data to answer questions about your grantmaking",
   "default": true
 }
