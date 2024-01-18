@@ -66,7 +66,7 @@ const chartCardMetadata = {
   },
   "orgAgeWhenAwarded": {
     "title": "Age of recipient organisations",
-    "instructions": "<p>Organisation age at the time of the grant award, based on the registration date of that organisation. Only available for recipients with charity or company numbers.</p>",
+    "commentary": "<p>Organisation age at the time of the grant award, based on the registration date of that organisation. Only available for recipients with charity or company numbers.</p>",
     "color": "teal",
     "chartType": "bar-horizontal",
   },
@@ -78,7 +78,8 @@ const chartCardMetadata = {
   },
   "recipientOrganizationType": {
     "title": "Recipient organisation type",
-    "instructions": "<p>Click on the bars or labels to select one or more recipient organisation types. <p>Organisation type is based on official organisation identifiers, such as registered charity or company numbers, found in the data.</p><p>Some organisation do not have an official identifier, for example because it is an unregistered community group, or the publisher has not included official identifiers in the data. Grants to Individuals also have no recipient organisation type.</p>",
+    "instructions": "<p>Click on the bars or labels to select one or more recipient organisation types.</p>",
+    "commentary": "<p>Organisation type is based on official organisation identifiers, such as registered charity or company numbers, found in the data.</p><p>Some organisation do not have an official identifier, for example because it is an unregistered community group, or the publisher has not included official identifiers in the data. Grants to Individuals also have no recipient organisation type.</p>",
     "color": "teal",
     "chartType": "bar-horizontal"
   }

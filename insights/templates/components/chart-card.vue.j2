@@ -111,7 +111,8 @@
                 </filter-item>
                 <div>
                 <hr class="separator-light">
-                <span v-html="chartCardMetadata.instructions"></span>
+                <span v-if="chartCardMetadata.instructions" class="hide-print" v-html="chartCardMetadata.instructions"></span>
+                <span v-if="chartCardMetadata.commentary" v-html="chartCardMetadata.commentary"></span>
                 <p v-if="totalNotInGraph > 0">{{totalNotInGraph.toLocaleString()}} grants are not shown as they did not include information to determine {{chartCardMetadata.title.toLowerCase()}}.</p>
                 </div>
             </div>

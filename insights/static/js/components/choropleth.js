@@ -33,7 +33,8 @@ export const choropleth = {
           </div>
           <div>
           <hr class="separator-light">
-          <span v-html="chartCardMetadata.instructions"></span>
+          <span v-if="chartCardMetadata.instructions" class="hide-print" v-html="chartCardMetadata.instructions"></span>
+          <span v-if="chartCardMetadata.commentary" v-html="chartCardMetadata.commentary"></span>
           <p v-if="totalNotOnMap > 0">{{totalNotOnMap.toLocaleString()}} grants are not shown as they did not include enough information to determine geography.</p>
           </div>
       </div>
