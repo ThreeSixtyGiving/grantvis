@@ -22,6 +22,7 @@ var app = new Vue({
             chartCardMetadata: chartCardMetadata,
             insightsConfig: INSIGHTS_CONFIG,
             grantnavBaseUrl: GRANTNAV_BASE_URL,
+            staticPath: STATIC_PATH,
             grantnavUrl: "",
             currentApiUrl: new URL(window.location),
         }

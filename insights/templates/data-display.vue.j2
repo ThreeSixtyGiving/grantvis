@@ -15,6 +15,7 @@
     const MAPBOX_ACCESS_TOKEN = {{ config.MAPBOX_ACCESS_TOKEN|tojson }};
     const INSIGHTS_CONFIG = {{ config.INSIGHTS_CONFIG|tojson }};
     const GRANTNAV_BASE_URL = {{ config.GRANTNAV_BASE_URL|tojson }};
+    const STATIC_PATH = "{{ url_for('static', filename="") }}";
   </script>
   <script type="module" src="{{ url_for('static', filename='js/data-display.js') }}"></script>
 {% endblock bodyscripts %}
@@ -42,24 +43,22 @@
               <div class="wrapper">
                 <div class="hero hero--orange">
                   <div class="hero__column hero__logo">
-                    <a href="/"><img src="https://cdn.threesixtygiving.org/images/360-logos/insights/360insights-color.svg"
-                        alt="360 "></a>
+                    <a href="/"><img v-bind:src="staticPath + insightsConfig.logo" alt="360 Giving"></a>
                   </div>
 
-                  <div class="hero__column hero__lead" v-if="!currentApiUrl.searchParams.get('fundingOrganization')">
-                    <h2 class="hero__title">See your grantmaking in new ways</h2>
-                    <p class="hero__blurb">Combine and visualise 360Giving, charity and other data to answer questions about your
-                      grantmaking</p>
-                  </div>
-                  <div class="hero__column hero__lead" v-else>
-                    <h2 class="hero__title">Grants made by:</h2>
-                    <p class="hero__blurb" v-if="data.aggregations">
-                      {{ data.aggregations.fundingOrganization.buckets.filter((i) => {return i.selected}).map((i) => {return i.name}).join(", ") }}
-                      <template v-if="data.aggregations.min_date && data.aggregations.max_date">
-                        <small>between</small> {{new Date(data.aggregations.min_date.value).getFullYear()}} <small>and</small> {{new Date(data.aggregations.max_date.value).getFullYear()}}
-                      </template>
-                    </p>
-                  </div>
+                  <div class="hero__column hero__lead" >
+                    <h2 class="hero__title">{{insightsConfig.header}}</h2>
+                    <p class="hero__blurb" v-if="!currentApiUrl.searchParams.get('fundingOrganization')">{{insightsConfig.blurb}}</p>
+                    <template v-else>
+                      <h3 class="hero__blurb">Grants made by</h3>
+                      <p class="hero__blurb" v-if="data.aggregations">
+                        {{ data.aggregations.fundingOrganization.buckets.filter((i) => {return i.selected}).map((i) => {return i.name}).join(", ") }}
+                        <template v-if="data.aggregations.min_date && data.aggregations.max_date">
+                          <small>between</small> {{new Date(data.aggregations.min_date.value).getFullYear()}} <small>and</small> {{new Date(data.aggregations.max_date.value).getFullYear()}}
+                        </template>
+                      </p>
+                    </template>
+                 </div>
                 </div>
               </div>
             </div>
