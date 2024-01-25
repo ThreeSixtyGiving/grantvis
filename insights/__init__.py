@@ -8,6 +8,8 @@ from flask import (
     Flask,
     render_template,
     url_for,
+    redirect,
+    request,
 )
 
 __version__ = "0.1.0"
@@ -60,5 +62,21 @@ def create_app():
                 "config": config_data,
             },
         )
+
+    # Legacy redirect 2024
+    @app.route("/data")
+    def legacy_data():
+        if request.args.get("funders"):
+            new_query = request.query_string.decode("utf-8").replace(
+                "funders", "fundingOrganization"
+            )
+            return redirect(f"/?{new_query}")
+
+        else:
+            return redirect("/")
+
+    @app.route("/file/<file_id>")
+    def legacy_file(file_id):
+        return redirect("/")
 
     return app
