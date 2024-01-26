@@ -3,13 +3,14 @@ import os
 import random
 import string
 import sys
+import insights.redirect_helpers as redirect_helpers
 
 from flask import (
     Flask,
     render_template,
     url_for,
-    redirect,
     request,
+    redirect,
 )
 
 __version__ = "0.1.0"
@@ -56,6 +57,10 @@ def create_app():
 
     @app.route("/")
     def data():
+        # Check for legacy url 2024
+        if request.args.get("funders"):
+            return redirect_helpers.funders(request)
+
         return render_template(
             "data-display.vue.j2",
             context={
@@ -67,14 +72,11 @@ def create_app():
     @app.route("/data")
     def legacy_data():
         if request.args.get("funders"):
-            new_query = request.query_string.decode("utf-8").replace(
-                "funders", "fundingOrganization"
-            )
-            return redirect(f"/?{new_query}")
-
+            return redirect_helpers.funders(request)
         else:
             return redirect("/")
 
+    # Legacy redirect 2024
     @app.route("/file/<file_id>")
     def legacy_file(file_id):
         return redirect("/")
