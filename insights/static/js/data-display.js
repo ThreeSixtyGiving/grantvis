@@ -78,12 +78,14 @@ var app = new Vue({
             this.grantnavUrl = `${this.grantnavBaseUrl}/search${url.search}`;
 
 
-            /* In insights these are not "public facing parameters" and only
-               apply to grantnav
+            /* In non-main insights (i.e. query restricted) these are not "public facing parameters" and only
+               apply to grantnav.
             */
-            urlSearch.delete("sort")
-            urlSearch.delete("query");
-            urlSearch.delete("default_field");
+            if (this.insightsConfig.query){
+                urlSearch.delete("sort")
+                urlSearch.delete("query");
+                urlSearch.delete("default_field");
+            }
 
             /* Update our browser url */
             history.pushState(null, '', `?${urlSearch.toString()}`);
