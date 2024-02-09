@@ -1,7 +1,7 @@
 <!-- Matomo -->
 <script type="text/javascript">
   var _paq = window._paq = window._paq || [];
-  var siteID = 27;
+  var siteID = {{ config.INSIGHTS_CONFIG.analyticsSiteID }};
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
   _paq.push(['requireCookieConsent']); // Don't use cookies unless we have consent
   _paq.push(['setCookieDomain', '*.threesixtygiving.org']);
