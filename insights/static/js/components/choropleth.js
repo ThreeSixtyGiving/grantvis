@@ -101,13 +101,22 @@ export const choropleth = {
       return layerData;
     },
     updateTotalNotOnMap(field) {
+      /* Total not on map = those aggregated under the key 'undertermined' note this is not the norm */
+      for (let bucket of this.dataAll.aggregations[field].buckets){
+        if (bucket.key === 'Undetermined'){
+          this.totalNotOnMap = bucket.doc_count;
+          break;
+        }
+      }
+
       /* selection has happened only count selected */
       if (this.currentApiUrl.searchParams.getAll(field).length){
-        this.totalOnMap = this.dataAll.aggregations[field].buckets.filter((item) => item.selected).reduce((total, item) => total + item.doc_count, 0);
+        this.totalOnMap = this.dataAll.aggregations[field].buckets.filter((item) => item.selected).reduce((total, item) => total + item.doc_count, 0) - this.totalNotOnMap;
       } else {
-        this.totalOnMap = this.dataAll.aggregations[field].buckets.reduce((total, item) => total + item.doc_count, 0);
+        this.totalOnMap = this.dataAll.aggregations[field].buckets.reduce((total, item) => total + item.doc_count, 0) - this.totalNotOnMap;
       }
-      this.totalNotOnMap = this.dataAll.hits.total.value - this.totalOnMap;
+
+
     },
     updateMap() {
 
