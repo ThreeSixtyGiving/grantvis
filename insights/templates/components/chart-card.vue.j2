@@ -111,7 +111,8 @@
                 </filter-item>
                 <div>
                 <hr class="separator-light">
-                <span v-if="chartCardMetadata.instructions" class="hide-print" v-html="chartCardMetadata.instructions"></span>
+                <span style="display: inline-block" v-if="chartCardMetadata.instructions" class="hide-print" v-html="chartCardMetadata.instructions"></span>
+                <a class="hide-print" href="#" v-on:click.prevent="removeFilter()" v-show="itemsSelected">Clear selection.</a></small>
                 <span v-if="chartCardMetadata.commentary" v-html="chartCardMetadata.commentary"></span>
                 <p v-if="totalNotInGraph > 0">{{totalNotInGraph.toLocaleString()}} grants are not shown as they did not include information to determine {{chartCardMetadata.title.toLowerCase()}}.</p>
                 </div>
@@ -174,6 +175,9 @@
       };
     },
     methods: {
+      removeFilter() {
+        this.$emit("remove-filter", this.dataId);
+      },
       updateMaxValue(buckets) {
         /* This maxValue is used to work out the scale of the graphs */
         if (this.itemsSelected) {
