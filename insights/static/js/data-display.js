@@ -25,6 +25,7 @@ var app = new Vue({
             staticPath: STATIC_PATH,
             grantnavUrl: "",
             currentApiUrl: new URL(window.location),
+            geoTypeSelect: "best",
         }
     },
     watch: {
@@ -77,6 +78,14 @@ var app = new Vue({
             /* Update Grantnav button url */
             this.grantnavUrl = `${this.grantnavBaseUrl}/search${url.search}`;
 
+            /* Decide which of the geo types to show (default = best) */
+            if (queryUrl.match("beneficiary.*Name")){
+              this.geoTypeSelect = "beneficiary";
+            }
+
+            if (queryUrl.match("recipientOrg.*Name")){
+              this.geoTypeSelect = "recipient_org";
+            }
 
             /* In non-main insights (i.e. query restricted) these are not "public facing parameters" and only
                apply to grantnav.
