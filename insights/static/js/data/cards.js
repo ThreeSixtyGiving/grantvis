@@ -34,20 +34,68 @@ const chartCardMetadata = {
     "filterer": { type: "finder" }
   },
   "recipientRegionName": {
-    "title": "Countries and regions",
+    "title": "Best available countries and regions",
     "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
     "color": "red",
     "chartType": "bar-horizontal"
   },
   "recipientDistrictName": {
-    "title": "Local authorities",
+    "title": "Best available local authorities",
     "instructions": "<p>Click on the bars or labels to select one or more local authorities.</p>",
     "color": "red",
     "chartType": "bar-horizontal",
     "filterer": { type: "finder" }
   },
+  "bestCountyName": {
+    "title": "Best available county",
+    "instructions": "<p>Click on the bars or labels to select one or more counties.</p>",
+    "color": "red",
+    "chartType": "bar-horizontal",
+    "filterer": { type: "finder" }
+  },
+  "recipientOrgRegionName": {
+    "title": "Recipient Organisation countries and regions",
+    "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
+    "color": "red",
+    "chartType": "bar-horizontal"
+  },
+  "recipientOrgDistrictName": {
+    "title": "Recipient Organisation local authorities",
+    "instructions": "<p>Click on the bars or labels to select one or more local authorities.</p>",
+    "color": "red",
+    "chartType": "bar-horizontal",
+    "filterer": { type: "finder" }
+  },
+  "recipientOrgCountyName": {
+    "title": "Recipient Organisation county",
+    "instructions": "<p>Click on the bars or labels to select one or more counties.</p>",
+    "color": "red",
+    "chartType": "bar-horizontal",
+    "filterer": { type: "finder" }
+  },
+  "beneficiaryRegionName": {
+    "title": "Beneficiary countries and regions",
+    "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
+    "color": "red",
+    "chartType": "bar-horizontal"
+  },
+  "beneficiaryDistrictName": {
+    "title": "Beneficiary local authorities",
+    "instructions": "<p>Click on the bars or labels to select one or more local authorities.</p>",
+    "color": "red",
+    "chartType": "bar-horizontal",
+    "filterer": { type: "finder" }
+  },
+  "beneficiaryCountyName": {
+    "title": "Beneficiary county",
+    "instructions": "<p>Click on the bars or labels to select one or more counties.</p>",
+    "color": "red",
+    "chartType": "bar-horizontal",
+    "filterer": { type: "finder" }
+  },
+
   "distributionChloropleth": {
-    "title": "Distribution of Grants by location",
+    "title": "Distribution of Grants by best available location",
     "instructions": "<p>Zoom into a Country/Region to view Local Authority-level data. Click on an area to view number of grants, and click on the number of grants to select the area.</p>",
     "color": "red",
     "chartType": "map-chloropleth"
@@ -72,7 +120,7 @@ const chartCardMetadata = {
   },
   "simple_grant_type": {
     "title": "Type of grant",
-    "instructions": "<p>Click on the bars or labels to select one or more grant types</p>",
+    "instructions": "<p>Click on the bars or labels to select one or more grant types.</p>",
     "color": "orange",
     "chartType": "bar-horizontal"
   },
