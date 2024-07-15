@@ -10,14 +10,14 @@
 
 {% block bodyscripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/data/cards.js') }}"></script>
+<script src="{{ url_for('static', filename='js/data/cards.js') }}?v=20240715"></script>
 <script>
     const MAPBOX_ACCESS_TOKEN = {{ config.MAPBOX_ACCESS_TOKEN|tojson }};
     const INSIGHTS_CONFIG = {{ config.INSIGHTS_CONFIG|tojson }};
     const GRANTNAV_BASE_URL = {{ config.GRANTNAV_BASE_URL|tojson }};
     const STATIC_PATH = "{{ url_for('static', filename="") }}";
   </script>
-  <script type="module" src="{{ url_for('static', filename='js/data-display.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/data-display.js') }}?v=20240715"></script>
 {% endblock bodyscripts %}
 
 {% block content %}
