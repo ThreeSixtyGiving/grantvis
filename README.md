@@ -1,4 +1,4 @@
-Insights
+GrantVis (Insights)
 ========
 
 [![Coverage Status](https://coveralls.io/repos/github/ThreeSixtyGiving/insights-ng/badge.svg)](https://coveralls.io/github/ThreeSixtyGiving/insights-ng)
