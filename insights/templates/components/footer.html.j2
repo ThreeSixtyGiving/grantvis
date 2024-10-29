@@ -44,15 +44,16 @@
                     <li><a href="https://dataquality.threesixtygiving.org/">Data Quality Tool</a></li>
                     <li><a href="https://data.threesixtygiving.org/">Registry</a></li>
                     <li><a href="https://qualitydashboard.threesixtygiving.org/">Quality Dashboard</a></li>
-                    {% if not config.INSIGHTS_CONFIG.default %}
                     <li><a href="https://insights.threesixtygiving.org/">360Insights</a></li>
+                    {% if not config.INSIGHTS_CONFIG.default %}
+                    <li><a href="https://grantvis.threesixtygiving.org/">GrantVis</a></li>
                     {% endif %}
                 </ul>
             </div>
 
             <div class="footer__column-3 footer__section">
-                <h3 class="footer__heading">Insights</h3>
-                <p>360Insights is a free tool to help you understand funders better. You can combine and visualise
+                <h3 class="footer__heading">GrantVis</h3>
+                <p>GrantVis is a free tool to help you understand funders better. You can combine and visualise
                     360Giving and charity data, and explore funding across different areas - from grant dates to types
                     of recipients.
                 </p>
@@ -70,7 +71,7 @@
         </div>
 
         <div class="wrapper footer__small-print">
-            <a href="https://github.com/ThreeSixtyGiving/insights-ng"
+            <a href="https://github.com/ThreeSixtyGiving/grantvis"
                 class="edit-github button button--small button--yellow">Edit on Github</a>
             <p>© Copyright 2022, 360Giving, licensed under a <a href="https://creativecommons.org/licenses/by/4.0/"
                     target="_blank">Creative Commons
