@@ -44,7 +44,7 @@ def create_app():
     def inject_nav():
         return dict(
             nav={
-                "360Insights": url_for("data"),
+                "GrantVis": url_for("data"),
                 "About": url_for("about"),
                 "GrantNav": "https://grantnav.threesixtygiving.org/",
             },
