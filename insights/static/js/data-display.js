@@ -40,6 +40,12 @@ var app = new Vue({
     methods: {
       async updateData(queryUrl = "/search") {
             this.loadingQ++;
+            /* temp workaround for https://github.com/ThreeSixtyGiving/grantnav/issues/1176
+             * This removes the incorrect portion of the url
+             */
+            if (queryUrl.includes("aggregates_api")) {
+              queryUrl = "/search?"+queryUrl.split("?")[1]
+            }
 
             const url = new URL(`${this.grantnavBaseUrl}/api/aggregates${queryUrl}`);
             let urlSearch = url.searchParams;
