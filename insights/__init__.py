@@ -3,6 +3,7 @@ import os
 import random
 import string
 import sys
+import datetime
 import insights.redirect_helpers as redirect_helpers
 
 from flask import (
@@ -49,6 +50,7 @@ def create_app():
                 "GrantNav": "https://grantnav.threesixtygiving.org/",
             },
             debug=app.config["DEBUG"],
+            current_year=datetime.datetime.now().year,
         )
 
     @app.route("/about")
