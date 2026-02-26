@@ -12,7 +12,7 @@ python3 -m venv .ve
 source .ve/bin/activate
 
 pip install -r requirements.txt
-pip install -r dev-requirements.txt # if developing
+pip install -r requirements_dev.txt # if developing
 
 Install postgres (Insights is tested in postgres 12)
 sudo -u postgres createuser -P -e <username>  --interactive
