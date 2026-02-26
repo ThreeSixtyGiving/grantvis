@@ -122,6 +122,11 @@ var app = new Vue({
           this.currentApiUrl.searchParams.delete(id);
           this.updateData(`/search${this.currentApiUrl.search}`);
         },
+
+        clearAllFilters(){
+          this.currentApiUrl = new URL(window.location.origin + window.location.pathname);
+          this.updateData("/search");
+        },
     },
     computed: {
       filtersApplied(){
