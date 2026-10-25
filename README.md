@@ -10,6 +10,7 @@ GrantVis (Insights)
 ```
 python3 -m venv .ve
 source .ve/bin/activate
+pip install --upgrade pip
 
 pip install -r requirements.txt
 pip install -r requirements_dev.txt # if developing
