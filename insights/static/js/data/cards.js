@@ -34,13 +34,13 @@ const chartCardMetadata = {
     "filterer": { type: "finder" }
   },
   "recipientRegionName": {
-    "title": "Best available countries and regions",
+    "title": "Best available UK country and region",
     "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
     "color": "red",
     "chartType": "bar-horizontal"
   },
   "recipientDistrictName": {
-    "title": "Best available local authorities",
+    "title": "Best available local authority",
     "instructions": "<p>Click on the bars or labels to select one or more local authorities.</p>",
     "color": "red",
     "chartType": "bar-horizontal",
@@ -54,13 +54,13 @@ const chartCardMetadata = {
     "filterer": { type: "finder" }
   },
   "recipientOrgRegionName": {
-    "title": "Recipient Organisation countries and regions",
+    "title": "Recipient Organisation country and region",
     "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
     "color": "red",
     "chartType": "bar-horizontal"
   },
   "recipientOrgDistrictName": {
-    "title": "Recipient Organisation local authorities",
+    "title": "Recipient Organisation local authority",
     "instructions": "<p>Click on the bars or labels to select one or more local authorities.</p>",
     "color": "red",
     "chartType": "bar-horizontal",
@@ -74,13 +74,13 @@ const chartCardMetadata = {
     "filterer": { type: "finder" }
   },
   "beneficiaryRegionName": {
-    "title": "Beneficiary countries and regions",
+    "title": "Beneficiary country and region",
     "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
     "color": "red",
     "chartType": "bar-horizontal"
   },
   "beneficiaryDistrictName": {
-    "title": "Beneficiary local authorities",
+    "title": "Beneficiary local authority",
     "instructions": "<p>Click on the bars or labels to select one or more local authorities.</p>",
     "color": "red",
     "chartType": "bar-horizontal",
