@@ -54,7 +54,7 @@ const chartCardMetadata = {
     "filterer": { type: "finder" }
   },
   "recipientOrgRegionName": {
-    "title": "Recipient Organisation country and region",
+    "title": "Recipient Organisation UK country and region",
     "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
     "color": "red",
     "chartType": "bar-horizontal"
@@ -74,20 +74,20 @@ const chartCardMetadata = {
     "filterer": { type: "finder" }
   },
   "beneficiaryRegionName": {
-    "title": "Beneficiary country and region",
+    "title": "Grant Location UK country and region",
     "instructions": "<p>Click on the bars or labels to select one or more countries.</p>",
     "color": "red",
     "chartType": "bar-horizontal"
   },
   "beneficiaryDistrictName": {
-    "title": "Beneficiary local authority",
+    "title": "Grant Location local authority",
     "instructions": "<p>Click on the bars or labels to select one or more local authorities.</p>",
     "color": "red",
     "chartType": "bar-horizontal",
     "filterer": { type: "finder" }
   },
   "beneficiaryCountyName": {
-    "title": "Beneficiary county",
+    "title": "Grant Location county",
     "instructions": "<p>Click on the bars or labels to select one or more counties.</p>",
     "color": "red",
     "chartType": "bar-horizontal",
