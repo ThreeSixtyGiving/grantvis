@@ -239,7 +239,7 @@
           }
 
           if (minDate !== '' || maxDate !== '') {
-            this.$emit("select", this.currentApiUrl.toString());
+            this.$emit("select", `/search${this.currentApiUrl.search}`);
           }
         }, 2000)();
       }
@@ -310,12 +310,12 @@
         if (this.dataId == "amountAwardedFixed") {
           if (!this.filters.numberMax) {
             this.currentApiUrl.searchParams.delete("max_amount");
-            this.$emit("select", this.currentApiUrl.toString());
+            this.$emit("select", `/search${this.currentApiUrl.search}`);
             return;
           }
 
           this.currentApiUrl.searchParams.set("max_amount", Number(this.filters.numberMax));
-          this.$emit("select", this.currentApiUrl.toString());
+          this.$emit("select", `/search${this.currentApiUrl.search}`);
         }
         /* TODO this doesn't reset correctly
         const app = this;
@@ -340,12 +340,12 @@
         if (this.dataId == "amountAwardedFixed") {
           if (!this.filters.numberMin) {
             this.currentApiUrl.searchParams.delete("min_amount");
-            this.$emit("select", this.currentApiUrl.toString());
+            this.$emit("select", `/search${this.currentApiUrl.search}`);
             return;
           }
 
           this.currentApiUrl.searchParams.set("min_amount", Number(this.filters.numberMin));
-          this.$emit("select", this.currentApiUrl.toString());
+          this.$emit("select", `/search${this.currentApiUrl.search}`);
         }
 
         /* Fixme this doesn't reset when max amount removed
